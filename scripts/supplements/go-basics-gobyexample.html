@@ -1,11 +1,11 @@
 <!-- Go by Example: Complete reference with "Run in Go Playground" buttons -->
 
-<h2>Go by Example — Organized Reference</h2>
+<h2>Go by Example — Quick Reference</h2>
 <p>All topics from <a href="https://gobyexample.com/" target="_blank">Go by Example</a>, organized under the matching course sections. Click <strong>"▶ Run in Go Playground"</strong> to run any example live.</p>
 <hr/>
 
-<h2>5. Variables, Constants, and Types</h2>
-<h3>Hello World</h3>
+<h3>Variables, Constants, and Types</h3>
+<h4 class="gbe-topic">Hello World</h4>
 <p>The classic first program. Every Go program starts with a <code>package main</code> declaration and a <code>func main()</code> entry point. <code>fmt.Println</code> prints a line to standard output.</p>
 <pre><code>package main
 
@@ -17,7 +17,7 @@ func main() {
 </code></pre>
 
 
-<h3>Values</h3>
+<h4 class="gbe-topic">Values</h4>
 <p>Go has various value types including strings, integers, floats, and booleans. Here are a few basic examples.</p>
 <pre><code>package main
 
@@ -34,7 +34,7 @@ func main() {
 </code></pre>
 
 
-<h3>Variables</h3>
+<h4 class="gbe-topic">Variables</h4>
 <p>In Go, variables are explicitly declared. The compiler uses the type to check correctness of function calls. <code>var</code> declares variables; <code>:=</code> is shorthand for declare-and-initialize inside functions.</p>
 <pre><code>package main
 
@@ -59,7 +59,7 @@ func main() {
 </code></pre>
 
 
-<h3>Constants</h3>
+<h4 class="gbe-topic">Constants</h4>
 <p>Go supports constants of character, string, boolean, and numeric values. <code>const</code> declares a constant value that cannot be changed after assignment. Constants can appear anywhere a <code>var</code> can but with the <code>const</code> keyword.</p>
 <pre><code>package main
 
@@ -81,8 +81,8 @@ func main() {
 </code></pre>
 
 
-<h2>6. Control Flow & Loop Scope Mechanics</h2>
-<h3>For</h3>
+<h3>Control Flow & Loop Scope Mechanics</h3>
+<h4 class="gbe-topic">For</h4>
 <p><code>for</code> is Go's only looping construct. It covers traditional for, while, and infinite loops — there is no <code>while</code> keyword.</p>
 <pre><code>package main
 
@@ -118,7 +118,7 @@ func main() {
 </code></pre>
 
 
-<h3>If/Else</h3>
+<h4 class="gbe-topic">If/Else</h4>
 <p>Branching with <code>if</code> and <code>else</code>. Parentheses are not needed around conditions, but braces are required. You can put a short statement before the condition — its variables are scoped to the if/else block.</p>
 <pre><code>package main
 
@@ -147,7 +147,7 @@ func main() {
 </code></pre>
 
 
-<h3>Switch</h3>
+<h4 class="gbe-topic">Switch</h4>
 <p>Switch statements express conditionals across many branches. Go's switch is cleaner than C's: it doesn't need <code>break</code> statements and cases don't fall through by default.</p>
 <pre><code>package main
 
@@ -187,8 +187,8 @@ func main() {
 </code></pre>
 
 
-<h2>7. Functions, Defer, and Error Handling</h2>
-<h3>Functions</h3>
+<h3>Functions, Defer, and Error Handling</h3>
+<h4 class="gbe-topic">Functions</h4>
 <p>Functions are central in Go. They are defined with <code>func</code> and can take zero or more arguments and return zero or more values.</p>
 <pre><code>package main
 
@@ -212,7 +212,7 @@ func main() {
 </code></pre>
 
 
-<h3>Multiple Return Values</h3>
+<h4 class="gbe-topic">Multiple Return Values</h4>
 <p>Go has built-in support for multiple return values. This is used idiomatically to return both result and error values from a function.</p>
 <pre><code>package main
 
@@ -234,7 +234,7 @@ func main() {
 </code></pre>
 
 
-<h3>Variadic Functions</h3>
+<h4 class="gbe-topic">Variadic Functions</h4>
 <p>Variadic functions can be called with any number of trailing arguments. <code>fmt.Println</code> is a common variadic function.</p>
 <pre><code>package main
 
@@ -259,7 +259,7 @@ func main() {
 </code></pre>
 
 
-<h3>Closures</h3>
+<h4 class="gbe-topic">Closures</h4>
 <p>Go supports anonymous functions, which can form closures. Anonymous functions are useful when you want to define a function inline without naming it. A closure captures variables from its surrounding scope.</p>
 <pre><code>package main
 
@@ -285,7 +285,7 @@ func main() {
 </code></pre>
 
 
-<h3>Recursion</h3>
+<h4 class="gbe-topic">Recursion</h4>
 <p>Go supports recursive functions. A classic example is factorial.</p>
 <pre><code>package main
 
@@ -313,7 +313,7 @@ func main() {
 }
 </code></pre>
 ```html
-<h3>Defer</h3>
+<h4 class="gbe-topic">Defer</h4>
 <p><code>defer</code> ensures a function call is performed later, usually for cleanup. It's commonly used to close files, unlock mutexes, or print a footer. Deferred calls execute in LIFO order when the surrounding function returns.</p>
 <pre><code>package main
 
@@ -353,7 +353,7 @@ func closeFile(f *os.File) {
 </code></pre>
 
 
-<h3>Panic</h3>
+<h4 class="gbe-topic">Panic</h4>
 <p>A <code>panic</code> means something went unexpectedly wrong. Typically we use it for errors that shouldn't occur during normal operation — programmer errors, not user input errors.</p>
 <pre><code>package main
 
@@ -371,7 +371,7 @@ func main() {
 </code></pre>
 
 
-<h3>Recover</h3>
+<h4 class="gbe-topic">Recover</h4>
 <p><code>recover</code> catches a panic and resumes normal execution. It must be called inside a deferred function. This is useful for libraries that shouldn't crash the caller on unexpected errors.</p>
 <pre><code>package main
 
@@ -410,7 +410,7 @@ func main() {
 </code></pre>
 
 
-<h3>Errors</h3>
+<h4 class="gbe-topic">Errors</h4>
 <p>In Go, errors are values. Functions communicate errors by returning a value of type <code>error</code> as their last return value. A nil error means success; a non-nil error carries a message describing what went wrong.</p>
 <pre><code class="language-go">package main
 
@@ -445,7 +445,7 @@ func main() {
 </code></pre>
 
 
-<h3>Custom Errors</h3>
+<h4 class="gbe-topic">Custom Errors</h4>
 <p>You can create custom error types by implementing the <code>error</code> interface (which requires only an <code>Error() string</code> method). Custom errors let callers inspect error details using type assertions or <code>errors.As</code>.</p>
 <pre><code class="language-go">package main
 
@@ -487,8 +487,8 @@ func main() {
 </code></pre>
 
 
-<h2>8. Data Structures and Mutation</h2>
-<h3>Arrays</h3>
+<h3>Data Structures and Mutation</h3>
+<h4 class="gbe-topic">Arrays</h4>
 <p>An array is a numbered sequence of elements of a fixed length. Arrays are values in Go — assigning one copies all elements. In typical Go code, slices are much more common than arrays.</p>
 <pre><code>package main
 
@@ -518,7 +518,7 @@ func main() {
 </code></pre>
 
 
-<h3>Slices</h3>
+<h4 class="gbe-topic">Slices</h4>
 <p>Slices are a key data type in Go, giving a more powerful interface than arrays. Unlike arrays, slices are dynamically-sized. They have a length and a capacity, backed by an underlying array.</p>
 <pre><code>package main
 
@@ -550,7 +550,7 @@ func main() {
 </code></pre>
 
 
-<h3>Maps</h3>
+<h4 class="gbe-topic">Maps</h4>
 <p>Maps are Go's built-in associative data type (sometimes called hashes or dicts in other languages). They map keys to values and are created with <code>make</code> or a literal.</p>
 <pre><code>package main
 
@@ -579,7 +579,7 @@ func main() {
 </code></pre>
 
 
-<h3>Sorting</h3>
+<h4 class="gbe-topic">Sorting</h4>
 <p>Go's <code>slices</code> package implements sorting for built-in and user-defined types.</p>
 <pre><code>package main
 
@@ -602,7 +602,7 @@ func main() {
 </code></pre>
 
 
-<h3>Sorting by Functions</h3>
+<h4 class="gbe-topic">Sorting by Functions</h4>
 <p>Sometimes you want to sort a collection by something other than its natural order. Use <code>slices.SortFunc</code> with a custom comparison function.</p>
 <pre><code>package main
 
@@ -636,7 +636,7 @@ func main() {
 </code></pre>
 
 
-<h3>Range over Built-in Types</h3>
+<h4 class="gbe-topic">Range over Built-in Types</h4>
 <p><code>range</code> iterates over elements in a variety of built-in data structures. Let's see how to use <code>range</code> with slices, maps, and strings.</p>
 <pre><code class="language-go">package main
 
@@ -672,8 +672,8 @@ func main() {
 </code></pre>
 
 
-<h2>9. Structs, Methods, and Interfaces</h2>
-<h3>Pointers</h3>
+<h3>Structs, Methods, and Interfaces</h3>
+<h4 class="gbe-topic">Pointers</h4>
 <p>Go supports pointers, allowing you to pass references to values and records within your program. A pointer holds the memory address of a value. The <code>&amp;</code> operator generates a pointer to its operand, and the <code>*</code> operator dereferences a pointer.</p>
 <pre><code class="language-go">package main
 
@@ -707,7 +707,7 @@ func main() {
 </code></pre>
 
 
-<h3>Strings and Runes</h3>
+<h4 class="gbe-topic">Strings and Runes</h4>
 <p>A Go string is a read-only slice of bytes. The language and standard library treat strings specially — as containers of text encoded in UTF-8. A <code>rune</code> is an alias for <code>int32</code> and represents a Unicode code point.</p>
 <pre><code class="language-go">package main
 
@@ -743,7 +743,7 @@ func main() {
 </code></pre>
 
 
-<h3>Structs</h3>
+<h4 class="gbe-topic">Structs</h4>
 <p>Go's <em>structs</em> are typed collections of fields. They're useful for grouping data together to form records. Structs are value types — when assigned or passed, they are copied.</p>
 <pre><code class="language-go">package main
 
@@ -792,7 +792,7 @@ func main() {
 </code></pre>
 
 
-<h3>Methods</h3>
+<h4 class="gbe-topic">Methods</h4>
 <p>Go supports <em>methods</em> defined on struct types. A method is a function with a special <em>receiver</em> argument. You can define methods with pointer receivers (to mutate state) or value receivers (read-only).</p>
 <pre><code class="language-go">package main
 
@@ -835,7 +835,7 @@ func main() {
 </code></pre>
 
 
-<h3>Interfaces</h3>
+<h4 class="gbe-topic">Interfaces</h4>
 <p>Interfaces are named collections of method signatures. They are implemented implicitly — a type implements an interface by implementing its methods. No explicit "implements" declaration is needed.</p>
 <pre><code class="language-go">package main
 
@@ -891,7 +891,7 @@ func main() {
 </code></pre>
 
 
-<h3>Enums</h3>
+<h4 class="gbe-topic">Enums</h4>
 <p>Go doesn't have a dedicated enum keyword but uses typed constants with <code>iota</code> to create enumerated types. This pattern gives you type safety and auto-incrementing values.</p>
 <pre><code class="language-go">package main
 
@@ -946,7 +946,7 @@ func main() {
 </code></pre>
 
 
-<h3>Struct Embedding</h3>
+<h4 class="gbe-topic">Struct Embedding</h4>
 <p>Go supports <em>embedding</em> of structs and interfaces to express a more seamless <em>composition</em> of types. This is not inheritance — it's composition where the embedded type's methods are promoted to the embedding struct.</p>
 <pre><code class="language-go">package main
 
@@ -990,8 +990,8 @@ func main() {
 </code></pre>
 
 
-<h2>10. Generics</h2>
 <h3>Generics</h3>
+<h4 class="gbe-topic">Generics</h4>
 <p>Starting with Go 1.18, the language supports generics via type parameters. This lets you write functions and types that work with multiple types while remaining type-safe at compile time.</p>
 <pre><code class="language-go">package main
 
@@ -1048,7 +1048,7 @@ func main() {
 </code></pre>
 
 
-<h3>Range over Iterators</h3>
+<h4 class="gbe-topic">Range over Iterators</h4>
 <p>Starting with Go 1.23, you can use <code>range</code> over custom iterator functions. An iterator is a function that takes a <code>yield</code> callback and calls it for each element. This enables <code>for...range</code> syntax over any sequence.</p>
 <pre><code class="language-go">package main
 
@@ -1082,8 +1082,8 @@ func main() {
 </code></pre>
 
 
-<h2>11. Concurrency Patterns</h2>
-<h3>Channel Buffering</h3>
+<h3>Concurrency Patterns</h3>
+<h4 class="gbe-topic">Channel Buffering</h4>
 <p>By default channels are unbuffered — they only accept sends if there's a corresponding receive ready. Buffered channels accept a limited number of values without a corresponding receiver.</p>
 <pre><code>package main
 
@@ -1099,7 +1099,7 @@ func main() {
 </code></pre>
 
 
-<h3>Channel Synchronization</h3>
+<h4 class="gbe-topic">Channel Synchronization</h4>
 <p>We can use channels to synchronize execution across goroutines. A blocking receive waits for the sender to complete.</p>
 <pre><code>package main
 
@@ -1123,7 +1123,7 @@ func main() {
 </code></pre>
 
 
-<h3>Channel Directions</h3>
+<h4 class="gbe-topic">Channel Directions</h4>
 <p>When using channels as function parameters, you can specify if a channel is meant to only send or receive values, increasing type-safety.</p>
 <pre><code>package main
 
@@ -1148,7 +1148,7 @@ func main() {
 </code></pre>
 
 
-<h3>Select</h3>
+<h4 class="gbe-topic">Select</h4>
 <p>Go's <code>select</code> lets you wait on multiple channel operations. It's like a switch but for channels — it blocks until one case can proceed.</p>
 <pre><code>package main
 
@@ -1182,7 +1182,7 @@ func main() {
 </code></pre>
 
 
-<h3>Timeouts</h3>
+<h4 class="gbe-topic">Timeouts</h4>
 <p>Timeouts are important for programs that connect to external resources. Implementing timeouts in Go is easy with channels and <code>select</code>.</p>
 <pre><code>package main
 
@@ -1219,7 +1219,7 @@ func main() {
 </code></pre>
 
 
-<h3>Non-Blocking Channel Operations</h3>
+<h4 class="gbe-topic">Non-Blocking Channel Operations</h4>
 <p>A <code>select</code> with a <code>default</code> case implements a non-blocking send, receive, or multi-way select.</p>
 <pre><code>package main
 
@@ -1256,7 +1256,7 @@ func main() {
 </code></pre>
 
 
-<h3>Closing Channels</h3>
+<h4 class="gbe-topic">Closing Channels</h4>
 <p>Closing a channel indicates that no more values will be sent on it. This is useful to communicate completion to a receiver.</p>
 <pre><code>package main
 
@@ -1290,7 +1290,7 @@ func main() {
 </code></pre>
 
 
-<h3>Range over Channels</h3>
+<h4 class="gbe-topic">Range over Channels</h4>
 <p>You can use <code>for</code>...<code>range</code> to iterate over values received from a channel, automatically ending when the channel is closed.</p>
 <pre><code>package main
 
@@ -1309,7 +1309,7 @@ func main() {
 </code></pre>
 
 
-<h3>Timers</h3>
+<h4 class="gbe-topic">Timers</h4>
 <p>Timers fire once in the future. They're useful when you want to wait or do something after a specific duration.</p>
 <pre><code>package main
 
@@ -1337,7 +1337,7 @@ func main() {
 </code></pre>
 
 
-<h3>Tickers</h3>
+<h4 class="gbe-topic">Tickers</h4>
 <p>Tickers are for when you want to do something repeatedly at regular intervals, unlike timers which fire once.</p>
 <pre><code>package main
 
@@ -1369,7 +1369,7 @@ func main() {
 </code></pre>
 
 
-<h3>Worker Pools</h3>
+<h4 class="gbe-topic">Worker Pools</h4>
 <p>A worker pool is a common concurrency pattern: a fixed number of goroutines process jobs from a shared channel. This limits concurrency while keeping throughput high.</p>
 <pre><code>package main
 
@@ -1408,7 +1408,7 @@ func main() {
 </code></pre>
 
 
-<h3>WaitGroups</h3>
+<h4 class="gbe-topic">WaitGroups</h4>
 <p>A <code>sync.WaitGroup</code> waits for a collection of goroutines to finish. Add to the counter before launching, call Done when each finishes, and Wait blocks until the counter is zero.</p>
 <pre><code>package main
 
@@ -1439,7 +1439,7 @@ func main() {
 </code></pre>
 
 
-<h3>Rate Limiting</h3>
+<h4 class="gbe-topic">Rate Limiting</h4>
 <p>Rate limiting is an important mechanism for controlling resource utilization and maintaining quality of service. Go supports rate limiting with goroutines, channels, and tickers.</p>
 <pre><code>package main
 
@@ -1486,7 +1486,7 @@ func main() {
 </code></pre>
 
 
-<h3>Atomic Counters</h3>
+<h4 class="gbe-topic">Atomic Counters</h4>
 <p>The <code>sync/atomic</code> package provides low-level atomic operations on integers, useful for simple shared state accessed by multiple goroutines without a full mutex.</p>
 <pre><code>package main
 
@@ -1515,7 +1515,7 @@ func main() {
 </code></pre>
 
 
-<h3>Mutexes</h3>
+<h4 class="gbe-topic">Mutexes</h4>
 <p>For more complex shared state, use a <code>sync.Mutex</code> to safely access data across multiple goroutines.</p>
 <pre><code>package main
 
@@ -1556,7 +1556,7 @@ func main() {
 </code></pre>
 
 
-<h3>Stateful Goroutines</h3>
+<h4 class="gbe-topic">Stateful Goroutines</h4>
 <p>An alternative to mutexes: use a single goroutine that owns the state, and communicate via channels. This is the "share memory by communicating" approach.</p>
 <pre><code>package main
 
@@ -1628,7 +1628,7 @@ func main() {
 </code></pre>
 
 
-<h3>Context</h3>
+<h4 class="gbe-topic">Context</h4>
 <p><code>context.Context</code> carries deadlines, cancellation signals, and request-scoped values across API boundaries and goroutines. It's the standard way to control long-running operations.</p>
 <pre><code>package main
 
@@ -1655,7 +1655,7 @@ func main() {
 </code></pre>
 
 
-<h3>Goroutines</h3>
+<h4 class="gbe-topic">Goroutines</h4>
 <p>A <em>goroutine</em> is a lightweight thread of execution managed by the Go runtime. You start one by placing <code>go</code> before a function call. Goroutines run concurrently with the calling code and with each other.</p>
 <pre><code class="language-go">package main
 
@@ -1688,7 +1688,7 @@ func main() {
 </code></pre>
 
 
-<h3>Channels</h3>
+<h4 class="gbe-topic">Channels</h4>
 <p>Channels are the pipes that connect concurrent goroutines. You can send values into channels from one goroutine and receive those values in another. By default, sends and receives block until both sides are ready, enabling synchronization without locks.</p>
 <pre><code class="language-go">package main
 
@@ -1730,8 +1730,8 @@ func main() {
 
 
 
-<h2>12. Testing, Fuzzing, and Security</h2>
-<h3>SHA256 Hashes</h3>
+<h3>Testing, Fuzzing, and Security</h3>
+<h4 class="gbe-topic">SHA256 Hashes</h4>
 <p>SHA256 hashes are frequently used to compute short identities for binary or text blobs. Go implements several hash functions in the <code>crypto/*</code> packages.</p>
 <pre><code>package main
 
@@ -1751,7 +1751,7 @@ func main() {
 </code></pre>
 
 
-<h3>Testing and Benchmarking</h3>
+<h4 class="gbe-topic">Testing and Benchmarking</h4>
 <p>Tests go in <code>*_test.go</code> files. Use <code>t.Run</code> for table-driven tests and <code>*testing.B</code> for benchmarks.</p>
 <pre><code>// intutils.go
 package main
@@ -1798,8 +1798,8 @@ func BenchmarkIntMin(b *testing.B) {
 <p>Run: <code>go test -v</code> | Bench: <code>go test -bench=.</code></p>
 
 
-<h2>13. Modern System Standard Utilities</h2>
-<h3>String Functions</h3>
+<h3>Modern System Standard Utilities</h3>
+<h4 class="gbe-topic">String Functions</h4>
 <p>The standard library's <code>strings</code> package provides many useful string-related functions. Here are some examples to give you a sense of the package.</p>
 <pre><code>package main
 
@@ -1824,7 +1824,7 @@ func main() {
 </code></pre>
 
 
-<h3>String Formatting</h3>
+<h4 class="gbe-topic">String Formatting</h4>
 <p>Go offers excellent support for string formatting via <code>fmt.Sprintf</code> and the <code>Printf</code> family. The verbs control how values are printed.</p>
 <pre><code>package main
 
@@ -1860,7 +1860,7 @@ func main() {
 </code></pre>
 
 
-<h3>Text Templates</h3>
+<h4 class="gbe-topic">Text Templates</h4>
 <p>Go's <code>text/template</code> package implements data-driven templates for generating textual output. It's the basis for Go's HTML templating too.</p>
 <pre><code>package main
 
@@ -1892,7 +1892,7 @@ func main() {
 </code></pre>
 
 
-<h3>Regular Expressions</h3>
+<h4 class="gbe-topic">Regular Expressions</h4>
 <p>Go's <code>regexp</code> package implements regular expression search. The syntax is RE2 (guaranteed linear time).</p>
 <pre><code>package main
 
@@ -1916,7 +1916,7 @@ func main() {
 </code></pre>
 
 
-<h3>JSON</h3>
+<h4 class="gbe-topic">JSON</h4>
 <p>Go's <code>encoding/json</code> package handles JSON encoding and decoding, including to/from structs, maps, and custom types.</p>
 <pre><code>package main
 
@@ -1975,7 +1975,7 @@ func main() {
 </code></pre>
 
 
-<h3>XML</h3>
+<h4 class="gbe-topic">XML</h4>
 <p>Go's <code>encoding/xml</code> package supports XML, similar to JSON. Struct field tags control the output element names.</p>
 <pre><code>package main
 
@@ -2007,7 +2007,7 @@ func main() {
 </code></pre>
 
 
-<h3>Time</h3>
+<h4 class="gbe-topic">Time</h4>
 <p>Go's <code>time</code> package provides functionality for representing and manipulating time.</p>
 <pre><code>package main
 
@@ -2044,7 +2044,7 @@ func main() {
 </code></pre>
 
 
-<h3>Epoch</h3>
+<h4 class="gbe-topic">Epoch</h4>
 <p>Programs often need to get the number of seconds, milliseconds, or nanoseconds since the Unix epoch.</p>
 <pre><code>package main
 
@@ -2067,7 +2067,7 @@ func main() {
 </code></pre>
 
 
-<h3>Time Formatting / Parsing</h3>
+<h4 class="gbe-topic">Time Formatting / Parsing</h4>
 <p>Go uses pattern-based time formatting. The reference time is <code>Mon Jan 2 15:04:05 MST 2006</code> — you rearrange its components to define your format.</p>
 <pre><code>package main
 
@@ -2094,7 +2094,7 @@ func main() {
 </code></pre>
 
 
-<h3>Random Numbers</h3>
+<h4 class="gbe-topic">Random Numbers</h4>
 <p>Go's <code>math/rand/v2</code> package provides pseudo-random number generation. For cryptographic randomness, use <code>crypto/rand</code>.</p>
 <pre><code>package main
 
@@ -2124,7 +2124,7 @@ func main() {
 </code></pre>
 
 
-<h3>Number Parsing</h3>
+<h4 class="gbe-topic">Number Parsing</h4>
 <p>Parsing numbers from strings is a basic but common task; the <code>strconv</code> package handles it.</p>
 <pre><code>package main
 
@@ -2155,7 +2155,7 @@ func main() {
 </code></pre>
 
 
-<h3>URL Parsing</h3>
+<h4 class="gbe-topic">URL Parsing</h4>
 <p>URLs provide a uniform way to locate resources. The <code>net/url</code> package parses URLs into their components.</p>
 <pre><code>package main
 
@@ -2189,7 +2189,7 @@ func main() {
 </code></pre>
 
 
-<h3>Base64 Encoding</h3>
+<h4 class="gbe-topic">Base64 Encoding</h4>
 <p>Go provides built-in support for base64 encoding/decoding.</p>
 <pre><code>package main
 
@@ -2216,7 +2216,7 @@ func main() {
 </code></pre>
 
 
-<h3>Reading Files</h3>
+<h4 class="gbe-topic">Reading Files</h4>
 <p>Reading files is one of the most basic tasks. Go's <code>os</code> package provides the tools.</p>
 <pre><code>package main
 
@@ -2255,7 +2255,7 @@ func main() {
 </code></pre>
 Here's the HTML fragment covering Go by Example topics 66–76:
 
-<h3>Writing Files</h3>
+<h4 class="gbe-topic">Writing Files</h4>
 <p>Writing files in Go follows similar patterns to reading. Go provides multiple approaches from simple one-shot writes to buffered writing for performance.</p>
 <pre><code>package main
 
@@ -2291,7 +2291,7 @@ func main() {
 </code></pre>
 
 
-<h3>Line Filters</h3>
+<h4 class="gbe-topic">Line Filters</h4>
 <p>A line filter reads input on stdin, processes it, and prints results to stdout. Uses <code>bufio.Scanner</code>.</p>
 <pre><code>package main
 
@@ -2316,7 +2316,7 @@ func main() {
 </code></pre>
 
 
-<h3>File Paths</h3>
+<h4 class="gbe-topic">File Paths</h4>
 <p>The <code>filepath</code> package provides portable path manipulation — Join, Dir, Base, Ext, Rel, IsAbs.</p>
 <pre><code>package main
 
@@ -2353,7 +2353,7 @@ func main() {
 </code></pre>
 
 
-<h3>Directories</h3>
+<h4 class="gbe-topic">Directories</h4>
 <p>Create, list, and walk directories using <code>os.Mkdir</code>, <code>os.MkdirAll</code>, <code>os.ReadDir</code>, and <code>filepath.WalkDir</code>.</p>
 <pre><code>package main
 
@@ -2395,7 +2395,7 @@ func main() {
 </code></pre>
 
 
-<h3>Temporary Files and Directories</h3>
+<h4 class="gbe-topic">Temporary Files and Directories</h4>
 <p><code>os.CreateTemp</code> and <code>os.MkdirTemp</code> create temporary files/dirs. The "*" in patterns is replaced with a random value.</p>
 <pre><code>package main
 
@@ -2424,7 +2424,7 @@ func main() {
 </code></pre>
 
 
-<h3>Embed Directive</h3>
+<h4 class="gbe-topic">Embed Directive</h4>
 <p><code>//go:embed</code> bakes file contents into the binary at compile time. Supports strings, byte slices, and <code>embed.FS</code> for multiple files.</p>
 <pre><code>package main
 
@@ -2457,7 +2457,7 @@ func main() {
 <p><strong>Project structure required:</strong> <code>single_file.txt</code> + <code>folder/</code> with matching files must exist at build time.</p>
 
 
-<h3>Environment Variables</h3>
+<h4 class="gbe-topic">Environment Variables</h4>
 <p><code>os.Setenv</code>, <code>os.Getenv</code>, <code>os.LookupEnv</code> (distinguishes unset from empty), and <code>os.Environ</code> (all vars).</p>
 <pre><code>package main
 
@@ -2491,7 +2491,7 @@ func main() {
 
 
 
-<h3>Logging</h3>
+<h4 class="gbe-topic">Logging</h4>
 <p>Go's standard library provides straightforward logging via the <code>log</code> package, and structured logging via <code>log/slog</code> (Go 1.21+).</p>
 <pre><code>package main
 
@@ -2522,7 +2522,7 @@ func main() {
 </code></pre>
 
 
-<h3>Spawning Processes</h3>
+<h4 class="gbe-topic">Spawning Processes</h4>
 <p>Sometimes a Go program needs to spawn other processes. <code>os/exec</code> runs external commands and captures their output.</p>
 <pre><code>package main
 
@@ -2554,7 +2554,7 @@ func main() {
 </code></pre>
 
 
-<h3>Exec'ing Processes</h3>
+<h4 class="gbe-topic">Exec'ing Processes</h4>
 <p>Sometimes we want to completely replace the current Go process with another. <code>syscall.Exec</code> does this (Unix only) — the Go program disappears and the new process takes over its PID.</p>
 <pre><code>package main
 
@@ -2579,7 +2579,7 @@ func main() {
 </code></pre>
 
 
-<h3>Signals</h3>
+<h4 class="gbe-topic">Signals</h4>
 <p>Go programs can handle Unix signals for graceful shutdown. The <code>os/signal</code> package notifies a channel when signals arrive.</p>
 <pre><code>package main
 
@@ -2609,7 +2609,7 @@ func main() {
 </code></pre>
 
 
-<h3>Exit</h3>
+<h4 class="gbe-topic">Exit</h4>
 <p>Use <code>os.Exit</code> to immediately exit with a status code. Deferred functions will NOT run. Use this for scripts/CLI tools, not libraries.</p>
 <pre><code>package main
 
@@ -2624,8 +2624,8 @@ func main() {
 }
 </code></pre>
 
-<h2>14. HTTP Infrastructure</h2>
-<h3>HTTP Client</h3>
+<h3>HTTP Infrastructure</h3>
+<h4 class="gbe-topic">HTTP Client</h4>
 <p>Go's <code>net/http</code> package makes it easy to make HTTP requests. The default client handles most needs; for production, configure timeouts.</p>
 <pre><code>package main
 
@@ -2649,7 +2649,7 @@ func main() {
 </code></pre>
 
 
-<h3>HTTP Server</h3>
+<h4 class="gbe-topic">HTTP Server</h4>
 <p>Writing a basic HTTP server in Go is straightforward. Handlers are functions with a standard signature. The server runs until stopped.</p>
 <pre><code>package main
 
@@ -2679,7 +2679,7 @@ func main() {
 </code></pre>
 
 
-<h3>TCP Server</h3>
+<h4 class="gbe-topic">TCP Server</h4>
 <p>Go's <code>net</code> package provides low-level networking. Here's a TCP echo server that handles each connection in its own goroutine.</p>
 <pre><code>package main
 
@@ -2711,8 +2711,8 @@ func main() {
 </code></pre>
 
 
-<h2>15. Structural Production Layout & Deployment</h2>
-<h3>Command-Line Arguments</h3>
+<h3>Structural Production Layout & Deployment</h3>
+<h4 class="gbe-topic">Command-Line Arguments</h4>
 <p>Raw CLI args via <code>os.Args</code>. Index 0 is the program path; real arguments start at [1:].</p>
 <pre><code>package main
 
@@ -2733,7 +2733,7 @@ func main() {
 </code></pre>
 
 
-<h3>Command-Line Flags</h3>
+<h4 class="gbe-topic">Command-Line Flags</h4>
 <p>The <code>flag</code> package handles typed flags with defaults, descriptions, and auto-generated <code>-h</code> output.</p>
 <pre><code>package main
 
@@ -2761,7 +2761,7 @@ func main() {
 </code></pre>
 
 
-<h3>Command-Line Subcommands</h3>
+<h4 class="gbe-topic">Command-Line Subcommands</h4>
 <p>Use <code>flag.NewFlagSet</code> for each subcommand, then parse based on <code>os.Args[1]</code>.</p>
 <pre><code>package main
 

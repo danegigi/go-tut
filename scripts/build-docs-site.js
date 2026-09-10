@@ -311,6 +311,8 @@ h1{font-size:2.5rem;font-weight:800;color:#fff;margin:28px 0 16px;line-height:1.
 h2{font-size:1.45rem;font-weight:600;color:var(--accent);margin:44px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--border);scroll-margin-top:70px;}
 h3{font-size:1.15rem;font-weight:600;color:#c5caff;margin:30px 0 10px;scroll-margin-top:70px;}
 h4,h5,h6{font-size:1rem;font-weight:600;color:var(--muted);margin:22px 0 8px;}
+h4.gbe-topic{color:#c5caff;font-size:1.02rem;margin:26px 0 8px;padding-left:20px;position:relative;scroll-margin-top:70px;}
+h4.gbe-topic::before{content:"▸";position:absolute;left:0;color:var(--accent);}
 p{margin-bottom:14px;color:#cdd0e0;}
 a{color:var(--accent);}
 strong{color:#eef0fb;}

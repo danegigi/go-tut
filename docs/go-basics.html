@@ -110,7 +110,6 @@ pre:hover .copy-btn{opacity:1;}
 <li class="toc-l3"><a href="#minimal-distroless-dockerfile-production-template">Minimal Distroless Dockerfile Production Template</a></li>
 <li class="toc-l2"><a href="#16-build-tags">16. Build Tags</a></li>
 <li class="toc-l2"><a href="#17-practical-cheat-sheet">17. Practical Cheat Sheet</a></li>
-<li class="toc-l2"><a href="#go-by-example-quick-reference">Go by Example — Quick Reference</a></li>
 <li class="toc-l3"><a href="#variables-constants-and-types">Variables, Constants, and Types</a></li>
 <li class="toc-l3"><a href="#control-flow-loop-scope-mechanics">Control Flow & Loop Scope Mechanics</a></li>
 <li class="toc-l3"><a href="#functions-defer-and-error-handling">Functions, Defer, and Error Handling</a></li>
@@ -543,10 +542,6 @@ package platform
 func Name() string { return "linux" }</code></pre><p>Filename suffixes such as _linux.<strong>go</strong>, _windows.<strong>go</strong>, _amd64.<strong>go</strong>, and _arm64.<strong>go</strong> are also automatically resolved by the Go compiler toolchain to filter platform-specific compilation units.</p><h2 id="17-practical-cheat-sheet">17. Practical Cheat Sheet</h2><table><thead><tr><th><p>Task</p></th><th><p>Command</p></th></tr><tr><th><p>Create module</p></th><th><p>go mod init example.com/app</p></th></tr><tr><th><p>Run app</p></th><th><p>go run .</p></th></tr><tr><th><p>Build</p></th><th><p>go build ./...</p></th></tr><tr><th><p>Test all</p></th><th><p>go test ./...</p></th></tr><tr><th><p>Race detector</p></th><th><p>go test -race ./...</p></th></tr><tr><th><p>Format</p></th><th><p>go fmt ./...</p></th></tr><tr><th><p>Vet</p></th><th><p>go vet ./...</p></th></tr><tr><th><p>Add dependency</p></th><th><p>go get module@version</p></th></tr><tr><th><p>Clean dependencies</p></th><th><p>go mod tidy</p></th></tr><tr><th><p>Install CLI</p></th><th><p>go install module/cmd/tool@version</p></th></tr><tr><th><p>Workspace init</p></th><th><p>go work init ./module-a ./module-b</p></th></tr><tr><th><p>Disable workspace</p></th><th><p>GOWORK=off go test ./...</p></th></tr></thead></table>
 <!-- Go by Example: Complete reference with "Run in Go Playground" buttons -->
 
-<h2 id="go-by-example-quick-reference">Go by Example — Quick Reference</h2>
-<p>All topics from <a href="https://gobyexample.com/" target="_blank">Go by Example</a>, organized under the matching course sections. Click <strong>"▶ Run in Go Playground"</strong> to run any example live.</p>
-<hr/>
-
 <h3 id="variables-constants-and-types">Variables, Constants, and Types</h3>
 <h4 class="gbe-topic">Hello World</h4>
 <p>The classic first program. Every Go program starts with a <code>package main</code> declaration and a <code>func main()</code> entry point. <code>fmt.Println</code> prints a line to standard output.</p>
@@ -558,7 +553,6 @@ func main() {
     fmt.Println("hello world")
 }
 </code></pre>
-
 
 <h4 class="gbe-topic">Values</h4>
 <p>Go has various value types including strings, integers, floats, and booleans. Here are a few basic examples.</p>

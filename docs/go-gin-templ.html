@@ -1,165 +1,735 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Go + Gin + templ + Docker — gin-templ-datastar</title>
-<style>
-:root{--bg:#0f1117;--surface:#1a1d27;--border:#2d3148;--text:#e2e4f0;--muted:#8b8fa8;--accent:#7c87ff;--code-bg:#1e2130;}
-*{box-sizing:border-box;margin:0;padding:0;}
-html{scroll-behavior:smooth;}
-html{scroll-behavior:smooth;}
-body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:15px;line-height:1.75;}
-.nav{position:sticky;top:0;z-index:10;background:rgba(15,17,23,.9);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:16px;}
-.nav a{color:var(--accent);text-decoration:none;font-weight:600;font-size:0.9rem;}
-.nav a:hover{text-decoration:underline;}
-.nav .crumb{color:var(--muted);font-size:0.85rem;}
-.container{max-width:920px;margin:0 auto;padding:40px 36px 96px;}
-h1{font-size:2.5rem;font-weight:800;color:#fff;margin:28px 0 16px;line-height:1.2;letter-spacing:-0.01em;}
-h2{font-size:1.45rem;font-weight:600;color:var(--accent);margin:44px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--border);scroll-margin-top:70px;}
-h3{font-size:1.15rem;font-weight:600;color:#c5caff;margin:30px 0 10px;scroll-margin-top:70px;}
-h4,h5,h6{font-size:1rem;font-weight:600;color:var(--muted);margin:22px 0 8px;}
-h4.gbe-topic{color:#c5caff;font-size:1.02rem;margin:26px 0 8px;padding-left:20px;position:relative;scroll-margin-top:70px;}
-h4.gbe-topic::before{content:"▸";position:absolute;left:0;color:var(--accent);}
-p{margin-bottom:14px;color:#cdd0e0;}
-a{color:var(--accent);}
-strong{color:#eef0fb;}
-code{background:#252836;color:#c5caff;padding:2px 6px;border-radius:4px;font-family:"JetBrains Mono","Fira Code",ui-monospace,SFMono-Regular,Menlo,monospace;font-size:0.9em;font-weight:400;}
-pre{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;padding:18px 22px;overflow-x:auto;margin:18px 0;}
-pre code{background:none;padding:0;color:#e6e9f5;font-size:0.95rem;line-height:1.7;white-space:pre;font-weight:400;}
-pre code strong, pre code b{font-weight:400;color:inherit;}
-table{width:100%;border-collapse:collapse;margin:20px 0;font-size:0.9em;}
-th{background:#252836;color:var(--accent);text-align:left;padding:10px 14px;font-weight:600;font-size:0.8em;border-bottom:2px solid var(--border);}
-td{padding:9px 14px;border-bottom:1px solid var(--border);color:#cdd0e0;vertical-align:top;}
-ul,ol{padding-left:26px;margin-bottom:14px;}
-li{margin-bottom:6px;color:#cdd0e0;}
-blockquote{border-left:3px solid var(--accent);margin:18px 0;padding:12px 18px;background:rgba(124,135,255,.07);color:var(--muted);border-radius:0 6px 6px 0;}
-img{max-width:100%;border-radius:8px;}
-hr{border:none;border-top:1px solid var(--border);margin:36px 0;}
-.toc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 22px;margin:24px 0 36px;}
-.toc-title{font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 10px;}
-.toc ul{list-style:none;padding:0;margin:0;}
-.toc li{margin:2px 0;}
-.toc a{color:#c5caff;text-decoration:none;font-size:0.92rem;}
-.toc a:hover{color:var(--accent);text-decoration:underline;}
-.toc-l2{margin-left:0;}
-.toc-l3{margin-left:18px;}
-.toc-l3 a{color:var(--muted);font-size:0.88rem;}
-.toc-back{position:fixed;bottom:24px;right:24px;background:var(--accent);color:#fff;padding:9px 14px;border-radius:8px;font-size:0.8rem;font-weight:600;text-decoration:none;box-shadow:0 4px 12px rgba(0,0,0,.4);opacity:.88;}
-.toc-back:hover{opacity:1;}
-.playground-float{position:fixed;bottom:24px;right:90px;background:#1a1d27;color:var(--accent);border:1px solid var(--accent);padding:8px 12px;border-radius:8px;font-size:0.75rem;font-weight:600;text-decoration:none;box-shadow:0 4px 12px rgba(0,0,0,.4);opacity:.88;}
-.playground-float:hover{opacity:1;background:rgba(124,135,255,.12);text-decoration:none;}
-pre{position:relative;}
-.copy-btn{position:absolute;top:8px;right:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:var(--muted);padding:4px 8px;border-radius:5px;font-size:0.7rem;font-family:inherit;cursor:pointer;opacity:0;transition:opacity .2s,background .15s;}
-pre:hover .copy-btn{opacity:1;}
-.copy-btn:hover{background:rgba(124,135,255,.15);color:var(--accent);border-color:var(--accent);}
-.copy-btn.copied{color:#4ade80;border-color:#4ade80;}
-</style>
-</head>
-<body>
-<nav class="nav">
-  <a href="index.html">&#8592; Home</a>
-  <span class="crumb">Go + Gin + templ + Docker</span>
-</nav>
-<div class="container">
-<h1 class="page-title">Go + Gin + templ + Docker</h1>
-<nav class="toc" aria-label="Table of contents">
-  <p class="toc-title">Contents</p>
-  <ul>
-<li class="toc-l2"><a href="#audience-and-goal">Audience And Goal</a></li>
-<li class="toc-l2"><a href="#1-what-you-are-building">1. What You Are Building</a></li>
-<li class="toc-l2"><a href="#2-why-go-gin-and-templ-work-well-together">2. Why Go, Gin, And Templ Work Well Together</a></li>
-<li class="toc-l2"><a href="#go-the-application-foundation">Go: The Application Foundation</a></li>
-<li class="toc-l2"><a href="#gin-routing-and-request-handling">Gin: Routing And Request Handling</a></li>
-<li class="toc-l2"><a href="#templ-typed-html-components">Templ: Typed HTML Components</a></li>
-<li class="toc-l2"><a href="#how-the-three-pieces-fit-in-openlisting">How The Three Pieces Fit In openlist.ing</a></li>
-<li class="toc-l2"><a href="#3-recommended-project-structure">3. Recommended Project Structure</a></li>
-<li class="toc-l2"><a href="#4-go-module-setup">4. Go Module Setup</a></li>
-<li class="toc-l2"><a href="#5-configuration">5. Configuration</a></li>
-<li class="toc-l2"><a href="#6-application-entrypoint">6. Application Entrypoint</a></li>
-<li class="toc-l2"><a href="#7-domain-models">7. Domain Models</a></li>
-<li class="toc-l2"><a href="#8-repository-layer">8. Repository Layer</a></li>
-<li class="toc-l2"><a href="#9-service-layer">9. Service Layer</a></li>
-<li class="toc-l2"><a href="#10-gin-router-construction">10. Gin Router Construction</a></li>
-<li class="toc-l2"><a href="#11-route-mounting">11. Route Mounting</a></li>
-<li class="toc-l2"><a href="#12-handler-design">12. Handler Design</a></li>
-<li class="toc-l2"><a href="#13-error-mapping">13. Error Mapping</a></li>
-<li class="toc-l2"><a href="#14-templ-features-and-how-to-use-them">14. Templ Features And How To Use Them</a></li>
-<li class="toc-l2"><a href="#component-parameters">Component Parameters</a></li>
-<li class="toc-l2"><a href="#layout-components-and-children">Layout Components And Children</a></li>
-<li class="toc-l2"><a href="#component-composition">Component Composition</a></li>
-<li class="toc-l2"><a href="#go-expressions-in-markup">Go Expressions In Markup</a></li>
-<li class="toc-l2"><a href="#loops">Loops</a></li>
-<li class="toc-l2"><a href="#conditionals">Conditionals</a></li>
-<li class="toc-l2"><a href="#switch-statements">Switch Statements</a></li>
-<li class="toc-l2"><a href="#dynamic-attributes">Dynamic Attributes</a></li>
-<li class="toc-l2"><a href="#forms-and-required-fields">Forms And Required Fields</a></li>
-<li class="toc-l2"><a href="#helper-functions">Helper Functions</a></li>
-<li class="toc-l2"><a href="#safe-html-and-user-content">Safe HTML And User Content</a></li>
-<li class="toc-l2"><a href="#datastar-htmx-and-custom-attributes">Datastar, HTMX, And Custom Attributes</a></li>
-<li class="toc-l2"><a href="#generated-code-workflow">Generated Code Workflow</a></li>
-<li class="toc-l2"><a href="#practical-templ-rules-for-this-project">Practical Templ Rules For This Project</a></li>
-<li class="toc-l2"><a href="#15-rendering-templ-from-gin">15. Rendering Templ From Gin</a></li>
-<li class="toc-l2"><a href="#16-building-listing-cards">16. Building Listing Cards</a></li>
-<li class="toc-l2"><a href="#17-forms-in-templ">17. Forms In Templ</a></li>
-<li class="toc-l2"><a href="#18-cms-page-definitions">18. CMS Page Definitions</a></li>
-<li class="toc-l2"><a href="#19-cms-form-components">19. CMS Form Components</a></li>
-<li class="toc-l2"><a href="#20-middleware">20. Middleware</a></li>
-<li class="toc-l2"><a href="#21-testing-routes">21. Testing Routes</a></li>
-<li class="toc-l2"><a href="#22-templ-generation-workflow">22. Templ Generation Workflow</a></li>
-<li class="toc-l2"><a href="#23-static-assets-and-css">23. Static Assets And CSS</a></li>
-<li class="toc-l2"><a href="#24-database-strategy">24. Database Strategy</a></li>
-<li class="toc-l2"><a href="#25-production-build">25. Production Build</a></li>
-<li class="toc-l2"><a href="#26-production-hardening-checklist">26. Production Hardening Checklist</a></li>
-<li class="toc-l2"><a href="#27-common-mistakes">27. Common Mistakes</a></li>
-<li class="toc-l2"><a href="#28-suggested-learning-path">28. Suggested Learning Path</a></li>
-<li class="toc-l2"><a href="#29-final-architecture-summary">29. Final Architecture Summary</a></li>
-<li class="toc-l2"><a href="#devops-deploying-a-go-gin-templ-app">DevOps: Deploying a Go + Gin + templ App</a></li>
-<li class="toc-l3"><a href="#1-dockerfile-a-multi-stage-build">1. Dockerfile — a multi-stage build</a></li>
-<li class="toc-l3"><a href="#2-docker-compose-app-database-together">2. Docker Compose — app + database together</a></li>
-<li class="toc-l3"><a href="#3-docker-swarm-scaling-to-a-cluster">3. Docker Swarm — scaling to a cluster</a></li>
-<li class="toc-l3"><a href="#4-traefik-reverse-proxy-automatic-https">4. Traefik — reverse proxy + automatic HTTPS</a></li>
-<li class="toc-l3"><a href="#putting-it-together">Putting it together</a></li>
-<li class="toc-l2"><a href="#kubernetes-from-pods-to-a-real-deployment">Kubernetes: From Pods to a Real Deployment</a></li>
-<li class="toc-l3"><a href="#the-mental-model-desired-state-and-the-control-loop">The mental model: desired state and the control loop</a></li>
-<li class="toc-l3"><a href="#1-pods-the-smallest-deployable-unit">1. Pods — the smallest deployable unit</a></li>
-<li class="toc-l3"><a href="#2-deployments-self-healing-scaling-and-rolling-updates">2. Deployments — self-healing, scaling, and rolling updates</a></li>
-<li class="toc-l3"><a href="#3-services-a-stable-address-for-a-moving-set-of-pods">3. Services — a stable address for a moving set of Pods</a></li>
-<li class="toc-l3"><a href="#4-ingress-routing-external-traffic-in-with-https">4. Ingress — routing external traffic in (with HTTPS)</a></li>
-<li class="toc-l3"><a href="#5-config-and-secrets">5. Config and secrets</a></li>
-<li class="toc-l3"><a href="#6-putting-it-all-together-the-deploy-workflow">6. Putting it all together — the deploy workflow</a></li>
-<li class="toc-l3"><a href="#object-cheat-sheet">Object cheat sheet</a></li>
-<li class="toc-l3"><a href="#docker-vs-kubernetes-when-to-reach-for-which">Docker vs Kubernetes — when to reach for which</a></li>
-  </ul>
-</nav>
-<p>Full Stack Go, Gin, and Templ Tutorial</p><p>Build a production-minded server-rendered web application with Go, Gin, and Templ, using openlist.ing as the practical example project.</p><h2 id="audience-and-goal">Audience And Goal</h2><p>This tutorial is for developers who already understand HTTP, HTML, forms, JSON, databases, and application architecture. It teaches how to build a complete server-rendered Go web application with Gin for HTTP routing and middleware, Templ for type-safe HTML components, and a clean internal package structure.</p><p>The example product is openlist.ing, a street-sourced real estate listing platform. Visitors browse property sale and lease signs spotted from the street, submit properties, view listing details, and interact with a CMS that manages content and operational pages.</p><p>By the end, you should understand how to:</p><ul><li>structure a Go web application for maintainability.</li><li>build Gin routers, handlers, middleware, redirects, and form endpoints.</li><li>render pages with Templ components.</li><li>pass request context through services and repositories.</li><li>validate route behavior with `httptest`.</li><li>configure local development and production builds.</li><li>prepare the app for database, security, and deployment hardening.</li></ul><h2 id="1-what-you-are-building">1. What You Are Building</h2><p>The tutorial uses this application shape:</p><p>openlist.ing/</p><pre><code>frontend/   Public property listing website
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Go + Gin + templ + Docker — gin-templ-datastar</title>
+    <style>
+      :root {
+        --bg: #0f1117;
+        --surface: #1a1d27;
+        --border: #2d3148;
+        --text: #e2e4f0;
+        --muted: #8b8fa8;
+        --accent: #7c87ff;
+        --code-bg: #1e2130;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 15px;
+        line-height: 1.75;
+      }
+      .nav {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: rgba(15, 17, 23, 0.9);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid var(--border);
+        padding: 12px 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .nav a {
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+      .nav a:hover {
+        text-decoration: underline;
+      }
+      .nav .crumb {
+        color: var(--muted);
+        font-size: 0.85rem;
+      }
+      .container {
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 40px 36px 96px;
+      }
+      h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #fff;
+        margin: 28px 0 16px;
+        line-height: 1.2;
+        letter-spacing: -0.01em;
+      }
+      h2 {
+        font-size: 1.45rem;
+        font-weight: 600;
+        color: var(--accent);
+        margin: 44px 0 14px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border);
+        scroll-margin-top: 70px;
+      }
+      h3 {
+        font-size: 1.15rem;
+        font-weight: 600;
+        color: #c5caff;
+        margin: 30px 0 10px;
+        scroll-margin-top: 70px;
+      }
+      h4,
+      h5,
+      h6 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--muted);
+        margin: 22px 0 8px;
+      }
+      h4.gbe-topic {
+        color: #c5caff;
+        font-size: 1.02rem;
+        margin: 26px 0 8px;
+        padding-left: 20px;
+        position: relative;
+        scroll-margin-top: 70px;
+      }
+      h4.gbe-topic::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent);
+      }
+      p {
+        margin-bottom: 14px;
+        color: #cdd0e0;
+      }
+      a {
+        color: var(--accent);
+      }
+      strong {
+        color: #eef0fb;
+      }
+      code {
+        background: #252836;
+        color: #c5caff;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family:
+          "JetBrains Mono", "Fira Code", ui-monospace, SFMono-Regular, Menlo,
+          monospace;
+        font-size: 0.9em;
+        font-weight: 400;
+      }
+      pre {
+        background: var(--code-bg);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 18px 22px;
+        overflow-x: auto;
+        margin: 18px 0;
+      }
+      pre code {
+        background: none;
+        padding: 0;
+        color: #e6e9f5;
+        font-size: 0.95rem;
+        line-height: 1.7;
+        white-space: pre;
+        font-weight: 400;
+      }
+      pre code strong,
+      pre code b {
+        font-weight: 400;
+        color: inherit;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        font-size: 0.9em;
+      }
+      th {
+        background: #252836;
+        color: var(--accent);
+        text-align: left;
+        padding: 10px 14px;
+        font-weight: 600;
+        font-size: 0.8em;
+        border-bottom: 2px solid var(--border);
+      }
+      td {
+        padding: 9px 14px;
+        border-bottom: 1px solid var(--border);
+        color: #cdd0e0;
+        vertical-align: top;
+      }
+      ul,
+      ol {
+        padding-left: 26px;
+        margin-bottom: 14px;
+      }
+      li {
+        margin-bottom: 6px;
+        color: #cdd0e0;
+      }
+      blockquote {
+        border-left: 3px solid var(--accent);
+        margin: 18px 0;
+        padding: 12px 18px;
+        background: rgba(124, 135, 255, 0.07);
+        color: var(--muted);
+        border-radius: 0 6px 6px 0;
+      }
+      img {
+        max-width: 100%;
+        border-radius: 8px;
+      }
+      hr {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 36px 0;
+      }
+      .toc {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 18px 22px;
+        margin: 24px 0 36px;
+      }
+      .toc-title {
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+        margin: 0 0 10px;
+      }
+      .toc ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .toc li {
+        margin: 2px 0;
+      }
+      .toc a {
+        color: #c5caff;
+        text-decoration: none;
+        font-size: 0.92rem;
+      }
+      .toc a:hover {
+        color: var(--accent);
+        text-decoration: underline;
+      }
+      .toc-l2 {
+        margin-left: 0;
+      }
+      .toc-l3 {
+        margin-left: 18px;
+      }
+      .toc-l3 a {
+        color: var(--muted);
+        font-size: 0.88rem;
+      }
+      .toc-back {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background: var(--accent);
+        color: #fff;
+        padding: 9px 14px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-decoration: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        opacity: 0.88;
+      }
+      .toc-back:hover {
+        opacity: 1;
+      }
+      .playground-float {
+        position: fixed;
+        bottom: 24px;
+        right: 90px;
+        background: #1a1d27;
+        color: var(--accent);
+        border: 1px solid var(--accent);
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-decoration: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        opacity: 0.88;
+      }
+      .playground-float:hover {
+        opacity: 1;
+        background: rgba(124, 135, 255, 0.12);
+        text-decoration: none;
+      }
+      pre {
+        position: relative;
+      }
+      .copy-btn {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: var(--muted);
+        padding: 4px 8px;
+        border-radius: 5px;
+        font-size: 0.7rem;
+        font-family: inherit;
+        cursor: pointer;
+        opacity: 0;
+        transition:
+          opacity 0.2s,
+          background 0.15s;
+      }
+      pre:hover .copy-btn {
+        opacity: 1;
+      }
+      .copy-btn:hover {
+        background: rgba(124, 135, 255, 0.15);
+        color: var(--accent);
+        border-color: var(--accent);
+      }
+      .copy-btn.copied {
+        color: #4ade80;
+        border-color: #4ade80;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="nav">
+      <a href="index.html">&#8592; Home</a>
+      <span class="crumb">Go + Gin + templ + Docker</span>
+    </nav>
+    <div class="container">
+      <h1 class="page-title">Go + Gin + templ + Docker</h1>
+      <nav class="toc" aria-label="Table of contents">
+        <p class="toc-title">Contents</p>
+        <ul>
+          <li class="toc-l2">
+            <a href="#audience-and-goal">Audience And Goal</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#1-what-you-are-building">1. What You Are Building</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#2-why-go-gin-and-templ-work-well-together"
+              >2. Why Go, Gin, And Templ Work Well Together</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#go-the-application-foundation"
+              >Go: The Application Foundation</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#gin-routing-and-request-handling"
+              >Gin: Routing And Request Handling</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#templ-typed-html-components"
+              >Templ: Typed HTML Components</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#how-the-three-pieces-fit-in-openlisting"
+              >How The Three Pieces Fit In openlist.ing</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#3-recommended-project-structure"
+              >3. Recommended Project Structure</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#4-go-module-setup">4. Go Module Setup</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#5-configuration">5. Configuration</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#6-application-entrypoint">6. Application Entrypoint</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#7-domain-models">7. Domain Models</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#8-repository-layer">8. Repository Layer</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#9-service-layer">9. Service Layer</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#10-gin-router-construction"
+              >10. Gin Router Construction</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#11-route-mounting">11. Route Mounting</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#12-handler-design">12. Handler Design</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#13-error-mapping">13. Error Mapping</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#14-templ-features-and-how-to-use-them"
+              >14. Templ Features And How To Use Them</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#component-parameters">Component Parameters</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#layout-components-and-children"
+              >Layout Components And Children</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#component-composition">Component Composition</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#go-expressions-in-markup">Go Expressions In Markup</a>
+          </li>
+          <li class="toc-l2"><a href="#loops">Loops</a></li>
+          <li class="toc-l2"><a href="#conditionals">Conditionals</a></li>
+          <li class="toc-l2">
+            <a href="#switch-statements">Switch Statements</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#dynamic-attributes">Dynamic Attributes</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#forms-and-required-fields">Forms And Required Fields</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#helper-functions">Helper Functions</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#safe-html-and-user-content">Safe HTML And User Content</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#datastar-htmx-and-custom-attributes"
+              >Datastar, HTMX, And Custom Attributes</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#generated-code-workflow">Generated Code Workflow</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#practical-templ-rules-for-this-project"
+              >Practical Templ Rules For This Project</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#15-rendering-templ-from-gin"
+              >15. Rendering Templ From Gin</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#16-building-listing-cards">16. Building Listing Cards</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#17-forms-in-templ">17. Forms In Templ</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#18-cms-page-definitions">18. CMS Page Definitions</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#19-cms-form-components">19. CMS Form Components</a>
+          </li>
+          <li class="toc-l2"><a href="#20-middleware">20. Middleware</a></li>
+          <li class="toc-l2">
+            <a href="#21-testing-routes">21. Testing Routes</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#22-templ-generation-workflow"
+              >22. Templ Generation Workflow</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#23-static-assets-and-css">23. Static Assets And CSS</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#24-database-strategy">24. Database Strategy</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#25-production-build">25. Production Build</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#26-production-hardening-checklist"
+              >26. Production Hardening Checklist</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#27-common-mistakes">27. Common Mistakes</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#28-suggested-learning-path"
+              >28. Suggested Learning Path</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#29-final-architecture-summary"
+              >29. Final Architecture Summary</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#devops-deploying-a-go-gin-templ-app"
+              >DevOps: Deploying a Go + Gin + templ App</a
+            >
+          </li>
+          <li class="toc-l3">
+            <a href="#1-dockerfile-a-multi-stage-build"
+              >1. Dockerfile — a multi-stage build</a
+            >
+          </li>
+          <li class="toc-l3">
+            <a href="#2-docker-compose-app-database-together"
+              >2. Docker Compose — app + database together</a
+            >
+          </li>
+          <li class="toc-l3">
+            <a href="#3-docker-swarm-scaling-to-a-cluster"
+              >3. Docker Swarm — scaling to a cluster</a
+            >
+          </li>
+          <li class="toc-l3">
+            <a href="#4-traefik-reverse-proxy-automatic-https"
+              >4. Traefik — reverse proxy + automatic HTTPS</a
+            >
+          </li>
+          <li class="toc-l3">
+            <a href="#putting-it-together">Putting it together</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#kubernetes-from-pods-to-a-real-deployment"
+              >Kubernetes: From Pods to a Real Deployment</a
+            >
+          </li>
+          <li class="toc-l3">
+            <a href="#the-mental-model-desired-state-and-the-control-loop"
+              >The mental model: desired state and the control loop</a
+            >
+          </li>
+          <li class="toc-l3">
+            <a href="#1-pods-the-smallest-deployable-unit"
+              >1. Pods — the smallest deployable unit</a
+            >
+          </li>
+          <li class="toc-l3">
+            <a href="#2-deployments-self-healing-scaling-and-rolling-updates"
+              >2. Deployments — self-healing, scaling, and rolling updates</a
+            >
+          </li>
+          <li class="toc-l3">
+            <a href="#3-services-a-stable-address-for-a-moving-set-of-pods"
+              >3. Services — a stable address for a moving set of Pods</a
+            >
+          </li>
+          <li class="toc-l3">
+            <a href="#4-ingress-routing-external-traffic-in-with-https"
+              >4. Ingress — routing external traffic in (with HTTPS)</a
+            >
+          </li>
+          <li class="toc-l3">
+            <a href="#5-config-and-secrets">5. Config and secrets</a>
+          </li>
+          <li class="toc-l3">
+            <a href="#6-putting-it-all-together-the-deploy-workflow"
+              >6. Putting it all together — the deploy workflow</a
+            >
+          </li>
+          <li class="toc-l3">
+            <a href="#object-cheat-sheet">Object cheat sheet</a>
+          </li>
+          <li class="toc-l3">
+            <a href="#docker-vs-kubernetes-when-to-reach-for-which"
+              >Docker vs Kubernetes — when to reach for which</a
+            >
+          </li>
+        </ul>
+      </nav>
+      <p>Full Stack Go, Gin, and Templ Tutorial</p>
+      <p>
+        Build a production-minded server-rendered web application with Go, Gin,
+        and Templ, using openlist.ing as the practical example project.
+      </p>
+      <h2 id="audience-and-goal">Audience And Goal</h2>
+      <p>
+        This tutorial is for developers who already understand HTTP, HTML,
+        forms, JSON, databases, and application architecture. It teaches how to
+        build a complete server-rendered Go web application with Gin for HTTP
+        routing and middleware, Templ for type-safe HTML components, and a clean
+        internal package structure.
+      </p>
+      <p>
+        The example product is openlist.ing, a street-sourced real estate
+        listing platform. Visitors browse property sale and lease signs spotted
+        from the street, submit properties, view listing details, and interact
+        with a CMS that manages content and operational pages.
+      </p>
+      <p>By the end, you should understand how to:</p>
+      <ul>
+        <li>structure a Go web application for maintainability.</li>
+        <li>
+          build Gin routers, handlers, middleware, redirects, and form
+          endpoints.
+        </li>
+        <li>render pages with Templ components.</li>
+        <li>pass request context through services and repositories.</li>
+        <li>validate route behavior with `httptest`.</li>
+        <li>configure local development and production builds.</li>
+        <li>
+          prepare the app for database, security, and deployment hardening.
+        </li>
+      </ul>
+      <h2 id="1-what-you-are-building">1. What You Are Building</h2>
+      <p>The tutorial uses this application shape:</p>
+      <p>openlist.ing/</p>
+      <pre><code>frontend/   Public property listing website
   cms/        Server-rendered administration app
-  database/   Central local database package and seed data</code></pre><p>The public frontend exposes pages such as:</p><ul><li>home page with latest listings.</li><li>listing search and filters.</li><li>listing detail page.</li><li>submit-property form.</li><li>claim and contact flows.</li><li>static pages such as about, FAQ, terms, and contact.</li></ul><p>The CMS exposes pages such as:</p><ul><li>dashboard.</li><li>user and role management forms.</li><li>page/content forms.</li><li>property listing management forms.</li><li>SEO, navigation, footer, theme, and audit settings.</li></ul><p>This is a classic server-rendered product: the server handles routes, loads data, renders HTML, and returns complete pages or form redirects.</p><h2 id="2-why-go-gin-and-templ-work-well-together">2. Why Go, Gin, And Templ Work Well Together</h2><p>Think of the stack in three layers:</p><ul><li>Go is the engine. It compiles your application into a binary, gives you static types, handles concurrency with goroutines, and provides the standard HTTP foundation.</li><li>Gin is the traffic controller. It matches URLs to handlers, reads route parameters, parses query strings and forms, serves static files, and runs middleware.</li><li>Templ is the page builder. It lets you write HTML as typed Go components, generate Go code from those components, and render the result directly to the HTTP response.</li></ul><p>In openlist.ing, a typical request works like this:</p><p>Browser requests GET /listings?q=maple</p><p>Gin matches the /listings route</p><p>The handler reads q=maple from the query string</p><p>The listing service loads and filters listings</p><p>The renderer calls a Templ ListingsPage component</p><p>Templ writes HTML to the response</p><p>The browser receives a complete server-rendered page</p><h2 id="go-the-application-foundation">Go: The Application Foundation</h2><p>Go gives the project a small deployment artifact and straightforward runtime behavior. A basic Go HTTP handler can be written with only the standard library:</p><pre><code>http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+  database/   Central local database package and seed data</code></pre>
+      <p>The public frontend exposes pages such as:</p>
+      <ul>
+        <li>home page with latest listings.</li>
+        <li>listing search and filters.</li>
+        <li>listing detail page.</li>
+        <li>submit-property form.</li>
+        <li>claim and contact flows.</li>
+        <li>static pages such as about, FAQ, terms, and contact.</li>
+      </ul>
+      <p>The CMS exposes pages such as:</p>
+      <ul>
+        <li>dashboard.</li>
+        <li>user and role management forms.</li>
+        <li>page/content forms.</li>
+        <li>property listing management forms.</li>
+        <li>SEO, navigation, footer, theme, and audit settings.</li>
+      </ul>
+      <p>
+        This is a classic server-rendered product: the server handles routes,
+        loads data, renders HTML, and returns complete pages or form redirects.
+      </p>
+      <h2 id="2-why-go-gin-and-templ-work-well-together">
+        2. Why Go, Gin, And Templ Work Well Together
+      </h2>
+      <p>Think of the stack in three layers:</p>
+      <ul>
+        <li>
+          Go is the engine. It compiles your application into a binary, gives
+          you static types, handles concurrency with goroutines, and provides
+          the standard HTTP foundation.
+        </li>
+        <li>
+          Gin is the traffic controller. It matches URLs to handlers, reads
+          route parameters, parses query strings and forms, serves static files,
+          and runs middleware.
+        </li>
+        <li>
+          Templ is the page builder. It lets you write HTML as typed Go
+          components, generate Go code from those components, and render the
+          result directly to the HTTP response.
+        </li>
+      </ul>
+      <p>In openlist.ing, a typical request works like this:</p>
+      <p>Browser requests GET /listings?q=maple</p>
+      <p>Gin matches the /listings route</p>
+      <p>The handler reads q=maple from the query string</p>
+      <p>The listing service loads and filters listings</p>
+      <p>The renderer calls a Templ ListingsPage component</p>
+      <p>Templ writes HTML to the response</p>
+      <p>The browser receives a complete server-rendered page</p>
+      <h2 id="go-the-application-foundation">Go: The Application Foundation</h2>
+      <p>
+        Go gives the project a small deployment artifact and straightforward
+        runtime behavior. A basic Go HTTP handler can be written with only the
+        standard library:
+      </p>
+      <pre><code>http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
     w.WriteHeader(http.StatusOK)
     _, _ = w.Write([]byte("ok"))
 })
-log.Fatal(http.ListenAndServe(":5173", nil))</code></pre><p>That example is useful for learning, but real applications quickly need routing, middleware, path parameters, form parsing, static assets, and test helpers. That is where Gin earns its place.</p><h2 id="gin-routing-and-request-handling">Gin: Routing And Request Handling</h2><p>Gin gives you a clear way to map routes to handler functions:</p><pre><code>router := gin.New()
+log.Fatal(http.ListenAndServe(":5173", nil))</code></pre>
+      <p>
+        That example is useful for learning, but real applications quickly need
+        routing, middleware, path parameters, form parsing, static assets, and
+        test helpers. That is where Gin earns its place.
+      </p>
+      <h2 id="gin-routing-and-request-handling">
+        Gin: Routing And Request Handling
+      </h2>
+      <p>Gin gives you a clear way to map routes to handler functions:</p>
+      <pre><code>router := gin.New()
 router.Use(gin.Logger(), gin.Recovery())
 router.GET("/", homeHandler)
 router.GET("/listings", listingsHandler)
 router.GET("/listings/:id", listingDetailHandler)
-router.POST("/listings", submitListingHandler)</code></pre><p>A handler receives `*gin.Context`, which gives access to query strings, path parameters, form fields, headers, status codes, redirects, and response helpers:</p><pre><code>func listingDetailHandler(c *gin.Context) {
+router.POST("/listings", submitListingHandler)</code></pre>
+      <p>
+        A handler receives `*gin.Context`, which gives access to query strings,
+        path parameters, form fields, headers, status codes, redirects, and
+        response helpers:
+      </p>
+      <pre><code>func listingDetailHandler(c *gin.Context) {
     id := c.Param("id")
     if id == "" {
         c.String(http.StatusBadRequest, "missing listing id")
         return
     }
     c.String(http.StatusOK, "listing id: "+id)
-}</code></pre><p>For openlist.ing, Gin is responsible for routes like `/listings`, `/submit`, `/contact`, and CMS pages such as `/users`, `/seo`, and `/theme`.</p><h2 id="templ-typed-html-components">Templ: Typed HTML Components</h2><p>Templ lets you write HTML components that accept Go values. A small component looks like this:</p><pre><code>templ ListingTitle(address string, city string) {
+}</code></pre>
+      <p>
+        For openlist.ing, Gin is responsible for routes like `/listings`,
+        `/submit`, `/contact`, and CMS pages such as `/users`, `/seo`, and
+        `/theme`.
+      </p>
+      <h2 id="templ-typed-html-components">Templ: Typed HTML Components</h2>
+      <p>
+        Templ lets you write HTML components that accept Go values. A small
+        component looks like this:
+      </p>
+      <pre><code>templ ListingTitle(address string, city string) {
     &lt;article class="listing-summary"&gt;
         &lt;h2&gt;{ address }&lt;/h2&gt;
         &lt;p&gt;{ city }&lt;/p&gt;
     &lt;/article&gt;
-}</code></pre><p>After running `templ generate`, that component becomes Go code. A Gin handler can render it through a small wrapper:</p><pre><code>func render(c *gin.Context, component templ.Component) {
+}</code></pre>
+      <p>
+        After running `templ generate`, that component becomes Go code. A Gin
+        handler can render it through a small wrapper:
+      </p>
+      <pre><code>func render(c *gin.Context, component templ.Component) {
     c.Status(http.StatusOK)
     c.Header("Content-Type", "text/html; charset=utf-8")
     _ = component.Render(c.Request.Context(), c.Writer)
-}</code></pre><p>The important idea is that the handler does not concatenate HTML strings. It passes typed data into a typed component.</p><h2 id="how-the-three-pieces-fit-in-openlisting">How The Three Pieces Fit In openlist.ing</h2><p>A simplified openlist.ing listing route combines all three layers:</p><pre><code>func (s *Server) listings(c *gin.Context) {
+}</code></pre>
+      <p>
+        The important idea is that the handler does not concatenate HTML
+        strings. It passes typed data into a typed component.
+      </p>
+      <h2 id="how-the-three-pieces-fit-in-openlisting">
+        How The Three Pieces Fit In openlist.ing
+      </h2>
+      <p>A simplified openlist.ing listing route combines all three layers:</p>
+      <pre><code>func (s *Server) listings(c *gin.Context) {
     rows, err := s.service.All(c.Request.Context())
     if handleErr(c, err) {
         return
@@ -168,7 +738,28 @@ router.POST("/listings", submitListingHandler)</code></pre><p>A handler receives
         Query: c.Query("q"),
     })
     s.renderer.Listings(c, rows, visible)
-}</code></pre><p>The division of work is clean:</p><ul><li>Gin gives the handler `c.Query("q")` and the response writer.</li><li>Go services load and filter typed `Listing` values.</li><li>Templ receives those listings and renders the page.</li></ul><p>This combination is especially good for SaaS dashboards, content-managed sites, public listing pages, admin tools, and form-heavy applications where full-page rendering is simpler and more robust than shipping a large client application.</p><h2 id="3-recommended-project-structure">3. Recommended Project Structure</h2><p>Use a small, explicit structure before reaching for frameworks inside frameworks.</p><p>frontend/</p><pre><code>cmd/server/main.go
+}</code></pre>
+      <p>The division of work is clean:</p>
+      <ul>
+        <li>Gin gives the handler `c.Query("q")` and the response writer.</li>
+        <li>Go services load and filter typed `Listing` values.</li>
+        <li>Templ receives those listings and renders the page.</li>
+      </ul>
+      <p>
+        This combination is especially good for SaaS dashboards, content-managed
+        sites, public listing pages, admin tools, and form-heavy applications
+        where full-page rendering is simpler and more robust than shipping a
+        large client application.
+      </p>
+      <h2 id="3-recommended-project-structure">
+        3. Recommended Project Structure
+      </h2>
+      <p>
+        Use a small, explicit structure before reaching for frameworks inside
+        frameworks.
+      </p>
+      <p>frontend/</p>
+      <pre><code>cmd/server/main.go
   internal/config/config.go
   internal/httpx/router.go
   internal/httpx/router_test.go
@@ -181,7 +772,10 @@ router.POST("/listings", submitListingHandler)</code></pre><p>A handler receives
   internal/web/views_templ.go
   public/
   data/
-  go.mod</code></pre><p>For an admin app:</p><p>cms/</p><pre><code>cmd/server/main.go
+  go.mod</code></pre>
+      <p>For an admin app:</p>
+      <p>cms/</p>
+      <pre><code>cmd/server/main.go
   internal/config/config.go
   internal/cms/definitions.go
   internal/httpx/router.go
@@ -191,12 +785,49 @@ router.POST("/listings", submitListingHandler)</code></pre><p>A handler receives
   internal/httpx/views_templ.go
   public/
   go.mod
-The package responsibilities are clear:</code></pre><ul><li>`cmd/server` wires the application and starts the HTTP server.</li><li>`internal/config` reads environment variables and default paths.</li><li>`internal/httpx` translates HTTP requests into application calls.</li><li>`internal/listings` contains listing business logic.</li><li>`internal/web` contains public site rendering.</li><li>`internal/cms` contains CMS page and field definitions.</li></ul><p>A good Go web app is not a pile of route callbacks. It is a small composition of packages with clear ownership.</p><h2 id="4-go-module-setup">4. Go Module Setup</h2><p>A frontend module starts with:</p><p>mkdir frontend</p><pre><code>cd frontend
+The package responsibilities are clear:</code></pre>
+      <ul>
+        <li>`cmd/server` wires the application and starts the HTTP server.</li>
+        <li>
+          `internal/config` reads environment variables and default paths.
+        </li>
+        <li>
+          `internal/httpx` translates HTTP requests into application calls.
+        </li>
+        <li>`internal/listings` contains listing business logic.</li>
+        <li>`internal/web` contains public site rendering.</li>
+        <li>`internal/cms` contains CMS page and field definitions.</li>
+      </ul>
+      <p>
+        A good Go web app is not a pile of route callbacks. It is a small
+        composition of packages with clear ownership.
+      </p>
+      <h2 id="4-go-module-setup">4. Go Module Setup</h2>
+      <p>A frontend module starts with:</p>
+      <p>mkdir frontend</p>
+      <pre><code>cd frontend
 go mod init openlist.ing/frontend
 go get github.com/gin-gonic/gin@v1.10.0
-go get github.com/a-h/templ@latest</code></pre><p>Install the Templ CLI:</p><pre><code>go install github.com/a-h/templ/cmd/templ@latest</code></pre><p>A minimal `go.mod` will include Gin and Templ:</p><p>module openlist.ing/frontend</p><p>go 1.25.0</p><p>require (</p><pre><code>github.com/a-h/templ v0.3.1020
+go get github.com/a-h/templ@latest</code></pre>
+      <p>Install the Templ CLI:</p>
+      <pre><code>go install github.com/a-h/templ/cmd/templ@latest</code></pre>
+      <p>A minimal `go.mod` will include Gin and Templ:</p>
+      <p>module openlist.ing/frontend</p>
+      <p>go 1.25.0</p>
+      <p>require (</p>
+      <pre><code>github.com/a-h/templ v0.3.1020
     github.com/gin-gonic/gin v1.10.0
-)</code></pre><p>Templ has two parts: the Go module dependency and the CLI. The module is imported by generated code. The CLI turns `.templ` files into Go code.</p><h2 id="5-configuration">5. Configuration</h2><p>Keep configuration in one package. Do not scatter `os.Getenv` calls across handlers.</p><pre><code>package config
+)</code></pre>
+      <p>
+        Templ has two parts: the Go module dependency and the CLI. The module is
+        imported by generated code. The CLI turns `.templ` files into Go code.
+      </p>
+      <h2 id="5-configuration">5. Configuration</h2>
+      <p>
+        Keep configuration in one package. Do not scatter `os.Getenv` calls
+        across handlers.
+      </p>
+      <pre><code>package config
 import "os"
 type Config struct {
     Port         string
@@ -221,10 +852,19 @@ func env(key, fallback string) string {
         return value
     }
     return fallback
-}</code></pre><p>Local `.env.example` files should document expected values:</p><pre><code>DATABASE_PROVIDER=sqlite
+}</code></pre>
+      <p>Local `.env.example` files should document expected values:</p>
+      <pre><code>DATABASE_PROVIDER=sqlite
 DATABASE_PATH=../database/data/myapp.sqlite
 SITE_URL=http://localhost:5173
-CMS_URL=http://localhost:5174</code></pre><p>Configuration should describe deploy-time choices. It should not decide business behavior.</p><h2 id="6-application-entrypoint">6. Application Entrypoint</h2><p>The entrypoint should wire dependencies and start the server.</p><pre><code>package main
+CMS_URL=http://localhost:5174</code></pre>
+      <p>
+        Configuration should describe deploy-time choices. It should not decide
+        business behavior.
+      </p>
+      <h2 id="6-application-entrypoint">6. Application Entrypoint</h2>
+      <p>The entrypoint should wire dependencies and start the server.</p>
+      <pre><code>package main
 import (
     "log"
     "openlist.ing/frontend/internal/config"
@@ -241,7 +881,24 @@ func main() {
     if err := router.Run(":" + cfg.Port); err != nil {
         log.Fatal(err)
     }
-}</code></pre><p>Notice what is not here:</p><ul><li>no listing filtering logic.</li><li>no HTML strings.</li><li>no form parsing.</li><li>no SQL or persistence details beyond constructing the repository.</li></ul><p>`main` is the assembly point. Keep it boring.</p><h2 id="7-domain-models">7. Domain Models</h2><p>Models should be explicit and small.</p><pre><code>package listings</code></pre><p>type Mode string</p><p>type Status string</p><p>const (</p><pre><code>ModeSale  Mode = "sale"
+}</code></pre>
+      <p>Notice what is not here:</p>
+      <ul>
+        <li>no listing filtering logic.</li>
+        <li>no HTML strings.</li>
+        <li>no form parsing.</li>
+        <li>
+          no SQL or persistence details beyond constructing the repository.
+        </li>
+      </ul>
+      <p>`main` is the assembly point. Keep it boring.</p>
+      <h2 id="7-domain-models">7. Domain Models</h2>
+      <p>Models should be explicit and small.</p>
+      <pre><code>package listings</code></pre>
+      <p>type Mode string</p>
+      <p>type Status string</p>
+      <p>const (</p>
+      <pre><code>ModeSale  Mode = "sale"
     ModeLease Mode = "lease"
     StatusCommunityVisible Status = "community_visible"
     StatusNeedsReview      Status = "needs_review"
@@ -267,11 +924,36 @@ type Listing struct {
     SpottedAt       string `json:"spottedAt"`
     MapX            int    `json:"mapX"`
     MapY            int    `json:"mapY"`
-}</code></pre><p>Struct tags make JSON shape explicit. Domain constants keep route handlers from passing arbitrary strings everywhere.</p><h2 id="8-repository-layer">8. Repository Layer</h2><p>A repository hides persistence. The first implementation can be JSON files for local development. A later implementation can use SQL.</p><pre><code>type Repository interface {
+}</code></pre>
+      <p>
+        Struct tags make JSON shape explicit. Domain constants keep route
+        handlers from passing arbitrary strings everywhere.
+      </p>
+      <h2 id="8-repository-layer">8. Repository Layer</h2>
+      <p>
+        A repository hides persistence. The first implementation can be JSON
+        files for local development. A later implementation can use SQL.
+      </p>
+      <pre><code>type Repository interface {
     All(ctx context.Context) ([]Listing, error)
     SaveAll(ctx context.Context, rows []Listing) error
     Reset(ctx context.Context) error
-}</code></pre><p>A file-backed repository is useful for early product development, demos, and route testing. A SQL-backed repository can implement the same interface later.</p><p>The handler should not care whether listings came from JSON, SQLite, PostgreSQL, or an API.</p><h2 id="9-service-layer">9. Service Layer</h2><p>The service layer owns use cases. It should contain behavior that would otherwise clutter handlers.</p><pre><code>type Service struct {
+}</code></pre>
+      <p>
+        A file-backed repository is useful for early product development, demos,
+        and route testing. A SQL-backed repository can implement the same
+        interface later.
+      </p>
+      <p>
+        The handler should not care whether listings came from JSON, SQLite,
+        PostgreSQL, or an API.
+      </p>
+      <h2 id="9-service-layer">9. Service Layer</h2>
+      <p>
+        The service layer owns use cases. It should contain behavior that would
+        otherwise clutter handlers.
+      </p>
+      <pre><code>type Service struct {
     repo Repository
 }
 func NewService(repo Repository) *Service {
@@ -279,7 +961,12 @@ func NewService(repo Repository) *Service {
 }
 func (s *Service) All(ctx context.Context) ([]Listing, error) {
     return s.repo.All(ctx)
-}</code></pre><p>Filtering belongs here because it is application behavior, not HTTP behavior.</p><pre><code>type Filter struct {
+}</code></pre>
+      <p>
+        Filtering belongs here because it is application behavior, not HTTP
+        behavior.
+      </p>
+      <pre><code>type Filter struct {
     Query  string
     Market string
     Mode   string
@@ -297,7 +984,14 @@ func (s *Service) Filter(rows []Listing, filter Filter) []Listing {
         out = append(out, row)
     }
     return out
-}</code></pre><p>Handlers should translate query parameters into a `Filter`. The service should decide what that filter means.</p><h2 id="10-gin-router-construction">10. Gin Router Construction</h2><p>Use a server struct for dependencies.</p><pre><code>type Server struct {
+}</code></pre>
+      <p>
+        Handlers should translate query parameters into a `Filter`. The service
+        should decide what that filter means.
+      </p>
+      <h2 id="10-gin-router-construction">10. Gin Router Construction</h2>
+      <p>Use a server struct for dependencies.</p>
+      <pre><code>type Server struct {
     cfg      config.Config
     service  *listings.Service
     renderer web.Renderer
@@ -310,7 +1004,14 @@ func NewRouter(cfg config.Config, service *listings.Service, renderer web.Render
     server := &amp;Server{cfg: cfg, service: service, renderer: renderer}
     server.mount(router)
     return router
-}</code></pre><p>This makes the router easy to test because you can inject temporary repositories, fake renderers, or real Templ renderers.</p><h2 id="11-route-mounting">11. Route Mounting</h2><p>Routes should be readable at a glance.</p><pre><code>func (s *Server) mount(router *gin.Engine) {
+}</code></pre>
+      <p>
+        This makes the router easy to test because you can inject temporary
+        repositories, fake renderers, or real Templ renderers.
+      </p>
+      <h2 id="11-route-mounting">11. Route Mounting</h2>
+      <p>Routes should be readable at a glance.</p>
+      <pre><code>func (s *Server) mount(router *gin.Engine) {
     router.Static("/assets", filepath.Join(s.cfg.PublicDir, "assets"))
     router.GET("/styles.css", s.staticFile("styles.css", "text/css; charset=utf-8"))
     router.GET("/site.webmanifest", s.staticFile("site.webmanifest", 
@@ -326,7 +1027,19 @@ func NewRouter(cfg config.Config, service *listings.Service, renderer web.Render
     router.POST("/claims", s.claimPost)
     router.POST("/features", s.featurePost)
     router.POST("/admin/listings/:id/status", s.statusPost)
-}</code></pre><p>Static assets, GET pages, and POST actions are easy to identify.</p><h2 id="12-handler-design">12. Handler Design</h2><p>A good handler does five things:</p><ol><li>read HTTP input.</li><li>call a service.</li><li>handle errors.</li><li>render or redirect.</li><li>avoid business logic sprawl.</li></ol><p>Example listing handler:</p><pre><code>func (s *Server) listings(c *gin.Context) {
+}</code></pre>
+      <p>Static assets, GET pages, and POST actions are easy to identify.</p>
+      <h2 id="12-handler-design">12. Handler Design</h2>
+      <p>A good handler does five things:</p>
+      <ol>
+        <li>read HTTP input.</li>
+        <li>call a service.</li>
+        <li>handle errors.</li>
+        <li>render or redirect.</li>
+        <li>avoid business logic sprawl.</li>
+      </ol>
+      <p>Example listing handler:</p>
+      <pre><code>func (s *Server) listings(c *gin.Context) {
     rows, err := s.service.All(c.Request.Context())
     if handleErr(c, err) {
         return
@@ -338,7 +1051,9 @@ func NewRouter(cfg config.Config, service *listings.Service, renderer web.Render
         Status: c.DefaultQuery("status", "all"),
     })
     s.renderer.Listings(c, rows, visible)
-}</code></pre><p>Example form handler:</p><pre><code>func (s *Server) contactPost(c *gin.Context) {
+}</code></pre>
+      <p>Example form handler:</p>
+      <pre><code>func (s *Server) contactPost(c *gin.Context) {
     if strings.TrimSpace(c.PostForm("name")) == "" ||
         strings.TrimSpace(c.PostForm("email")) == "" ||
         strings.TrimSpace(c.PostForm("message")) == "" {
@@ -346,7 +1061,15 @@ func NewRouter(cfg config.Config, service *listings.Service, renderer web.Render
         return
     }
     c.Redirect(http.StatusSeeOther, "/?contact=sent#contact")
-}</code></pre><p>For browser forms, `303 See Other` is often the right redirect after successful POST. It prevents accidental resubmission when the user refreshes.</p><h2 id="13-error-mapping">13. Error Mapping</h2><p>Centralize repeated error-to-HTTP behavior.</p><pre><code>func handleErr(c *gin.Context, err error) bool {
+}</code></pre>
+      <p>
+        For browser forms, `303 See Other` is often the right redirect after
+        successful POST. It prevents accidental resubmission when the user
+        refreshes.
+      </p>
+      <h2 id="13-error-mapping">13. Error Mapping</h2>
+      <p>Centralize repeated error-to-HTTP behavior.</p>
+      <pre><code>func handleErr(c *gin.Context, err error) bool {
     if err == nil {
         return false
     }
@@ -360,17 +1083,63 @@ func NewRouter(cfg config.Config, service *listings.Service, renderer web.Render
     }
     c.String(http.StatusInternalServerError, err.Error())
     return true
-}</code></pre><p>This gives domain packages freedom to return domain errors while the HTTP package decides how those errors appear to browsers.</p><h2 id="14-templ-features-and-how-to-use-them">14. Templ Features And How To Use Them</h2><p>Templ is more than a way to write HTML in Go. It is a component system for server-rendered applications. You write `.templ` files, run `templ generate`, and Templ creates normal Go code that can be compiled, tested, and rendered from handlers.</p><p>The main features you will use in openlist.ing are:</p><ul><li>typed component parameters.</li><li>component composition.</li><li>children and layout slots.</li><li>Go expressions inside markup.</li><li>loops and conditionals.</li><li>dynamic attributes.</li><li>safe URLs for links.</li><li>helper functions from normal Go files.</li><li>generated Go render functions.</li></ul><h2 id="component-parameters">Component Parameters</h2><p>A Templ component accepts typed Go parameters. This is the first major benefit over unstructured HTML strings.</p><pre><code>templ ListingTitle(address string, city string) {
+}</code></pre>
+      <p>
+        This gives domain packages freedom to return domain errors while the
+        HTTP package decides how those errors appear to browsers.
+      </p>
+      <h2 id="14-templ-features-and-how-to-use-them">
+        14. Templ Features And How To Use Them
+      </h2>
+      <p>
+        Templ is more than a way to write HTML in Go. It is a component system
+        for server-rendered applications. You write `.templ` files, run `templ
+        generate`, and Templ creates normal Go code that can be compiled,
+        tested, and rendered from handlers.
+      </p>
+      <p>The main features you will use in openlist.ing are:</p>
+      <ul>
+        <li>typed component parameters.</li>
+        <li>component composition.</li>
+        <li>children and layout slots.</li>
+        <li>Go expressions inside markup.</li>
+        <li>loops and conditionals.</li>
+        <li>dynamic attributes.</li>
+        <li>safe URLs for links.</li>
+        <li>helper functions from normal Go files.</li>
+        <li>generated Go render functions.</li>
+      </ul>
+      <h2 id="component-parameters">Component Parameters</h2>
+      <p>
+        A Templ component accepts typed Go parameters. This is the first major
+        benefit over unstructured HTML strings.
+      </p>
+      <pre><code>templ ListingTitle(address string, city string) {
     &lt;div class="listing-title"&gt;
         &lt;h2&gt;{ address }&lt;/h2&gt;
         &lt;p&gt;{ city }&lt;/p&gt;
     &lt;/div&gt;
-}</code></pre><p>You call it with normal values:</p><p>@ListingTitle(row.Address, row.City)</p><p>For openlist.ing, most useful components accept domain types:</p><pre><code>templ ListingCard(row listings.Listing) {
+}</code></pre>
+      <p>You call it with normal values:</p>
+      <p>@ListingTitle(row.Address, row.City)</p>
+      <p>For openlist.ing, most useful components accept domain types:</p>
+      <pre><code>templ ListingCard(row listings.Listing) {
     &lt;article class="listing-card"&gt;
         &lt;h3&gt;{ row.Address }&lt;/h3&gt;
         &lt;p&gt;{ row.City }, { row.Country }&lt;/p&gt;
     &lt;/article&gt;
-}</code></pre><p>This makes the component contract obvious. `ListingCard` needs a `listings.Listing`, not a map, JSON blob, or loose set of strings.</p><h2 id="layout-components-and-children">Layout Components And Children</h2><p>A layout component can receive child content with `{ children... }`.</p><pre><code>templ PageShell(title string) {
+}</code></pre>
+      <p>
+        This makes the component contract obvious. `ListingCard` needs a
+        `listings.Listing`, not a map, JSON blob, or loose set of strings.
+      </p>
+      <h2 id="layout-components-and-children">
+        Layout Components And Children
+      </h2>
+      <p>
+        A layout component can receive child content with `{ children... }`.
+      </p>
+      <pre><code>templ PageShell(title string) {
     &lt;!doctype html&gt;
     &lt;html lang="en"&gt;
         &lt;head&gt;
@@ -383,7 +1152,9 @@ func NewRouter(cfg config.Config, service *listings.Service, renderer web.Render
             { children... }
         &lt;/body&gt;
     &lt;/html&gt;
-}</code></pre><p>A page component wraps its content inside the shell:</p><pre><code>templ HomePage(rows []listings.Listing) {
+}</code></pre>
+      <p>A page component wraps its content inside the shell:</p>
+      <pre><code>templ HomePage(rows []listings.Listing) {
     @PageShell("openlist.ing") {
         @Topbar()
         &lt;main&gt;
@@ -391,7 +1162,18 @@ func NewRouter(cfg config.Config, service *listings.Service, renderer web.Render
             @LatestProperties(rows)
         &lt;/main&gt;
     }
-}</code></pre><p>Use this pattern for page-level consistency. The shell owns document structure, shared CSS, metadata, scripts, header/footer placement, and global layout. Individual pages own their content.</p><h2 id="component-composition">Component Composition</h2><p>Templ components should be small enough to name clearly. Instead of one giant home page component, compose it from sections:</p><pre><code>templ HomePage(rows []listings.Listing) {
+}</code></pre>
+      <p>
+        Use this pattern for page-level consistency. The shell owns document
+        structure, shared CSS, metadata, scripts, header/footer placement, and
+        global layout. Individual pages own their content.
+      </p>
+      <h2 id="component-composition">Component Composition</h2>
+      <p>
+        Templ components should be small enough to name clearly. Instead of one
+        giant home page component, compose it from sections:
+      </p>
+      <pre><code>templ HomePage(rows []listings.Listing) {
     @PageShell("openlist.ing") {
         @Topbar()
         &lt;main&gt;
@@ -401,9 +1183,30 @@ func NewRouter(cfg config.Config, service *listings.Service, renderer web.Render
             @ContactSection()
         &lt;/main&gt;
     }
-}</code></pre><p>Composition keeps templates readable. It also makes each section easier to change without touching unrelated markup.</p><h2 id="go-expressions-in-markup">Go Expressions In Markup</h2><p>Use `{ ... }` to insert escaped dynamic text.</p><p>&lt;h1&gt;{ row.Address }&lt;/h1&gt;</p><p>&lt;p class="listing-price"&gt;{ row.Price }&lt;/p&gt;</p><p>&lt;p&gt;{ row.Notes }&lt;/p&gt;</p><p>Templ escapes text output by default. That is what you want for user-controlled fields such as listing notes, addresses, and contact details.</p><p>Use helpers when formatting gets repetitive:</p><pre><code>func statusLabel(status listings.Status) string {
+}</code></pre>
+      <p>
+        Composition keeps templates readable. It also makes each section easier
+        to change without touching unrelated markup.
+      </p>
+      <h2 id="go-expressions-in-markup">Go Expressions In Markup</h2>
+      <p>Use `{ ... }` to insert escaped dynamic text.</p>
+      <p>&lt;h1&gt;{ row.Address }&lt;/h1&gt;</p>
+      <p>&lt;p class="listing-price"&gt;{ row.Price }&lt;/p&gt;</p>
+      <p>&lt;p&gt;{ row.Notes }&lt;/p&gt;</p>
+      <p>
+        Templ escapes text output by default. That is what you want for
+        user-controlled fields such as listing notes, addresses, and contact
+        details.
+      </p>
+      <p>Use helpers when formatting gets repetitive:</p>
+      <pre><code>func statusLabel(status listings.Status) string {
     return strings.ReplaceAll(string(status), "_", " ")
-}</code></pre><p>Then call the helper from the template:</p><p>&lt;span&gt;{ statusLabel(row.Status) }&lt;/span&gt;</p><h2 id="loops">Loops</h2><p>Use normal Go `for` loops inside components.</p><pre><code>templ LatestProperties(rows []listings.Listing) {
+}</code></pre>
+      <p>Then call the helper from the template:</p>
+      <p>&lt;span&gt;{ statusLabel(row.Status) }&lt;/span&gt;</p>
+      <h2 id="loops">Loops</h2>
+      <p>Use normal Go `for` loops inside components.</p>
+      <pre><code>templ LatestProperties(rows []listings.Listing) {
     &lt;section class="latest-properties"&gt;
         &lt;div class="latest-grid"&gt;
             for _, row := range topListings(rows, 8) {
@@ -411,18 +1214,29 @@ func NewRouter(cfg config.Config, service *listings.Service, renderer web.Render
             }
         &lt;/div&gt;
     &lt;/section&gt;
-}</code></pre><p>This is useful for listing grids, CMS sidebar navigation, dropdown options, breadcrumbs, and repeated cards.</p><p>For select fields, the pattern is the same:</p><pre><code>templ PropertyTypeSelect(types []string) {
+}</code></pre>
+      <p>
+        This is useful for listing grids, CMS sidebar navigation, dropdown
+        options, breadcrumbs, and repeated cards.
+      </p>
+      <p>For select fields, the pattern is the same:</p>
+      <pre><code>templ PropertyTypeSelect(types []string) {
     &lt;select name="type"&gt;
         for _, item := range types {
             &lt;option value={ item }&gt;{ item }&lt;/option&gt;
         }
     &lt;/select&gt;
-}</code></pre><h2 id="conditionals">Conditionals</h2><p>Use `if` for conditional HTML.</p><pre><code>templ StatusBadges(row listings.Listing) {
+}</code></pre>
+      <h2 id="conditionals">Conditionals</h2>
+      <p>Use `if` for conditional HTML.</p>
+      <pre><code>templ StatusBadges(row listings.Listing) {
     if row.Featured {
         &lt;span class="status-pill warning"&gt;featured&lt;/span&gt;
     }
     &lt;span class={ "status-pill " + string(row.Status) }&gt;{ statusLabel(row.Status) }&lt;/span&gt;
-}</code></pre><p>The CMS uses conditionals for saved notices:</p><pre><code>templ CMSPage(page cms.Page, saved bool) {
+}</code></pre>
+      <p>The CMS uses conditionals for saved notices:</p>
+      <pre><code>templ CMSPage(page cms.Page, saved bool) {
     @Shell(page.Title) {
         if saved {
             &lt;p class="notice"&gt;Saved draft changes for { page.Title }.&lt;/p&gt;
@@ -433,7 +1247,17 @@ func NewRouter(cfg config.Config, service *listings.Service, renderer web.Render
             }
         &lt;/form&gt;
     }
-}</code></pre><p>Use conditionals to include or omit real elements. Do not render hidden placeholder markup unless the client-side behavior needs it.</p><h2 id="switch-statements">Switch Statements</h2><p>Templ supports Go control flow such as `switch`. This is useful for CMS field rendering.</p><pre><code>templ FieldControl(field cms.Field) {
+}</code></pre>
+      <p>
+        Use conditionals to include or omit real elements. Do not render hidden
+        placeholder markup unless the client-side behavior needs it.
+      </p>
+      <h2 id="switch-statements">Switch Statements</h2>
+      <p>
+        Templ supports Go control flow such as `switch`. This is useful for CMS
+        field rendering.
+      </p>
+      <pre><code>templ FieldControl(field cms.Field) {
     switch field.Type {
         case "textarea":
             @TextareaField(field)
@@ -445,9 +1269,38 @@ field.Label }&lt;/span&gt;&lt;/label&gt;
         default:
             @InputField(field)
     }
-}</code></pre><p>This keeps the CMS extensible. Adding a new field type becomes a focused component change.</p><h2 id="dynamic-attributes">Dynamic Attributes</h2><p>Use `{ ... }` inside attributes when the value changes per record.</p><p>&lt;img class="listing-photo-img" src={ listingImageURL(row) } alt=""/&gt;</p><p>&lt;button aria-label={ "Save " + row.Address }&gt;♡&lt;/button&gt;</p><p>&lt;span class={ "status-pill " + string(row.Status) }&gt;{ statusLabel(row.Status) }&lt;/span&gt;</p><p>Dynamic attributes are ideal for classes, form values, ARIA labels, image sources, IDs, and data attributes.</p><pre><code>For links built from dynamic values, use `templ.URL`:
+}</code></pre>
+      <p>
+        This keeps the CMS extensible. Adding a new field type becomes a focused
+        component change.
+      </p>
+      <h2 id="dynamic-attributes">Dynamic Attributes</h2>
+      <p>Use `{ ... }` inside attributes when the value changes per record.</p>
+      <p>
+        &lt;img class="listing-photo-img" src={ listingImageURL(row) }
+        alt=""/&gt;
+      </p>
+      <p>&lt;button aria-label={ "Save " + row.Address }&gt;♡&lt;/button&gt;</p>
+      <p>
+        &lt;span class={ "status-pill " + string(row.Status) }&gt;{
+        statusLabel(row.Status) }&lt;/span&gt;
+      </p>
+      <p>
+        Dynamic attributes are ideal for classes, form values, ARIA labels,
+        image sources, IDs, and data attributes.
+      </p>
+      <pre><code>For links built from dynamic values, use `templ.URL`:
 go
-&lt;a href={ templ.URL("/listings/" + row.ID) }&gt;View details&lt;/a&gt;</code></pre><p>That makes intent clear: this expression is meant to be used as a URL.</p><h2 id="forms-and-required-fields">Forms And Required Fields</h2><p>Templ works well for HTML forms because forms are mostly structured HTML with a few dynamic values.</p><pre><code>templ InputField(field cms.Field) {
+&lt;a href={ templ.URL("/listings/" + row.ID) }&gt;View details&lt;/a&gt;</code></pre>
+      <p>
+        That makes intent clear: this expression is meant to be used as a URL.
+      </p>
+      <h2 id="forms-and-required-fields">Forms And Required Fields</h2>
+      <p>
+        Templ works well for HTML forms because forms are mostly structured HTML
+        with a few dynamic values.
+      </p>
+      <pre><code>templ InputField(field cms.Field) {
     if field.Required {
         &lt;label&gt;&lt;span&gt;{ field.Label }&lt;/span&gt;&lt;input type={ inputType(field) } name={ 
 field.Name } placeholder={ field.Placeholder } required/&gt;&lt;/label&gt;
@@ -455,21 +1308,134 @@ field.Name } placeholder={ field.Placeholder } required/&gt;&lt;/label&gt;
         &lt;label&gt;&lt;span&gt;{ field.Label }&lt;/span&gt;&lt;input type={ inputType(field) } name={ 
 field.Name } placeholder={ field.Placeholder }/&gt;&lt;/label&gt;
     }
-}</code></pre><p>In Go templates, boolean attributes such as `required` are easiest to handle with separate branches. This keeps generated HTML explicit and easy to inspect.</p><h2 id="helper-functions">Helper Functions</h2><p>Keep helper functions in normal `.go` files in the same package as your `.templ` files.</p><pre><code>package web
+}</code></pre>
+      <p>
+        In Go templates, boolean attributes such as `required` are easiest to
+        handle with separate branches. This keeps generated HTML explicit and
+        easy to inspect.
+      </p>
+      <h2 id="helper-functions">Helper Functions</h2>
+      <p>
+        Keep helper functions in normal `.go` files in the same package as your
+        `.templ` files.
+      </p>
+      <pre><code>package web
 func listingImageURL(row listings.Listing) string {
     if row.Photo != "" {
         return row.Photo
     }
     return defaultImageForType(row.Type)
-}</code></pre><p>Then use the helper in the template:</p><p>&lt;img src={ listingImageURL(row) } alt=""/&gt;</p><p>Good helper candidates include:</p><ul><li>status labels.</li><li>image fallback URLs.</li><li>date formatting.</li><li>short text summaries.</li><li>class-name builders.</li><li>filtered slices such as latest or featured listings.</li></ul><p>Avoid putting business decisions in helpers. If a rule changes application behavior, it belongs in a service, not a view helper.</p><h2 id="safe-html-and-user-content">Safe HTML And User Content</h2><p>By default, Templ escapes text inserted with `{ value }`. Keep that default for user content.</p><p>Use safe HTML mechanisms only for trusted content that you control and sanitize before rendering. A CMS rich-text field should not become raw HTML until you have a sanitization strategy.</p><p>For openlist.ing, listing notes, addresses, contact fields, and user-submitted descriptions should render as escaped text.</p><h2 id="datastar-htmx-and-custom-attributes">Datastar, HTMX, And Custom Attributes</h2><p>Templ can preserve custom HTML attributes used by lightweight frontend libraries. For example, the frontend can keep Datastar attributes in normal markup:</p><p>&lt;body data-signals="{ selectedListing: '', selectedStatus: 'all' }"&gt;</p><p>    { children... }</p><p>&lt;/body&gt;</p><p>Dynamic data attributes also work:</p><p>&lt;article data-show={ filterExpression(row) }&gt;</p><p>    @ListingCardBody(row)</p><p>&lt;/article&gt;</p><p>This makes Templ a good fit for hypermedia-style applications: server-rendered HTML first, light declarative interactivity where needed.</p><h2 id="generated-code-workflow">Generated Code Workflow</h2><p>Templ files are source files, but Go builds the generated files. The workflow is:</p><pre><code>templ generate
+}</code></pre>
+      <p>Then use the helper in the template:</p>
+      <p>&lt;img src={ listingImageURL(row) } alt=""/&gt;</p>
+      <p>Good helper candidates include:</p>
+      <ul>
+        <li>status labels.</li>
+        <li>image fallback URLs.</li>
+        <li>date formatting.</li>
+        <li>short text summaries.</li>
+        <li>class-name builders.</li>
+        <li>filtered slices such as latest or featured listings.</li>
+      </ul>
+      <p>
+        Avoid putting business decisions in helpers. If a rule changes
+        application behavior, it belongs in a service, not a view helper.
+      </p>
+      <h2 id="safe-html-and-user-content">Safe HTML And User Content</h2>
+      <p>
+        By default, Templ escapes text inserted with `{ value }`. Keep that
+        default for user content.
+      </p>
+      <p>
+        Use safe HTML mechanisms only for trusted content that you control and
+        sanitize before rendering. A CMS rich-text field should not become raw
+        HTML until you have a sanitization strategy.
+      </p>
+      <p>
+        For openlist.ing, listing notes, addresses, contact fields, and
+        user-submitted descriptions should render as escaped text.
+      </p>
+      <h2 id="datastar-htmx-and-custom-attributes">
+        Datastar, HTMX, And Custom Attributes
+      </h2>
+      <p>
+        Templ can preserve custom HTML attributes used by lightweight frontend
+        libraries. For example, the frontend can keep Datastar attributes in
+        normal markup:
+      </p>
+      <p>
+        &lt;body data-signals="{ selectedListing: '', selectedStatus: 'all'
+        }"&gt;
+      </p>
+      <p>{ children... }</p>
+      <p>&lt;/body&gt;</p>
+      <p>Dynamic data attributes also work:</p>
+      <p>&lt;article data-show={ filterExpression(row) }&gt;</p>
+      <p>@ListingCardBody(row)</p>
+      <p>&lt;/article&gt;</p>
+      <p>
+        This makes Templ a good fit for hypermedia-style applications:
+        server-rendered HTML first, light declarative interactivity where
+        needed.
+      </p>
+      <h2 id="generated-code-workflow">Generated Code Workflow</h2>
+      <p>
+        Templ files are source files, but Go builds the generated files. The
+        workflow is:
+      </p>
+      <pre><code>templ generate
 go test ./...
-go run ./cmd/server</code></pre><p>If generation succeeds but Go tests fail, the problem is in the generated Go integration, imports, helper functions, or handler code. If generation fails, the issue is in `.templ` syntax or unsupported template expressions.</p><h2 id="practical-templ-rules-for-this-project">Practical Templ Rules For This Project</h2><p>Use these rules when extending openlist.ing:</p><ul><li>Create page components for full pages: `HomePage`, `ListingsPage`, `SubmitPage`, `CMSPage`.</li><li>Create section components for repeated page regions: `Topbar`, `Footer`, `LatestProperties`, `ContactSection`.</li><li>Create item components for repeated records: `ListingCard`, `Testimonial`, `FieldControl`.</li><li>Keep business rules in services and formatting helpers in the view package.</li><li>Use `templ.URL` for dynamic links.</li><li>Prefer escaped text output for anything users can edit.</li><li>Run `templ generate` after every `.templ` edit.</li><li>Run route tests after template changes because templates are part of the HTTP response contract.</li></ul><p>Templ is most effective when you treat it as typed HTML composition, not as a place to hide application logic.</p><h2 id="15-rendering-templ-from-gin">15. Rendering Templ From Gin</h2><p>Create a renderer interface for the pages your router needs.</p><pre><code>type Renderer interface {
+go run ./cmd/server</code></pre>
+      <p>
+        If generation succeeds but Go tests fail, the problem is in the
+        generated Go integration, imports, helper functions, or handler code. If
+        generation fails, the issue is in `.templ` syntax or unsupported
+        template expressions.
+      </p>
+      <h2 id="practical-templ-rules-for-this-project">
+        Practical Templ Rules For This Project
+      </h2>
+      <p>Use these rules when extending openlist.ing:</p>
+      <ul>
+        <li>
+          Create page components for full pages: `HomePage`, `ListingsPage`,
+          `SubmitPage`, `CMSPage`.
+        </li>
+        <li>
+          Create section components for repeated page regions: `Topbar`,
+          `Footer`, `LatestProperties`, `ContactSection`.
+        </li>
+        <li>
+          Create item components for repeated records: `ListingCard`,
+          `Testimonial`, `FieldControl`.
+        </li>
+        <li>
+          Keep business rules in services and formatting helpers in the view
+          package.
+        </li>
+        <li>Use `templ.URL` for dynamic links.</li>
+        <li>Prefer escaped text output for anything users can edit.</li>
+        <li>Run `templ generate` after every `.templ` edit.</li>
+        <li>
+          Run route tests after template changes because templates are part of
+          the HTTP response contract.
+        </li>
+      </ul>
+      <p>
+        Templ is most effective when you treat it as typed HTML composition, not
+        as a place to hide application logic.
+      </p>
+      <h2 id="15-rendering-templ-from-gin">15. Rendering Templ From Gin</h2>
+      <p>Create a renderer interface for the pages your router needs.</p>
+      <pre><code>type Renderer interface {
     Home(*gin.Context, []listings.Listing)
     Listings(*gin.Context, []listings.Listing, []listings.Listing)
     Simple(*gin.Context, string, string)
     Submit(*gin.Context)
     ListingDetail(*gin.Context, listings.Listing)
-}</code></pre><p>Implement it with Templ:</p><pre><code>type TemplRenderer struct{}
+}</code></pre>
+      <p>Implement it with Templ:</p>
+      <pre><code>type TemplRenderer struct{}
 func NewTemplRenderer() *TemplRenderer { return &amp;TemplRenderer{} }
 func (r *TemplRenderer) Listings(c *gin.Context, all []listings.Listing, visible 
 []listings.Listing) {
@@ -481,7 +1447,17 @@ func (r *TemplRenderer) render(c *gin.Context, component templ.Component) {
     if err := component.Render(c.Request.Context(), c.Writer); err != nil {
         c.Error(err)
     }
-}</code></pre><p>This keeps templates out of handlers while still making render calls explicit.</p><h2 id="16-building-listing-cards">16. Building Listing Cards</h2><p>A listing card is a natural Templ component because it receives a typed listing and produces repeated HTML.</p><pre><code>templ ListingCard(row listings.Listing) {
+}</code></pre>
+      <p>
+        This keeps templates out of handlers while still making render calls
+        explicit.
+      </p>
+      <h2 id="16-building-listing-cards">16. Building Listing Cards</h2>
+      <p>
+        A listing card is a natural Templ component because it receives a typed
+        listing and produces repeated HTML.
+      </p>
+      <pre><code>templ ListingCard(row listings.Listing) {
     &lt;article class="listing-card"&gt;
         &lt;div class="listing-photo"&gt;
             &lt;img class="listing-photo-img" src={ listingImageURL(row) } alt=""/&gt;
@@ -502,7 +1478,9 @@ statusLabel(row.Status) }&lt;/span&gt;
 row.ID) }&gt;View details&lt;/a&gt;
         &lt;/div&gt;
     &lt;/article&gt;
-}</code></pre><p>Keep helpers in Go files beside the templates:</p><pre><code>func statusLabel(status listings.Status) string {
+}</code></pre>
+      <p>Keep helpers in Go files beside the templates:</p>
+      <pre><code>func statusLabel(status listings.Status) string {
     return strings.ReplaceAll(string(status), "_", " ")
 }
 func listingImageURL(row listings.Listing) string {
@@ -510,7 +1488,14 @@ func listingImageURL(row listings.Listing) string {
         return row.Photo
     }
     return defaultImageForType(row.Type)
-}</code></pre><p>Use Templ for structure. Use Go helpers for formatting and small derivations.</p><h2 id="17-forms-in-templ">17. Forms In Templ</h2><p>Forms are a strong use case for server-rendered Go.</p><pre><code>templ SubmitPage() {
+}</code></pre>
+      <p>
+        Use Templ for structure. Use Go helpers for formatting and small
+        derivations.
+      </p>
+      <h2 id="17-forms-in-templ">17. Forms In Templ</h2>
+      <p>Forms are a strong use case for server-rendered Go.</p>
+      <pre><code>templ SubmitPage() {
     @PageShell("Submit a sign") {
         @Topbar()
         &lt;main&gt;
@@ -527,7 +1512,11 @@ sale&lt;/option&gt;&lt;option value="lease"&gt;For lease&lt;/option&gt;&lt;/sele
             &lt;/form&gt;
         &lt;/main&gt;
     }
-}</code></pre><p>The matching handler reads form fields, calls a service, and redirects.</p><pre><code>func (s *Server) submitListing(c *gin.Context) {
+}</code></pre>
+      <p>
+        The matching handler reads form fields, calls a service, and redirects.
+      </p>
+      <pre><code>func (s *Server) submitListing(c *gin.Context) {
     if err := c.Request.ParseForm(); err != nil {
         c.String(http.StatusBadRequest, err.Error())
         return
@@ -537,7 +1526,10 @@ sale&lt;/option&gt;&lt;option value="lease"&gt;For lease&lt;/option&gt;&lt;/sele
         return
     }
     c.Redirect(http.StatusSeeOther, "/listings")
-}</code></pre><h2 id="18-cms-page-definitions">18. CMS Page Definitions</h2><p>The CMS can generate many forms from typed page metadata.</p><pre><code>type Field struct {
+}</code></pre>
+      <h2 id="18-cms-page-definitions">18. CMS Page Definitions</h2>
+      <p>The CMS can generate many forms from typed page metadata.</p>
+      <pre><code>type Field struct {
     Name        string
     Label       string
     Type        string
@@ -553,7 +1545,9 @@ type Page struct {
     Description string
     SubmitLabel string
     Fields      []Field
-}</code></pre><p>Example page definition:</p><pre><code>var Pages = []Page{
+}</code></pre>
+      <p>Example page definition:</p>
+      <pre><code>var Pages = []Page{
     {
         Slug:        "users",
         Title:       "Users manager",
@@ -567,7 +1561,14 @@ type Page struct {
 "invited", "suspended"}},
         },
     },
-}</code></pre><p>This lets the CMS grow by adding definitions instead of route boilerplate.</p><h2 id="19-cms-form-components">19. CMS Form Components</h2><p>A generic CMS page component can render any page definition.</p><pre><code>templ CMSPage(page cms.Page, saved bool) {
+}</code></pre>
+      <p>
+        This lets the CMS grow by adding definitions instead of route
+        boilerplate.
+      </p>
+      <h2 id="19-cms-form-components">19. CMS Form Components</h2>
+      <p>A generic CMS page component can render any page definition.</p>
+      <pre><code>templ CMSPage(page cms.Page, saved bool) {
     @Shell(page.Title) {
         if saved {
             &lt;p class="notice"&gt;Saved draft changes for { page.Title }.&lt;/p&gt;
@@ -584,7 +1585,9 @@ type Page struct {
             &lt;/form&gt;
         &lt;/section&gt;
     }
-}</code></pre><p>Field rendering is type-based:</p><pre><code>templ FieldControl(field cms.Field) {
+}</code></pre>
+      <p>Field rendering is type-based:</p>
+      <pre><code>templ FieldControl(field cms.Field) {
     switch field.Type {
         case "textarea":
             @TextareaField(field)
@@ -596,22 +1599,47 @@ field.Label }&lt;/span&gt;&lt;/label&gt;
         default:
             @InputField(field)
     }
-}</code></pre><p>This is a compact pattern for internal tools and admin systems.</p><h2 id="20-middleware">20. Middleware</h2><p>Gin middleware wraps requests. Start with logging and recovery:</p><pre><code>router := gin.New()
-router.Use(gin.Logger(), gin.Recovery())</code></pre><p>Add middleware for cross-cutting concerns:</p><pre><code>func SecurityHeaders() gin.HandlerFunc {
+}</code></pre>
+      <p>This is a compact pattern for internal tools and admin systems.</p>
+      <h2 id="20-middleware">20. Middleware</h2>
+      <p>Gin middleware wraps requests. Start with logging and recovery:</p>
+      <pre><code>router := gin.New()
+router.Use(gin.Logger(), gin.Recovery())</code></pre>
+      <p>Add middleware for cross-cutting concerns:</p>
+      <pre><code>func SecurityHeaders() gin.HandlerFunc {
     return func(c *gin.Context) {
         c.Header("X-Content-Type-Options", "nosniff")
         c.Header("X-Frame-Options", "DENY")
         c.Header("Referrer-Policy", "strict-origin-when-cross-origin")
         c.Next()
     }
-}</code></pre><p>For CMS routes, middleware should eventually enforce sessions, CSRF protection, and permissions.</p><pre><code>cmsGroup := router.Group("/")</code></pre><p>cmsGroup.Use(RequireSession(), RequireCSRF())</p><p>Middleware should be boring and focused. It should not hide route-specific business rules.</p><h2 id="21-testing-routes">21. Testing Routes</h2><p>Use `httptest` to verify status codes, redirects, and response bodies.</p><pre><code>func TestFrontendRouteParity(t *testing.T) {
+}</code></pre>
+      <p>
+        For CMS routes, middleware should eventually enforce sessions, CSRF
+        protection, and permissions.
+      </p>
+      <pre><code>cmsGroup := router.Group("/")</code></pre>
+      <p>cmsGroup.Use(RequireSession(), RequireCSRF())</p>
+      <p>
+        Middleware should be boring and focused. It should not hide
+        route-specific business rules.
+      </p>
+      <h2 id="21-testing-routes">21. Testing Routes</h2>
+      <p>
+        Use `httptest` to verify status codes, redirects, and response bodies.
+      </p>
+      <pre><code>func TestFrontendRouteParity(t *testing.T) {
     router := NewRouter(cfg, service, web.NewTemplRenderer())
     assertStatus(t, router, http.MethodGet, "/", "", http.StatusOK)
     assertStatus(t, router, http.MethodGet, "/listings?q=maple", "", http.StatusOK)
     assertStatus(t, router, http.MethodGet, "/listings/missing", "", http.StatusNotFound)
     assertStatus(t, router, http.MethodPost, "/contact", "name=&amp;email=&amp;message=", 
 http.StatusBadRequest)
-}</code></pre><p>Helper:</p><pre><code>func assertStatus(t *testing.T, router http.Handler, method, target, body string, want int)</code></pre><p>*httptest.ResponseRecorder {</p><pre><code>t.Helper()
+}</code></pre>
+      <p>Helper:</p>
+      <pre><code>func assertStatus(t *testing.T, router http.Handler, method, target, body string, want int)</code></pre>
+      <p>*httptest.ResponseRecorder {</p>
+      <pre><code>t.Helper()
     req := httptest.NewRequest(method, target, strings.NewReader(body))
     if body != "" {
         req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
@@ -622,24 +1650,128 @@ http.StatusBadRequest)
         t.Fatalf("%s %s status = %d, want %d", method, target, res.Code, want)
     }
     return res
-}</code></pre><p>Tests should lock down behavior before refactors. That is especially important in server-rendered apps where redirects and form status codes are part of the user experience.</p><h2 id="22-templ-generation-workflow">22. Templ Generation Workflow</h2><p>After editing `.templ` files, run:</p><pre><code>templ generate</code></pre><p>Then run tests:</p><pre><code>GOCACHE=$PWD/.cache/go-build go test ./...</code></pre><p>If the CLI warns that it is older than the module version, reinstall it:</p><pre><code>go install github.com/a-h/templ/cmd/templ@latest</code></pre><p>Generated files are required for normal Go builds. You can commit them or generate them in CI. For small teams and simple deployments, committing generated files is often the least surprising option.</p><h2 id="23-static-assets-and-css">23. Static Assets And CSS</h2><p>Serve public assets directly from Gin:</p><pre><code>router.Static("/assets", filepath.Join(s.cfg.PublicDir, "assets"))
-router.GET("/styles.css", s.staticFile("styles.css", "text/css; charset=utf-8"))</code></pre><p>A helper can serve individual files with explicit content types:</p><pre><code>func (s *Server) staticFile(name string, contentType string) gin.HandlerFunc {
+}</code></pre>
+      <p>
+        Tests should lock down behavior before refactors. That is especially
+        important in server-rendered apps where redirects and form status codes
+        are part of the user experience.
+      </p>
+      <h2 id="22-templ-generation-workflow">22. Templ Generation Workflow</h2>
+      <p>After editing `.templ` files, run:</p>
+      <pre><code>templ generate</code></pre>
+      <p>Then run tests:</p>
+      <pre><code>GOCACHE=$PWD/.cache/go-build go test ./...</code></pre>
+      <p>
+        If the CLI warns that it is older than the module version, reinstall it:
+      </p>
+      <pre><code>go install github.com/a-h/templ/cmd/templ@latest</code></pre>
+      <p>
+        Generated files are required for normal Go builds. You can commit them
+        or generate them in CI. For small teams and simple deployments,
+        committing generated files is often the least surprising option.
+      </p>
+      <h2 id="23-static-assets-and-css">23. Static Assets And CSS</h2>
+      <p>Serve public assets directly from Gin:</p>
+      <pre><code>router.Static("/assets", filepath.Join(s.cfg.PublicDir, "assets"))
+router.GET("/styles.css", s.staticFile("styles.css", "text/css; charset=utf-8"))</code></pre>
+      <p>A helper can serve individual files with explicit content types:</p>
+      <pre><code>func (s *Server) staticFile(name string, contentType string) gin.HandlerFunc {
     path := filepath.Join(s.cfg.PublicDir, name)
     return func(c *gin.Context) {
         c.Header("Content-Type", contentType)
         c.File(path)
     }
-}</code></pre><p>For production, add cache headers for fingerprinted assets. For local development, clarity matters more than aggressive caching.</p><h2 id="24-database-strategy">24. Database Strategy</h2><p>The current project keeps a centralized database package beside the apps. Local development uses SQLite, while the environment model leaves room for PostgreSQL or MySQL.</p><pre><code>DATABASE_PROVIDER=sqlite
-DATABASE_PATH=../database/data/myapp.sqlite</code></pre><p>Production examples:</p><pre><code>DATABASE_PROVIDER=postgres
-DATABASE_URL=postgres://user:password@localhost/myapp</code></pre><pre><code>DATABASE_PROVIDER=mysql
-DATABASE_URL=mysql://user:password@localhost/myapp</code></pre><p>When implementing a Go SQL repository, create one database pool at startup:</p><pre><code>db, err := sql.Open("postgres", cfg.DatabaseURL)</code></pre><p>if err != nil {</p><pre><code>return err
-}</code></pre><p>db.SetMaxOpenConns(25)</p><p>db.SetMaxIdleConns(25)</p><p>db.SetConnMaxLifetime(5 * time.Minute)</p><p>Pass `context.Context` into every query. Never open a new database connection for each request.</p><h2 id="25-production-build">25. Production Build</h2><p>Build the frontend:</p><pre><code>cd frontend
+}</code></pre>
+      <p>
+        For production, add cache headers for fingerprinted assets. For local
+        development, clarity matters more than aggressive caching.
+      </p>
+      <h2 id="24-database-strategy">24. Database Strategy</h2>
+      <p>
+        The current project keeps a centralized database package beside the
+        apps. Local development uses SQLite, while the environment model leaves
+        room for PostgreSQL or MySQL.
+      </p>
+      <pre><code>DATABASE_PROVIDER=sqlite
+DATABASE_PATH=../database/data/myapp.sqlite</code></pre>
+      <p>Production examples:</p>
+      <pre><code>DATABASE_PROVIDER=postgres
+DATABASE_URL=postgres://user:password@localhost/myapp</code></pre>
+      <pre><code>DATABASE_PROVIDER=mysql
+DATABASE_URL=mysql://user:password@localhost/myapp</code></pre>
+      <p>
+        When implementing a Go SQL repository, create one database pool at
+        startup:
+      </p>
+      <pre><code>db, err := sql.Open("postgres", cfg.DatabaseURL)</code></pre>
+      <p>if err != nil {</p>
+      <pre><code>return err
+}</code></pre>
+      <p>db.SetMaxOpenConns(25)</p>
+      <p>db.SetMaxIdleConns(25)</p>
+      <p>db.SetConnMaxLifetime(5 * time.Minute)</p>
+      <p>
+        Pass `context.Context` into every query. Never open a new database
+        connection for each request.
+      </p>
+      <h2 id="25-production-build">25. Production Build</h2>
+      <p>Build the frontend:</p>
+      <pre><code>cd frontend
 templ generate
 go test ./...
-go build -o bin/myapp-frontend ./cmd/server</code></pre><p>Build the CMS:</p><pre><code>cd cms
+go build -o bin/myapp-frontend ./cmd/server</code></pre>
+      <p>Build the CMS:</p>
+      <pre><code>cd cms
 templ generate
 go test ./...
-go build -o bin/myapp-cms ./cmd/server</code></pre><p>A production Dockerfile should generate Templ files during the builder stage:</p><p>FROM golang:1.25-bookworm AS builder</p><p>WORKDIR /app</p><p>RUN go install github.com/a-h/templ/cmd/templ@latest</p><p>COPY go.mod go.sum ./</p><p>RUN go mod download</p><p>COPY . .</p><p>RUN templ generate</p><p>RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -ldflags="-s -w" -o /out/app </p><p>./cmd/server</p><p>FROM gcr.io/distroless/static-debian12:nonroot</p><p>WORKDIR /app</p><p>COPY --from=builder /out/app /app/app</p><p>COPY --from=builder /app/public /app/public</p><p>EXPOSE 5173</p><p>USER nonroot:nonroot</p><p>ENTRYPOINT ["/app/app"]</p><p>Distroless is a good default for static Go binaries because it is smaller than a full Linux image but less bare than `scratch`.</p><h2 id="26-production-hardening-checklist">26. Production Hardening Checklist</h2><p>Before deployment, add or verify:</p><ul><li>structured logs with request IDs.</li><li>panic recovery and error logging.</li><li>security headers.</li><li>trusted proxy settings.</li><li>HTTPS at the proxy or load balancer.</li><li>CMS authentication.</li><li>CSRF protection for forms.</li><li>rate limits for login, contact, and submit endpoints.</li><li>database connection pooling.</li><li>migrations and seed workflow.</li><li>asset caching.</li><li>health checks.</li><li>graceful shutdown.</li></ul><pre><code>A graceful shutdown entrypoint uses `http.Server` directly:
+go build -o bin/myapp-cms ./cmd/server</code></pre>
+      <p>
+        A production Dockerfile should generate Templ files during the builder
+        stage:
+      </p>
+      <p>FROM golang:1.25-bookworm AS builder</p>
+      <p>WORKDIR /app</p>
+      <p>RUN go install github.com/a-h/templ/cmd/templ@latest</p>
+      <p>COPY go.mod go.sum ./</p>
+      <p>RUN go mod download</p>
+      <p>COPY . .</p>
+      <p>RUN templ generate</p>
+      <p>
+        RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath
+        -ldflags="-s -w" -o /out/app
+      </p>
+      <p>./cmd/server</p>
+      <p>FROM gcr.io/distroless/static-debian12:nonroot</p>
+      <p>WORKDIR /app</p>
+      <p>COPY --from=builder /out/app /app/app</p>
+      <p>COPY --from=builder /app/public /app/public</p>
+      <p>EXPOSE 5173</p>
+      <p>USER nonroot:nonroot</p>
+      <p>ENTRYPOINT ["/app/app"]</p>
+      <p>
+        Distroless is a good default for static Go binaries because it is
+        smaller than a full Linux image but less bare than `scratch`.
+      </p>
+      <h2 id="26-production-hardening-checklist">
+        26. Production Hardening Checklist
+      </h2>
+      <p>Before deployment, add or verify:</p>
+      <ul>
+        <li>structured logs with request IDs.</li>
+        <li>panic recovery and error logging.</li>
+        <li>security headers.</li>
+        <li>trusted proxy settings.</li>
+        <li>HTTPS at the proxy or load balancer.</li>
+        <li>CMS authentication.</li>
+        <li>CSRF protection for forms.</li>
+        <li>rate limits for login, contact, and submit endpoints.</li>
+        <li>database connection pooling.</li>
+        <li>migrations and seed workflow.</li>
+        <li>asset caching.</li>
+        <li>health checks.</li>
+        <li>graceful shutdown.</li>
+      </ul>
+      <pre><code>A graceful shutdown entrypoint uses `http.Server` directly:
 go
 srv := &amp;http.Server{Addr: ":" + cfg.Port, Handler: router}
 go func() {
@@ -647,16 +1779,86 @@ go func() {
         log.Fatal(err)
     }
 }()
-ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)</code></pre><p>defer cancel()</p><p>_ = srv.Shutdown(ctx)</p><h2 id="27-common-mistakes">27. Common Mistakes</h2><p>Avoid these early mistakes:</p><ul><li>putting all logic in `main.go`.</li><li>letting handlers become business services.</li><li>building HTML with string concatenation.</li><li>skipping `templ generate` before tests.</li><li>ignoring `context.Context` in repository methods.</li><li>using `302` for every form redirect instead of intentional `303` behavior.</li><li>opening database connections per request.</li><li>hiding dependencies in global variables.</li><li>skipping route tests because pages render in a browser.</li></ul><p>The stack rewards explicitness. Keep the boring boundaries intact.</p><h2 id="28-suggested-learning-path">28. Suggested Learning Path</h2><p>Work through the stack in this order:</p><ol><li>Create a Gin router with one static page.</li><li>Add a Templ layout and render it from Gin.</li><li>Add a typed model and a service method.</li><li>Add a listing page with a looped Templ component.</li><li>Add a form page and a POST handler.</li><li>Add redirects and validation errors.</li><li>Add `httptest` route tests.</li><li>Add middleware.</li><li>Add persistence behind a repository interface.</li><li>Add production configuration and build scripts.</li></ol><p>This order keeps each concept small enough to understand while still moving toward a real application.</p><h2 id="29-final-architecture-summary">29. Final Architecture Summary</h2><p>A solid Go, Gin, and Templ application has clear boundaries:</p><ul><li>Gin owns HTTP.</li><li>handlers translate requests and responses.</li><li>services own use cases.</li><li>repositories own persistence.</li><li>Templ owns HTML.</li><li>config owns environment.</li><li>tests own behavior verification.</li><li>`cmd/server` owns assembly.</li></ul><p>openlist.ing follows that shape. The result is a server-rendered application that is easy to run locally, easy to test, easy to compile, and ready for production hardening.</p>
-<h2 id="devops-deploying-a-go-gin-templ-app">DevOps: Deploying a Go + Gin + templ App</h2>
+ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)</code></pre>
+      <p>defer cancel()</p>
+      <p>_ = srv.Shutdown(ctx)</p>
+      <h2 id="27-common-mistakes">27. Common Mistakes</h2>
+      <p>Avoid these early mistakes:</p>
+      <ul>
+        <li>putting all logic in `main.go`.</li>
+        <li>letting handlers become business services.</li>
+        <li>building HTML with string concatenation.</li>
+        <li>skipping `templ generate` before tests.</li>
+        <li>ignoring `context.Context` in repository methods.</li>
+        <li>
+          using `302` for every form redirect instead of intentional `303`
+          behavior.
+        </li>
+        <li>opening database connections per request.</li>
+        <li>hiding dependencies in global variables.</li>
+        <li>skipping route tests because pages render in a browser.</li>
+      </ul>
+      <p>The stack rewards explicitness. Keep the boring boundaries intact.</p>
+      <h2 id="28-suggested-learning-path">28. Suggested Learning Path</h2>
+      <p>Work through the stack in this order:</p>
+      <ol>
+        <li>Create a Gin router with one static page.</li>
+        <li>Add a Templ layout and render it from Gin.</li>
+        <li>Add a typed model and a service method.</li>
+        <li>Add a listing page with a looped Templ component.</li>
+        <li>Add a form page and a POST handler.</li>
+        <li>Add redirects and validation errors.</li>
+        <li>Add `httptest` route tests.</li>
+        <li>Add middleware.</li>
+        <li>Add persistence behind a repository interface.</li>
+        <li>Add production configuration and build scripts.</li>
+      </ol>
+      <p>
+        This order keeps each concept small enough to understand while still
+        moving toward a real application.
+      </p>
+      <h2 id="29-final-architecture-summary">29. Final Architecture Summary</h2>
+      <p>A solid Go, Gin, and Templ application has clear boundaries:</p>
+      <ul>
+        <li>Gin owns HTTP.</li>
+        <li>handlers translate requests and responses.</li>
+        <li>services own use cases.</li>
+        <li>repositories own persistence.</li>
+        <li>Templ owns HTML.</li>
+        <li>config owns environment.</li>
+        <li>tests own behavior verification.</li>
+        <li>`cmd/server` owns assembly.</li>
+      </ul>
+      <p>
+        openlist.ing follows that shape. The result is a server-rendered
+        application that is easy to run locally, easy to test, easy to compile,
+        and ready for production hardening.
+      </p>
+      <h2 id="devops-deploying-a-go-gin-templ-app">
+        DevOps: Deploying a Go + Gin + templ App
+      </h2>
 
-<p>A Go web app compiles to a single static binary, which makes it one of the easiest things to containerize and deploy. This section walks up the ladder: a single Docker image, then Docker Compose for local multi-service dev, then Docker Swarm for a small cluster, and finally Traefik as a reverse proxy that gives you automatic HTTPS and routing. Each step builds on the previous one.</p>
+      <p>
+        A Go web app compiles to a single static binary, which makes it one of
+        the easiest things to containerize and deploy. This section walks up the
+        ladder: a single Docker image, then Docker Compose for local
+        multi-service dev, then Docker Swarm for a small cluster, and finally
+        Traefik as a reverse proxy that gives you automatic HTTPS and routing.
+        Each step builds on the previous one.
+      </p>
 
-<h3 id="1-dockerfile-a-multi-stage-build">1. Dockerfile — a multi-stage build</h3>
+      <h3 id="1-dockerfile-a-multi-stage-build">
+        1. Dockerfile — a multi-stage build
+      </h3>
 
-<p>The goal of a Go Dockerfile is a tiny final image that contains <em>only</em> the compiled binary and static assets — no Go toolchain, no source. A multi-stage build does this: a "builder" stage compiles, and a minimal final stage copies just the binary out.</p>
+      <p>
+        The goal of a Go Dockerfile is a tiny final image that contains
+        <em>only</em> the compiled binary and static assets — no Go toolchain,
+        no source. A multi-stage build does this: a "builder" stage compiles,
+        and a minimal final stage copies just the binary out.
+      </p>
 
-<pre><code># ---- Stage 1: build ----
+      <pre><code># ---- Stage 1: build ----
 FROM golang:1.26-alpine AS builder
 WORKDIR /src
 
@@ -693,19 +1895,34 @@ EXPOSE 8080
 ENTRYPOINT ["/app/server"]
 </code></pre>
 
-<p><strong>What it does:</strong> stage 1 pulls the full Go image, generates templ code, and compiles a static binary. Stage 2 starts from a ~5 MB Alpine base and copies in only the binary and <code>static/</code> directory. The final image is typically 15–25 MB instead of the ~800 MB of the builder. <code>CGO_ENABLED=0</code> is the key flag — it produces a self-contained binary with no dynamic library dependencies, so it can even run <code>FROM scratch</code>.</p>
+      <p>
+        <strong>What it does:</strong> stage 1 pulls the full Go image,
+        generates templ code, and compiles a static binary. Stage 2 starts from
+        a ~5 MB Alpine base and copies in only the binary and
+        <code>static/</code> directory. The final image is typically 15–25 MB
+        instead of the ~800 MB of the builder. <code>CGO_ENABLED=0</code> is the
+        key flag — it produces a self-contained binary with no dynamic library
+        dependencies, so it can even run <code>FROM scratch</code>.
+      </p>
 
-<p>Build and run it:</p>
+      <p>Build and run it:</p>
 
-<pre><code>docker build -t myapp:latest .
+      <pre><code>docker build -t myapp:latest .
 docker run --rm -p 8080:8080 --env-file .env myapp:latest
 </code></pre>
 
-<h3 id="2-docker-compose-app-database-together">2. Docker Compose — app + database together</h3>
+      <h3 id="2-docker-compose-app-database-together">
+        2. Docker Compose — app + database together
+      </h3>
 
-<p>A real app needs a database. Docker Compose describes multiple services in one <code>compose.yaml</code> and wires them onto a shared network so they can find each other by name. This is the standard local-dev and small-single-host setup.</p>
+      <p>
+        A real app needs a database. Docker Compose describes multiple services
+        in one <code>compose.yaml</code> and wires them onto a shared network so
+        they can find each other by name. This is the standard local-dev and
+        small-single-host setup.
+      </p>
 
-<pre><code>services:
+      <pre><code>services:
   app:
     build: .
     ports:
@@ -740,9 +1957,18 @@ volumes:
   dbdata:
 </code></pre>
 
-<p><strong>What it does:</strong> two services — <code>app</code> and <code>db</code> — on an automatically-created private network. The app reaches MySQL at host <code>db</code> (the service name) rather than an IP, because Compose provides internal DNS. <code>depends_on</code> with <code>condition: service_healthy</code> makes the app wait for the DB's healthcheck to pass before starting, avoiding "connection refused" on boot. The named volume <code>dbdata</code> keeps the database on disk so data survives <code>docker compose down</code> and restarts.</p>
+      <p>
+        <strong>What it does:</strong> two services — <code>app</code> and
+        <code>db</code> — on an automatically-created private network. The app
+        reaches MySQL at host <code>db</code> (the service name) rather than an
+        IP, because Compose provides internal DNS. <code>depends_on</code> with
+        <code>condition: service_healthy</code> makes the app wait for the DB's
+        healthcheck to pass before starting, avoiding "connection refused" on
+        boot. The named volume <code>dbdata</code> keeps the database on disk so
+        data survives <code>docker compose down</code> and restarts.
+      </p>
 
-<pre><code># Bring the whole stack up (build if needed), in the background.
+      <pre><code># Bring the whole stack up (build if needed), in the background.
 docker compose up -d --build
 
 # Tail logs, then tear it down (keeping the volume).
@@ -750,11 +1976,19 @@ docker compose logs -f app
 docker compose down
 </code></pre>
 
-<h3 id="3-docker-swarm-scaling-to-a-cluster">3. Docker Swarm — scaling to a cluster</h3>
+      <h3 id="3-docker-swarm-scaling-to-a-cluster">
+        3. Docker Swarm — scaling to a cluster
+      </h3>
 
-<p>Compose runs on one host. <strong>Docker Swarm</strong> turns a set of machines into a single cluster and schedules replicas across them, with built-in load balancing and rolling updates — using nearly the same YAML. It's the lightest-weight orchestrator (Kubernetes is the heavier alternative).</p>
+      <p>
+        Compose runs on one host. <strong>Docker Swarm</strong> turns a set of
+        machines into a single cluster and schedules replicas across them, with
+        built-in load balancing and rolling updates — using nearly the same
+        YAML. It's the lightest-weight orchestrator (Kubernetes is the heavier
+        alternative).
+      </p>
 
-<pre><code># Initialize a swarm on the manager node.
+      <pre><code># Initialize a swarm on the manager node.
 docker swarm init
 
 # The same compose file works, but now under the `deploy:` key.
@@ -762,9 +1996,12 @@ docker swarm init
 docker stack deploy -c compose.yaml myapp
 </code></pre>
 
-<p>Add a <code>deploy</code> block to the app service to control replicas and rolling updates:</p>
+      <p>
+        Add a <code>deploy</code> block to the app service to control replicas
+        and rolling updates:
+      </p>
 
-<pre><code>services:
+      <pre><code>services:
   app:
     image: myregistry/myapp:latest   # Swarm pulls from a registry, not `build:`
     deploy:
@@ -783,13 +2020,33 @@ docker stack deploy -c compose.yaml myapp
       - "8080:8080"
 </code></pre>
 
-<p><strong>What it does:</strong> Swarm runs 3 replicas of the app and spreads incoming requests across them via its built-in routing mesh — hitting any node's port 8080 reaches a healthy replica. <code>update_config</code> defines a <strong>rolling update</strong>: when you push a new image and re-run <code>docker stack deploy</code>, Swarm replaces replicas one at a time (<code>start-first</code> brings the new container up before killing the old), so the service stays available throughout. Note the switch from <code>build:</code> to <code>image:</code> — Swarm pulls a pre-built image from a registry, so your CI builds and pushes the image, and the stack file just references it.</p>
+      <p>
+        <strong>What it does:</strong> Swarm runs 3 replicas of the app and
+        spreads incoming requests across them via its built-in routing mesh —
+        hitting any node's port 8080 reaches a healthy replica.
+        <code>update_config</code> defines a <strong>rolling update</strong>:
+        when you push a new image and re-run <code>docker stack deploy</code>,
+        Swarm replaces replicas one at a time (<code>start-first</code> brings
+        the new container up before killing the old), so the service stays
+        available throughout. Note the switch from <code>build:</code> to
+        <code>image:</code> — Swarm pulls a pre-built image from a registry, so
+        your CI builds and pushes the image, and the stack file just references
+        it.
+      </p>
 
-<h3 id="4-traefik-reverse-proxy-automatic-https">4. Traefik — reverse proxy + automatic HTTPS</h3>
+      <h3 id="4-traefik-reverse-proxy-automatic-https">
+        4. Traefik — reverse proxy + automatic HTTPS
+      </h3>
 
-<p>You don't want to expose the app on port 8080 to the world, hand-manage TLS certificates, or reconfigure a proxy every time you scale. <strong>Traefik</strong> is a reverse proxy that discovers your containers automatically (via Docker labels), routes by hostname/path, and provisions Let's Encrypt certificates for you.</p>
+      <p>
+        You don't want to expose the app on port 8080 to the world, hand-manage
+        TLS certificates, or reconfigure a proxy every time you scale.
+        <strong>Traefik</strong> is a reverse proxy that discovers your
+        containers automatically (via Docker labels), routes by hostname/path,
+        and provisions Let's Encrypt certificates for you.
+      </p>
 
-<pre><code>services:
+      <pre><code>services:
   traefik:
     image: traefik:v3.1
     command:
@@ -827,37 +2084,109 @@ volumes:
   letsencrypt:
 </code></pre>
 
-<p><strong>What it does:</strong> Traefik mounts the Docker socket (read-only) to watch containers as they start and stop. Because the app carries <code>traefik.enable=true</code> and a <code>Host(...)</code> rule label, Traefik automatically creates a route: HTTPS requests for <code>app.example.com</code> are forwarded to the app's internal port 8080. The <code>certresolver=le</code> label triggers Traefik to obtain and renew a Let's Encrypt certificate for that hostname over the TLS challenge — no manual <code>certbot</code>. The app itself keeps serving plain HTTP on 8080 inside the network; Traefik terminates TLS at the edge. When you scale the app to multiple replicas (in Swarm), Traefik load-balances across them automatically because it discovers each one by its labels.</p>
+      <p>
+        <strong>What it does:</strong> Traefik mounts the Docker socket
+        (read-only) to watch containers as they start and stop. Because the app
+        carries <code>traefik.enable=true</code> and a
+        <code>Host(...)</code> rule label, Traefik automatically creates a
+        route: HTTPS requests for <code>app.example.com</code> are forwarded to
+        the app's internal port 8080. The <code>certresolver=le</code> label
+        triggers Traefik to obtain and renew a Let's Encrypt certificate for
+        that hostname over the TLS challenge — no manual <code>certbot</code>.
+        The app itself keeps serving plain HTTP on 8080 inside the network;
+        Traefik terminates TLS at the edge. When you scale the app to multiple
+        replicas (in Swarm), Traefik load-balances across them automatically
+        because it discovers each one by its labels.
+      </p>
 
-<h3 id="putting-it-together">Putting it together</h3>
+      <h3 id="putting-it-together">Putting it together</h3>
 
-<table>
-  <thead>
-    <tr><th>Tool</th><th>Solves</th><th>Use when</th></tr>
-  </thead>
-  <tbody>
-    <tr><td>Dockerfile</td><td>Reproducible, tiny runtime image</td><td>Always — the foundation for everything below</td></tr>
-    <tr><td>Docker Compose</td><td>App + DB + friends on one host</td><td>Local dev, and small single-server deployments</td></tr>
-    <tr><td>Docker Swarm</td><td>Replicas across a cluster, rolling updates</td><td>You've outgrown one host but don't want Kubernetes</td></tr>
-    <tr><td>Traefik</td><td>Reverse proxy, routing, automatic HTTPS</td><td>You need TLS and clean hostnames in front of it all</td></tr>
-  </tbody>
-</table>
+      <table>
+        <thead>
+          <tr>
+            <th>Tool</th>
+            <th>Solves</th>
+            <th>Use when</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Dockerfile</td>
+            <td>Reproducible, tiny runtime image</td>
+            <td>Always — the foundation for everything below</td>
+          </tr>
+          <tr>
+            <td>Docker Compose</td>
+            <td>App + DB + friends on one host</td>
+            <td>Local dev, and small single-server deployments</td>
+          </tr>
+          <tr>
+            <td>Docker Swarm</td>
+            <td>Replicas across a cluster, rolling updates</td>
+            <td>You've outgrown one host but don't want Kubernetes</td>
+          </tr>
+          <tr>
+            <td>Traefik</td>
+            <td>Reverse proxy, routing, automatic HTTPS</td>
+            <td>You need TLS and clean hostnames in front of it all</td>
+          </tr>
+        </tbody>
+      </table>
 
-<p>A common production shape for a small team: CI builds the multi-stage image and pushes it to a registry; a Swarm stack file references that image with <code>replicas</code> and a rolling <code>update_config</code>; and Traefik sits in front terminating TLS and routing by hostname. You get zero-downtime deploys, automatic certificates, and horizontal scaling with a handful of YAML files and no Kubernetes.</p>
+      <p>
+        A common production shape for a small team: CI builds the multi-stage
+        image and pushes it to a registry; a Swarm stack file references that
+        image with <code>replicas</code> and a rolling
+        <code>update_config</code>; and Traefik sits in front terminating TLS
+        and routing by hostname. You get zero-downtime deploys, automatic
+        certificates, and horizontal scaling with a handful of YAML files and no
+        Kubernetes.
+      </p>
 
-<h2 id="kubernetes-from-pods-to-a-real-deployment">Kubernetes: From Pods to a Real Deployment</h2>
+      <h2 id="kubernetes-from-pods-to-a-real-deployment">
+        Kubernetes: From Pods to a Real Deployment
+      </h2>
 
-<p>Docker Swarm is the easy on-ramp, but most companies run <strong>Kubernetes</strong> (often written "K8s" — K, then 8 letters, then s) in production. Kubernetes is a container orchestrator: you tell it the <em>desired state</em> ("I want 3 copies of this app running, reachable at this address"), and it continuously works to make reality match — restarting crashed containers, rescheduling them when a machine dies, and rolling out new versions without downtime. This section builds up from the smallest unit to a full deployment, assuming you've never touched K8s before.</p>
+      <p>
+        Docker Swarm is the easy on-ramp, but most companies run
+        <strong>Kubernetes</strong> (often written "K8s" — K, then 8 letters,
+        then s) in production. Kubernetes is a container orchestrator: you tell
+        it the <em>desired state</em> ("I want 3 copies of this app running,
+        reachable at this address"), and it continuously works to make reality
+        match — restarting crashed containers, rescheduling them when a machine
+        dies, and rolling out new versions without downtime. This section builds
+        up from the smallest unit to a full deployment, assuming you've never
+        touched K8s before.
+      </p>
 
-<h3 id="the-mental-model-desired-state-and-the-control-loop">The mental model: desired state and the control loop</h3>
+      <h3 id="the-mental-model-desired-state-and-the-control-loop">
+        The mental model: desired state and the control loop
+      </h3>
 
-<p>Everything in Kubernetes is an <strong>object</strong> you describe in YAML and submit to the cluster. The cluster's "control plane" runs controllers that constantly compare desired state (what your YAML says) against actual state (what's running) and act to close the gap. You almost never start containers by hand — you declare what you want and let Kubernetes maintain it. If you delete a running app container, Kubernetes notices it's one short of the desired count and starts a new one within seconds. That self-healing loop is the whole point.</p>
+      <p>
+        Everything in Kubernetes is an <strong>object</strong> you describe in
+        YAML and submit to the cluster. The cluster's "control plane" runs
+        controllers that constantly compare desired state (what your YAML says)
+        against actual state (what's running) and act to close the gap. You
+        almost never start containers by hand — you declare what you want and
+        let Kubernetes maintain it. If you delete a running app container,
+        Kubernetes notices it's one short of the desired count and starts a new
+        one within seconds. That self-healing loop is the whole point.
+      </p>
 
-<h3 id="1-pods-the-smallest-deployable-unit">1. Pods — the smallest deployable unit</h3>
+      <h3 id="1-pods-the-smallest-deployable-unit">
+        1. Pods — the smallest deployable unit
+      </h3>
 
-<p>A <strong>Pod</strong> is one or more containers that share a network address and storage, scheduled together on the same machine (node). For a typical web app, a Pod holds a single container: your Go binary. You rarely create Pods directly (a bare Pod isn't restarted if it dies), but understanding them is the foundation.</p>
+      <p>
+        A <strong>Pod</strong> is one or more containers that share a network
+        address and storage, scheduled together on the same machine (node). For
+        a typical web app, a Pod holds a single container: your Go binary. You
+        rarely create Pods directly (a bare Pod isn't restarted if it dies), but
+        understanding them is the foundation.
+      </p>
 
-<pre><code># pod.yaml — the simplest possible object (for learning; not for production)
+      <pre><code># pod.yaml — the simplest possible object (for learning; not for production)
 apiVersion: v1
 kind: Pod
 metadata:
@@ -872,7 +2201,7 @@ spec:
         - containerPort: 8080
 </code></pre>
 
-<pre><code># Apply it, then inspect.
+      <pre><code># Apply it, then inspect.
 kubectl apply -f pod.yaml
 kubectl get pods                     # STATUS should become Running
 kubectl logs myapp                   # view the container's stdout
@@ -880,13 +2209,28 @@ kubectl describe pod myapp           # events + why it's pending/crashing
 kubectl delete pod myapp             # gone for good — nothing restarts it
 </code></pre>
 
-<p><strong>What this shows:</strong> <code>kubectl</code> is the CLI that talks to the cluster. <code>apply -f</code> submits an object; Kubernetes schedules the Pod onto a node and pulls the image. The <code>labels</code> (<code>app: myapp</code>) are just tags — but they're how everything else finds this Pod later. The lesson: a bare Pod has no supervision, so we never ship them alone. That's what a Deployment is for.</p>
+      <p>
+        <strong>What this shows:</strong> <code>kubectl</code> is the CLI that
+        talks to the cluster. <code>apply -f</code> submits an object;
+        Kubernetes schedules the Pod onto a node and pulls the image. The
+        <code>labels</code> (<code>app: myapp</code>) are just tags — but
+        they're how everything else finds this Pod later. The lesson: a bare Pod
+        has no supervision, so we never ship them alone. That's what a
+        Deployment is for.
+      </p>
 
-<h3 id="2-deployments-self-healing-scaling-and-rolling-updates">2. Deployments — self-healing, scaling, and rolling updates</h3>
+      <h3 id="2-deployments-self-healing-scaling-and-rolling-updates">
+        2. Deployments — self-healing, scaling, and rolling updates
+      </h3>
 
-<p>A <strong>Deployment</strong> is the object you actually use. It manages a set of identical Pods for you: it keeps a target number running (self-healing), lets you scale that number up or down, and rolls out new image versions one Pod at a time with zero downtime.</p>
+      <p>
+        A <strong>Deployment</strong> is the object you actually use. It manages
+        a set of identical Pods for you: it keeps a target number running
+        (self-healing), lets you scale that number up or down, and rolls out new
+        image versions one Pod at a time with zero downtime.
+      </p>
 
-<pre><code># deployment.yaml
+      <pre><code># deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -927,7 +2271,7 @@ spec:
             periodSeconds: 5
 </code></pre>
 
-<pre><code>kubectl apply -f deployment.yaml
+      <pre><code>kubectl apply -f deployment.yaml
 kubectl get deployments            # READY should read 3/3
 kubectl get pods                   # 3 Pods, names like myapp-7d9f8c-abcde
 kubectl scale deployment myapp --replicas=5   # scale up on the fly
@@ -938,13 +2282,35 @@ kubectl rollout status deployment/myapp        # watch the rollout progress
 kubectl rollout undo deployment/myapp          # instant rollback if it goes wrong
 </code></pre>
 
-<p><strong>What this shows:</strong> the Deployment's <code>template</code> is a Pod blueprint; <code>replicas: 3</code> is the desired count. Kill a Pod (<code>kubectl delete pod myapp-...</code>) and the Deployment starts a replacement immediately — that's self-healing. The two <strong>probes</strong> matter a lot: the <code>readinessProbe</code> hitting your app's <code>/healthcheck</code> route tells Kubernetes when a new Pod is ready to receive traffic (so rollouts wait for it), and the <code>livenessProbe</code> restarts a hung container. <code>resources.requests</code> tells the scheduler how much to reserve; <code>limits</code> cap usage (blow past the memory limit and the container is OOM-killed and restarted). <code>rollout undo</code> is your safety net.</p>
+      <p>
+        <strong>What this shows:</strong> the Deployment's
+        <code>template</code> is a Pod blueprint; <code>replicas: 3</code> is
+        the desired count. Kill a Pod (<code>kubectl delete pod myapp-...</code
+        >) and the Deployment starts a replacement immediately — that's
+        self-healing. The two <strong>probes</strong> matter a lot: the
+        <code>readinessProbe</code> hitting your app's
+        <code>/healthcheck</code> route tells Kubernetes when a new Pod is ready
+        to receive traffic (so rollouts wait for it), and the
+        <code>livenessProbe</code> restarts a hung container.
+        <code>resources.requests</code> tells the scheduler how much to reserve;
+        <code>limits</code> cap usage (blow past the memory limit and the
+        container is OOM-killed and restarted). <code>rollout undo</code> is
+        your safety net.
+      </p>
 
-<h3 id="3-services-a-stable-address-for-a-moving-set-of-pods">3. Services — a stable address for a moving set of Pods</h3>
+      <h3 id="3-services-a-stable-address-for-a-moving-set-of-pods">
+        3. Services — a stable address for a moving set of Pods
+      </h3>
 
-<p>Pods are ephemeral — they get new IPs every time they restart or reschedule. A <strong>Service</strong> gives the set a single, stable virtual IP and DNS name, and load-balances across whichever Pods currently match its label selector. Other Pods reach your app by the Service name, not by chasing Pod IPs.</p>
+      <p>
+        Pods are ephemeral — they get new IPs every time they restart or
+        reschedule. A <strong>Service</strong> gives the set a single, stable
+        virtual IP and DNS name, and load-balances across whichever Pods
+        currently match its label selector. Other Pods reach your app by the
+        Service name, not by chasing Pod IPs.
+      </p>
 
-<pre><code># service.yaml
+      <pre><code># service.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -958,20 +2324,38 @@ spec:
   type: ClusterIP           # internal-only virtual IP (the default)
 </code></pre>
 
-<pre><code>kubectl apply -f service.yaml
+      <pre><code>kubectl apply -f service.yaml
 kubectl get service myapp
 # Inside the cluster, other Pods can now reach it at:
 #   http://myapp        (same namespace)
 #   http://myapp.default.svc.cluster.local   (fully-qualified)
 </code></pre>
 
-<p><strong>What this shows:</strong> the Service's <code>selector</code> (<code>app: myapp</code>) is the same label the Deployment stamps on its Pods — that's the glue connecting them. Any Pod in the cluster can now call <code>http://myapp</code> and Kubernetes' internal DNS + load balancer routes it to a healthy replica, regardless of how many there are or what IPs they have. <code>type: ClusterIP</code> keeps it internal; to expose it to the outside world you use an Ingress (next).</p>
+      <p>
+        <strong>What this shows:</strong> the Service's
+        <code>selector</code> (<code>app: myapp</code>) is the same label the
+        Deployment stamps on its Pods — that's the glue connecting them. Any Pod
+        in the cluster can now call <code>http://myapp</code> and Kubernetes'
+        internal DNS + load balancer routes it to a healthy replica, regardless
+        of how many there are or what IPs they have.
+        <code>type: ClusterIP</code> keeps it internal; to expose it to the
+        outside world you use an Ingress (next).
+      </p>
 
-<h3 id="4-ingress-routing-external-traffic-in-with-https">4. Ingress — routing external traffic in (with HTTPS)</h3>
+      <h3 id="4-ingress-routing-external-traffic-in-with-https">
+        4. Ingress — routing external traffic in (with HTTPS)
+      </h3>
 
-<p>A ClusterIP Service is only reachable inside the cluster. An <strong>Ingress</strong> is the K8s equivalent of the Traefik setup earlier: it routes external HTTP(S) requests by hostname/path to internal Services, and (with cert-manager) provisions TLS certificates. An "ingress controller" (nginx-ingress, or Traefik running as the controller) actually implements the rules.</p>
+      <p>
+        A ClusterIP Service is only reachable inside the cluster. An
+        <strong>Ingress</strong> is the K8s equivalent of the Traefik setup
+        earlier: it routes external HTTP(S) requests by hostname/path to
+        internal Services, and (with cert-manager) provisions TLS certificates.
+        An "ingress controller" (nginx-ingress, or Traefik running as the
+        controller) actually implements the rules.
+      </p>
 
-<pre><code># ingress.yaml
+      <pre><code># ingress.yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -996,13 +2380,27 @@ spec:
                   number: 80
 </code></pre>
 
-<p><strong>What this shows:</strong> external requests for <code>app.example.com</code> hit the ingress controller, which forwards them to the internal <code>myapp</code> Service on port 80, which load-balances to the Pods. The <code>cert-manager</code> annotation triggers automatic Let's Encrypt certificates stored in the <code>myapp-tls</code> Secret — same outcome as Traefik's ACME resolver, expressed the Kubernetes way. This is the full path: internet → Ingress → Service → Pod → your Go binary.</p>
+      <p>
+        <strong>What this shows:</strong> external requests for
+        <code>app.example.com</code> hit the ingress controller, which forwards
+        them to the internal <code>myapp</code> Service on port 80, which
+        load-balances to the Pods. The <code>cert-manager</code> annotation
+        triggers automatic Let's Encrypt certificates stored in the
+        <code>myapp-tls</code> Secret — same outcome as Traefik's ACME resolver,
+        expressed the Kubernetes way. This is the full path: internet → Ingress
+        → Service → Pod → your Go binary.
+      </p>
 
-<h3 id="5-config-and-secrets">5. Config and secrets</h3>
+      <h3 id="5-config-and-secrets">5. Config and secrets</h3>
 
-<p>Never bake config or credentials into your image. Kubernetes has two objects for this: <strong>ConfigMap</strong> for non-secret config and <strong>Secret</strong> for sensitive values. You mount them as environment variables (or files) into your Pods.</p>
+      <p>
+        Never bake config or credentials into your image. Kubernetes has two
+        objects for this: <strong>ConfigMap</strong> for non-secret config and
+        <strong>Secret</strong> for sensitive values. You mount them as
+        environment variables (or files) into your Pods.
+      </p>
 
-<pre><code># config.yaml
+      <pre><code># config.yaml
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -1021,17 +2419,27 @@ stringData:                # stringData is auto-base64-encoded for you
   DATABASE_URL: "user:password@tcp(mysql:3306)/myapp?parseTime=true"
 </code></pre>
 
-<pre><code># In the Deployment's container spec, pull them all in as env vars:
+      <pre><code># In the Deployment's container spec, pull them all in as env vars:
           envFrom:
             - configMapRef: { name: myapp-config }
             - secretRef:    { name: myapp-secrets }
 </code></pre>
 
-<p><strong>What this shows:</strong> config lives outside the image, so the same image runs unchanged in dev, staging, and prod — only the ConfigMap/Secret differ. <code>envFrom</code> injects every key as an environment variable your Go app reads with <code>os.Getenv</code>. Secrets are namespaced and access-controlled (in production, back them with a real secrets manager or sealed-secrets — plain Secrets are only base64-encoded, not encrypted at rest by default).</p>
+      <p>
+        <strong>What this shows:</strong> config lives outside the image, so the
+        same image runs unchanged in dev, staging, and prod — only the
+        ConfigMap/Secret differ. <code>envFrom</code> injects every key as an
+        environment variable your Go app reads with <code>os.Getenv</code>.
+        Secrets are namespaced and access-controlled (in production, back them
+        with a real secrets manager or sealed-secrets — plain Secrets are only
+        base64-encoded, not encrypted at rest by default).
+      </p>
 
-<h3 id="6-putting-it-all-together-the-deploy-workflow">6. Putting it all together — the deploy workflow</h3>
+      <h3 id="6-putting-it-all-together-the-deploy-workflow">
+        6. Putting it all together — the deploy workflow
+      </h3>
 
-<pre><code># 1. Build and push the image (your CI does this on every merge).
+      <pre><code># 1. Build and push the image (your CI does this on every merge).
 docker build -t myregistry/myapp:1.0.0 .
 docker push myregistry/myapp:1.0.0
 
@@ -1059,48 +2467,102 @@ kubectl exec -it &lt;pod-name&gt; -- sh          # shell into a running containe
 kubectl get events --sort-by=.lastTimestamp
 </code></pre>
 
-<h3 id="object-cheat-sheet">Object cheat sheet</h3>
+      <h3 id="object-cheat-sheet">Object cheat sheet</h3>
 
-<table>
-  <thead>
-    <tr><th>Object</th><th>What it is</th><th>Analogy</th></tr>
-  </thead>
-  <tbody>
-    <tr><td>Pod</td><td>One or more co-located containers (usually one)</td><td>A single running instance</td></tr>
-    <tr><td>Deployment</td><td>Keeps N identical Pods running; rolling updates</td><td>A supervisor / autoscaler</td></tr>
-    <tr><td>Service</td><td>Stable IP + DNS that load-balances to matching Pods</td><td>An internal load balancer</td></tr>
-    <tr><td>Ingress</td><td>Routes external HTTP(S) by host/path to Services</td><td>The front door + reverse proxy</td></tr>
-    <tr><td>ConfigMap / Secret</td><td>Config and credentials injected as env/files</td><td>An .env file, but cluster-managed</td></tr>
-    <tr><td>Namespace</td><td>A virtual cluster for isolating teams/envs</td><td>A folder / tenant</td></tr>
-  </tbody>
-</table>
+      <table>
+        <thead>
+          <tr>
+            <th>Object</th>
+            <th>What it is</th>
+            <th>Analogy</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Pod</td>
+            <td>One or more co-located containers (usually one)</td>
+            <td>A single running instance</td>
+          </tr>
+          <tr>
+            <td>Deployment</td>
+            <td>Keeps N identical Pods running; rolling updates</td>
+            <td>A supervisor / autoscaler</td>
+          </tr>
+          <tr>
+            <td>Service</td>
+            <td>Stable IP + DNS that load-balances to matching Pods</td>
+            <td>An internal load balancer</td>
+          </tr>
+          <tr>
+            <td>Ingress</td>
+            <td>Routes external HTTP(S) by host/path to Services</td>
+            <td>The front door + reverse proxy</td>
+          </tr>
+          <tr>
+            <td>ConfigMap / Secret</td>
+            <td>Config and credentials injected as env/files</td>
+            <td>An .env file, but cluster-managed</td>
+          </tr>
+          <tr>
+            <td>Namespace</td>
+            <td>A virtual cluster for isolating teams/envs</td>
+            <td>A folder / tenant</td>
+          </tr>
+        </tbody>
+      </table>
 
-<h3 id="docker-vs-kubernetes-when-to-reach-for-which">Docker vs Kubernetes — when to reach for which</h3>
+      <h3 id="docker-vs-kubernetes-when-to-reach-for-which">
+        Docker vs Kubernetes — when to reach for which
+      </h3>
 
-<p>Docker <em>builds and runs</em> a container. Kubernetes <em>orchestrates</em> many containers across many machines. You always need Docker (or a compatible image builder) to produce the image; Kubernetes is the layer above that decides where images run, keeps them healthy, scales them, and networks them. For a hobby project or a single server, Docker Compose is plenty. When you need multiple machines, self-healing, zero-downtime rollouts, and horizontal scaling across a team, that's where Kubernetes earns its complexity. A good learning path is exactly this section's order: run the image with <code>docker run</code>, wire services with Compose, then graduate to Pods → Deployments → Services → Ingress on a local cluster like <a href="https://kind.sigs.k8s.io/">kind</a> or <a href="https://minikube.sigs.k8s.io/">minikube</a> before touching a real cloud cluster.</p>
+      <p>
+        Docker <em>builds and runs</em> a container. Kubernetes
+        <em>orchestrates</em> many containers across many machines. You always
+        need Docker (or a compatible image builder) to produce the image;
+        Kubernetes is the layer above that decides where images run, keeps them
+        healthy, scales them, and networks them. For a hobby project or a single
+        server, Docker Compose is plenty. When you need multiple machines,
+        self-healing, zero-downtime rollouts, and horizontal scaling across a
+        team, that's where Kubernetes earns its complexity. A good learning path
+        is exactly this section's order: run the image with
+        <code>docker run</code>, wire services with Compose, then graduate to
+        Pods → Deployments → Services → Ingress on a local cluster like
+        <a href="https://kind.sigs.k8s.io/">kind</a> or
+        <a href="https://minikube.sigs.k8s.io/">minikube</a> before touching a
+        real cloud cluster.
+      </p>
 
-<blockquote>Start local: install <code>kind</code> (<code>kind create cluster</code>) or <code>minikube</code> (<code>minikube start</code>), point <code>kubectl</code> at it, and apply the manifests above. Everything here runs on your laptop first — break things safely, then move to a managed cluster (EKS, GKE, AKS) once the workflow is muscle memory.</blockquote>
-
-
-</div>
-<a href="https://go.dev/play/" target="_blank" class="playground-float">▶ Go Playground</a>
-<a href="#" class="toc-back">&#8593; Top</a>
-<script>
-document.querySelectorAll('pre').forEach(function(pre) {
-  var btn = document.createElement('button');
-  btn.className = 'copy-btn';
-  btn.textContent = 'Copy';
-  btn.addEventListener('click', function() {
-    var code = pre.querySelector('code');
-    var text = code ? code.textContent : pre.textContent;
-    navigator.clipboard.writeText(text).then(function() {
-      btn.textContent = 'Copied!';
-      btn.classList.add('copied');
-      setTimeout(function() { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
-    });
-  });
-  pre.appendChild(btn);
-});
-</script>
-</body>
+      <blockquote>
+        Start local: install <code>kind</code> (<code>kind create cluster</code
+        >) or <code>minikube</code> (<code>minikube start</code>), point
+        <code>kubectl</code> at it, and apply the manifests above. Everything
+        here runs on your laptop first — break things safely, then move to a
+        managed cluster (EKS, GKE, AKS) once the workflow is muscle memory.
+      </blockquote>
+    </div>
+    <a href="https://go.dev/play/" target="_blank" class="playground-float"
+      >▶ Go Playground</a
+    >
+    <a href="#" class="toc-back">&#8593; Top</a>
+    <script>
+      document.querySelectorAll("pre").forEach(function (pre) {
+        var btn = document.createElement("button");
+        btn.className = "copy-btn";
+        btn.textContent = "Copy";
+        btn.addEventListener("click", function () {
+          var code = pre.querySelector("code");
+          var text = code ? code.textContent : pre.textContent;
+          navigator.clipboard.writeText(text).then(function () {
+            btn.textContent = "Copied!";
+            btn.classList.add("copied");
+            setTimeout(function () {
+              btn.textContent = "Copy";
+              btn.classList.remove("copied");
+            }, 2000);
+          });
+        });
+        pre.appendChild(btn);
+      });
+    </script>
+  </body>
 </html>

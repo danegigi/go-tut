@@ -1,74 +1,318 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>admin-v2 Tutorial — Go · Gin · templ · sqlx · Datastar · Tailwind · Playwright</title>
-<style>
-:root{--bg:#0f1117;--surface:#1a1d27;--border:#2d3148;--text:#e2e4f0;--muted:#8b8fa8;--accent:#7c87ff;--code-bg:#1e2130;}
-*{box-sizing:border-box;margin:0;padding:0;}
-html{scroll-behavior:smooth;}
-body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:15px;line-height:1.75;}
-.container{max-width:920px;margin:0 auto;padding:56px 36px 96px;}
-h1{font-size:2.1rem;font-weight:700;color:#fff;margin-bottom:10px;line-height:1.2;scroll-margin-top:24px;}
-h2{font-size:1.35rem;font-weight:600;color:var(--accent);margin:52px 0 16px;padding-bottom:10px;border-bottom:1px solid var(--border);scroll-margin-top:24px;}
-h3{font-size:1.05rem;font-weight:600;color:#c5caff;margin:36px 0 12px;scroll-margin-top:24px;}
-h4{font-size:0.85rem;font-weight:600;color:var(--muted);margin:24px 0 8px;text-transform:uppercase;letter-spacing:.07em;scroll-margin-top:24px;}
-p{margin-bottom:16px;color:#cdd0e0;}
-a{color:var(--accent);text-decoration:none;}a:hover{text-decoration:underline;}
-code{background:#252836;color:#c5caff;padding:2px 7px;border-radius:4px;font-family:"JetBrains Mono","Fira Code",monospace;font-size:0.85em;}
-pre{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;padding:22px 26px;overflow-x:auto;margin:20px 0;}
-pre code{background:none;padding:0;color:#dde1f7;font-size:0.87em;line-height:1.65;}
-table{width:100%;border-collapse:collapse;margin:24px 0;font-size:0.9em;}
-th{background:#252836;color:var(--accent);text-align:left;padding:11px 15px;font-weight:600;font-size:0.78em;text-transform:uppercase;letter-spacing:.06em;border-bottom:2px solid var(--border);}
-td{padding:10px 15px;border-bottom:1px solid var(--border);color:#cdd0e0;vertical-align:top;}
-tr:hover td{background:rgba(124,135,255,.05);}
-ul,ol{padding-left:26px;margin-bottom:16px;}
-li{margin-bottom:7px;color:#cdd0e0;}
-blockquote{border-left:3px solid var(--accent);margin:20px 0;padding:14px 22px;background:rgba(124,135,255,.07);color:var(--muted);border-radius:0 7px 7px 0;}
-hr{border:none;border-top:1px solid var(--border);margin:52px 0;}
-.toc-back{position:fixed;bottom:24px;right:24px;background:var(--accent);color:#fff;padding:10px 14px;border-radius:8px;font-size:0.8rem;box-shadow:0 4px 12px rgba(0,0,0,.4);opacity:.85;}
-.toc-back:hover{opacity:1;text-decoration:none;}
-</style>
-</head>
-<body>
-<nav style="position:sticky;top:0;z-index:10;background:rgba(15,17,23,.9);backdrop-filter:blur(8px);border-bottom:1px solid #2d3148;padding:12px 24px;display:flex;align-items:center;gap:16px;">
-  <a href="index.html" style="color:#7c87ff;text-decoration:none;font-weight:600;font-size:0.9rem;">&#8592; Home</a>
-  <span style="color:#8b8fa8;font-size:0.85rem;">Full-Stack Tutorial</span>
-</nav>
-<div class="container">
-<h1 id="building-a-full-stack-go-admin-panel">Building a Full-Stack Go Admin Panel</h1>
-<h2 id="go--gin--templ--sqlx--datastar--tailwind-css--air">Go · Gin · templ · sqlx · Datastar · Tailwind CSS · air</h2>
-<p>This tutorial walks through the architecture of a server-rendered Go admin panel — a real, working application built with Gin, templ, Datastar, and Tailwind CSS.</p>
-<p>It is written for <strong>beginner to mid-level developers</strong>. If you know what a web server does but haven&#39;t built one in Go, this tutorial will teach you the patterns. If you&#39;re coming from Node.js, Django, or Rails, you&#39;ll find direct comparisons throughout. Advanced readers will find deeper explanations in later sections.</p>
-<hr>
-<h2 id="table-of-contents">Table of contents</h2>
-<ol>
-<li><a href="#1-the-big-picture-how-a-request-becomes-a-web-page">The big picture: how a request becomes a web page</a></li>
-<li><a href="#2-the-stack-and-why">The stack and why</a></li>
-<li><a href="#3-project-layout--why-files-live-where-they-do">Project layout — why files live where they do</a></li>
-<li><a href="#4-maingo--the-applications-front-door">main.go — the application&#39;s front door</a></li>
-<li><a href="#5-models--what-your-data-looks-like-in-go">models — what your data looks like in Go</a></li>
-<li><a href="#6-store--talking-to-the-database">store — talking to the database</a></li>
-<li><a href="#7-routes--the-url-map">routes — the URL map</a></li>
-<li><a href="#8-handlers--what-happens-when-a-url-is-hit">handlers — what happens when a URL is hit</a></li>
-<li><a href="#9-pages-templ--turning-data-into-html">pages (templ) — turning data into HTML</a></li>
-<li><a href="#10-layouts--the-shared-shell-around-every-page">layouts — the shared shell around every page</a></li>
-<li><a href="#11-middleware--code-that-runs-before-your-handler">middleware — code that runs before your handler</a></li>
-<li><a href="#12-authentication-session-cookies--jwt">Authentication: session cookies + JWT</a></li>
-<li><a href="#13-reactive-ui-with-datastar">Reactive UI with Datastar</a></li>
-<li><a href="#14-styling-with-tailwind-css-v3">Styling with Tailwind CSS v3</a></li>
-<li><a href="#15-live-reload-with-air">Live reload with air</a></li>
-<li><a href="#16-the-build-pipeline-makefile">The build pipeline (Makefile)</a></li>
-<li><a href="#17-end-to-end-walkthrough-the-accounts-list">End-to-end walkthrough: the accounts list</a></li>
-<li><a href="#18-patterns-and-tradeoffs">Patterns and tradeoffs</a></li>
-<li><a href="#19-performance-skeleton-first-pages--parallel-queries">Performance: skeleton-first pages + parallel queries</a></li>
-<li><a href="#20-end-to-end-testing-with-playwright">End-to-end testing with Playwright</a></li>
-</ol>
-<hr>
-<h2 id="1-the-big-picture-how-a-request-becomes-a-web-page">1. The big picture: how a request becomes a web page</h2>
-<p>Before looking at any code, understand the flow. Every HTTP request the browser makes follows this path:</p>
-<pre><code>Browser sends: GET /accounts?q=john
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>
+      admin-v2 Tutorial — Go · Gin · templ · sqlx · Datastar · Tailwind ·
+      Playwright
+    </title>
+    <style>
+      :root {
+        --bg: #0f1117;
+        --surface: #1a1d27;
+        --border: #2d3148;
+        --text: #e2e4f0;
+        --muted: #8b8fa8;
+        --accent: #7c87ff;
+        --code-bg: #1e2130;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 15px;
+        line-height: 1.75;
+      }
+      .container {
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 56px 36px 96px;
+      }
+      h1 {
+        font-size: 2.1rem;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 10px;
+        line-height: 1.2;
+        scroll-margin-top: 24px;
+      }
+      h2 {
+        font-size: 1.35rem;
+        font-weight: 600;
+        color: var(--accent);
+        margin: 52px 0 16px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--border);
+        scroll-margin-top: 24px;
+      }
+      h3 {
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: #c5caff;
+        margin: 36px 0 12px;
+        scroll-margin-top: 24px;
+      }
+      h4 {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--muted);
+        margin: 24px 0 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        scroll-margin-top: 24px;
+      }
+      p {
+        margin-bottom: 16px;
+        color: #cdd0e0;
+      }
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      code {
+        background: #252836;
+        color: #c5caff;
+        padding: 2px 7px;
+        border-radius: 4px;
+        font-family: "JetBrains Mono", "Fira Code", monospace;
+        font-size: 0.85em;
+      }
+      pre {
+        background: var(--code-bg);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 22px 26px;
+        overflow-x: auto;
+        margin: 20px 0;
+      }
+      pre code {
+        background: none;
+        padding: 0;
+        color: #dde1f7;
+        font-size: 0.87em;
+        line-height: 1.65;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 24px 0;
+        font-size: 0.9em;
+      }
+      th {
+        background: #252836;
+        color: var(--accent);
+        text-align: left;
+        padding: 11px 15px;
+        font-weight: 600;
+        font-size: 0.78em;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        border-bottom: 2px solid var(--border);
+      }
+      td {
+        padding: 10px 15px;
+        border-bottom: 1px solid var(--border);
+        color: #cdd0e0;
+        vertical-align: top;
+      }
+      tr:hover td {
+        background: rgba(124, 135, 255, 0.05);
+      }
+      ul,
+      ol {
+        padding-left: 26px;
+        margin-bottom: 16px;
+      }
+      li {
+        margin-bottom: 7px;
+        color: #cdd0e0;
+      }
+      blockquote {
+        border-left: 3px solid var(--accent);
+        margin: 20px 0;
+        padding: 14px 22px;
+        background: rgba(124, 135, 255, 0.07);
+        color: var(--muted);
+        border-radius: 0 7px 7px 0;
+      }
+      hr {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 52px 0;
+      }
+      .toc-back {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background: var(--accent);
+        color: #fff;
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        opacity: 0.85;
+      }
+      .toc-back:hover {
+        opacity: 1;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <nav
+      style="
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: rgba(15, 17, 23, 0.9);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid #2d3148;
+        padding: 12px 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      "
+    >
+      <a
+        href="index.html"
+        style="
+          color: #7c87ff;
+          text-decoration: none;
+          font-weight: 600;
+          font-size: 0.9rem;
+        "
+        >&#8592; Home</a
+      >
+      <span style="color: #8b8fa8; font-size: 0.85rem"
+        >Full-Stack Tutorial</span
+      >
+    </nav>
+    <div class="container">
+      <h1 id="building-a-full-stack-go-admin-panel">
+        Building a Full-Stack Go Admin Panel
+      </h1>
+      <h2 id="go--gin--templ--sqlx--datastar--tailwind-css--air">
+        Go · Gin · templ · sqlx · Datastar · Tailwind CSS · air
+      </h2>
+      <p>
+        This tutorial walks through the architecture of a server-rendered Go
+        admin panel — a real, working application built with Gin, templ,
+        Datastar, and Tailwind CSS.
+      </p>
+      <p>
+        It is written for <strong>beginner to mid-level developers</strong>. If
+        you know what a web server does but haven&#39;t built one in Go, this
+        tutorial will teach you the patterns. If you&#39;re coming from Node.js,
+        Django, or Rails, you&#39;ll find direct comparisons throughout.
+        Advanced readers will find deeper explanations in later sections.
+      </p>
+      <hr />
+      <h2 id="table-of-contents">Table of contents</h2>
+      <ol>
+        <li>
+          <a href="#1-the-big-picture-how-a-request-becomes-a-web-page"
+            >The big picture: how a request becomes a web page</a
+          >
+        </li>
+        <li><a href="#2-the-stack-and-why">The stack and why</a></li>
+        <li>
+          <a href="#3-project-layout--why-files-live-where-they-do"
+            >Project layout — why files live where they do</a
+          >
+        </li>
+        <li>
+          <a href="#4-maingo--the-applications-front-door"
+            >main.go — the application&#39;s front door</a
+          >
+        </li>
+        <li>
+          <a href="#5-models--what-your-data-looks-like-in-go"
+            >models — what your data looks like in Go</a
+          >
+        </li>
+        <li>
+          <a href="#6-store--talking-to-the-database"
+            >store — talking to the database</a
+          >
+        </li>
+        <li><a href="#7-routes--the-url-map">routes — the URL map</a></li>
+        <li>
+          <a href="#8-handlers--what-happens-when-a-url-is-hit"
+            >handlers — what happens when a URL is hit</a
+          >
+        </li>
+        <li>
+          <a href="#9-pages-templ--turning-data-into-html"
+            >pages (templ) — turning data into HTML</a
+          >
+        </li>
+        <li>
+          <a href="#10-layouts--the-shared-shell-around-every-page"
+            >layouts — the shared shell around every page</a
+          >
+        </li>
+        <li>
+          <a href="#11-middleware--code-that-runs-before-your-handler"
+            >middleware — code that runs before your handler</a
+          >
+        </li>
+        <li>
+          <a href="#12-authentication-session-cookies--jwt"
+            >Authentication: session cookies + JWT</a
+          >
+        </li>
+        <li>
+          <a href="#13-reactive-ui-with-datastar">Reactive UI with Datastar</a>
+        </li>
+        <li>
+          <a href="#14-styling-with-tailwind-css-v3"
+            >Styling with Tailwind CSS v3</a
+          >
+        </li>
+        <li><a href="#15-live-reload-with-air">Live reload with air</a></li>
+        <li>
+          <a href="#16-the-build-pipeline-makefile"
+            >The build pipeline (Makefile)</a
+          >
+        </li>
+        <li>
+          <a href="#17-end-to-end-walkthrough-the-accounts-list"
+            >End-to-end walkthrough: the accounts list</a
+          >
+        </li>
+        <li><a href="#18-patterns-and-tradeoffs">Patterns and tradeoffs</a></li>
+        <li>
+          <a href="#19-performance-skeleton-first-pages--parallel-queries"
+            >Performance: skeleton-first pages + parallel queries</a
+          >
+        </li>
+        <li>
+          <a href="#20-end-to-end-testing-with-playwright"
+            >End-to-end testing with Playwright</a
+          >
+        </li>
+      </ol>
+      <hr />
+      <h2 id="1-the-big-picture-how-a-request-becomes-a-web-page">
+        1. The big picture: how a request becomes a web page
+      </h2>
+      <p>
+        Before looking at any code, understand the flow. Every HTTP request the
+        browser makes follows this path:
+      </p>
+      <pre><code>Browser sends: GET /accounts?q=john
         │
         ▼
    Gin router  (routes.go)
@@ -93,53 +337,82 @@ hr{border:none;border-top:1px solid var(--border);margin:52px 0;}
         ▼
 Browser receives: full HTML page
 </code></pre>
-<p>Each box is a separate file (or small group of files). This separation is deliberate — each layer has <strong>one job</strong>, and you can change it without touching the others. A database query change stays in the store. A visual change stays in the templ file. A new URL stays in routes.go.</p>
-<p>This is called <strong>separation of concerns</strong> and it&#39;s why codebases don&#39;t turn into spaghetti as they grow.</p>
-<hr>
-<h2 id="2-the-stack-and-why">2. The stack and why</h2>
-<table>
-<thead>
-<tr>
-<th>Concern</th>
-<th>Choice</th>
-<th>What it replaces / comparison</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>HTTP routing</td>
-<td>Gin</td>
-<td>Like Express.js for Go — handles routing, params, middleware</td>
-</tr>
-<tr>
-<td>HTML templates</td>
-<td>templ</td>
-<td>Like JSX but compiled to Go — type-safe, no runtime errors from bad data</td>
-</tr>
-<tr>
-<td>Database</td>
-<td>sqlx + raw SQL</td>
-<td>Like <code>node-postgres</code> — write SQL yourself, auto-scans results into structs</td>
-</tr>
-<tr>
-<td>Reactivity</td>
-<td>Datastar</td>
-<td>Like HTMX — HTML attributes drive fetch/update, no JavaScript written</td>
-</tr>
-<tr>
-<td>CSS</td>
-<td>Tailwind v3</td>
-<td>Same as in any React/Next.js project</td>
-</tr>
-<tr>
-<td>Live reload</td>
-<td>air</td>
-<td>Like nodemon for Go</td>
-</tr>
-</tbody></table>
-<p>The guiding principle: <strong>no magic</strong>. Every layer is transparent. The SQL queries are strings you can paste into a MySQL console. The HTML output is Go code you can read and debug. The &quot;reactivity&quot; is a 14 KB script tag — not a compiled JS bundle.</p>
-<hr>
-<h2 id="3-project-layout--why-files-live-where-they-do">3. Project layout — why files live where they do</h2>
-<pre><code>v2/
+      <p>
+        Each box is a separate file (or small group of files). This separation
+        is deliberate — each layer has <strong>one job</strong>, and you can
+        change it without touching the others. A database query change stays in
+        the store. A visual change stays in the templ file. A new URL stays in
+        routes.go.
+      </p>
+      <p>
+        This is called <strong>separation of concerns</strong> and it&#39;s why
+        codebases don&#39;t turn into spaghetti as they grow.
+      </p>
+      <hr />
+      <h2 id="2-the-stack-and-why">2. The stack and why</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Concern</th>
+            <th>Choice</th>
+            <th>What it replaces / comparison</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>HTTP routing</td>
+            <td>Gin</td>
+            <td>
+              Like Express.js for Go — handles routing, params, middleware
+            </td>
+          </tr>
+          <tr>
+            <td>HTML templates</td>
+            <td>templ</td>
+            <td>
+              Like JSX but compiled to Go — type-safe, no runtime errors from
+              bad data
+            </td>
+          </tr>
+          <tr>
+            <td>Database</td>
+            <td>sqlx + raw SQL</td>
+            <td>
+              Like <code>node-postgres</code> — write SQL yourself, auto-scans
+              results into structs
+            </td>
+          </tr>
+          <tr>
+            <td>Reactivity</td>
+            <td>Datastar</td>
+            <td>
+              Like HTMX — HTML attributes drive fetch/update, no JavaScript
+              written
+            </td>
+          </tr>
+          <tr>
+            <td>CSS</td>
+            <td>Tailwind v3</td>
+            <td>Same as in any React/Next.js project</td>
+          </tr>
+          <tr>
+            <td>Live reload</td>
+            <td>air</td>
+            <td>Like nodemon for Go</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        The guiding principle: <strong>no magic</strong>. Every layer is
+        transparent. The SQL queries are strings you can paste into a MySQL
+        console. The HTML output is Go code you can read and debug. The
+        &quot;reactivity&quot; is a 14 KB script tag — not a compiled JS bundle.
+      </p>
+      <hr />
+      <h2 id="3-project-layout--why-files-live-where-they-do">
+        3. Project layout — why files live where they do
+      </h2>
+      <pre><code>v2/
 ├── cmd/server/main.go         ← Start here — the entry point
 ├── internal/
 │   ├── models/models.go       ← Data shapes (Go structs)
@@ -176,24 +449,51 @@ Browser receives: full HTML page
 ├── Makefile                   ← Build commands
 └── tailwind.config.js
 </code></pre>
-<h3 id="why-internal">Why <code>internal/</code>?</h3>
-<p>Go has a built-in rule: packages inside an <code>internal/</code> directory can only be imported by code in the <strong>same module</strong>. This means no other Go project can accidentally import your <code>store</code> or <code>models</code> packages. It&#39;s a compiler-enforced boundary that keeps the codebase from becoming entangled with outside code.</p>
-<h3 id="why-cmdserver">Why <code>cmd/server/</code>?</h3>
-<p>The <code>cmd/</code> directory is a Go convention for executable entry points. If you later add a second binary — a CLI tool or a background worker — it gets its own <code>cmd/worker/main.go</code>. Each sub-directory under <code>cmd/</code> produces one binary. Shared business logic stays in <code>internal/</code> and is reused by all of them.</p>
-<h3 id="why-split-handlers-into-multiple-files">Why split handlers into multiple files?</h3>
-<p>All files in <code>handlers/</code> belong to the same <code>handlers</code> package. Splitting by domain (accounts, affiliates, labels) keeps each file focused on one area. When you&#39;re working on account logic, you open <code>accounts_handler.go</code> — you don&#39;t wade through 800 lines of unrelated code.</p>
-<hr>
-<h2 id="4-maingo--the-applications-front-door">4. main.go — the application&#39;s front door</h2>
-<p><code>main.go</code> is the only file that directly touches everything. It&#39;s the glue. Its job is to:</p>
-<ol>
-<li>Load configuration (environment variables)</li>
-<li>Connect to the database</li>
-<li>Build all the stores</li>
-<li>Build the handler (injecting the stores into it)</li>
-<li>Set up the router and its middleware</li>
-<li>Start the server</li>
-</ol>
-<pre><code class="language-go">// cmd/server/main.go
+      <h3 id="why-internal">Why <code>internal/</code>?</h3>
+      <p>
+        Go has a built-in rule: packages inside an
+        <code>internal/</code> directory can only be imported by code in the
+        <strong>same module</strong>. This means no other Go project can
+        accidentally import your <code>store</code> or
+        <code>models</code> packages. It&#39;s a compiler-enforced boundary that
+        keeps the codebase from becoming entangled with outside code.
+      </p>
+      <h3 id="why-cmdserver">Why <code>cmd/server/</code>?</h3>
+      <p>
+        The <code>cmd/</code> directory is a Go convention for executable entry
+        points. If you later add a second binary — a CLI tool or a background
+        worker — it gets its own <code>cmd/worker/main.go</code>. Each
+        sub-directory under <code>cmd/</code> produces one binary. Shared
+        business logic stays in <code>internal/</code> and is reused by all of
+        them.
+      </p>
+      <h3 id="why-split-handlers-into-multiple-files">
+        Why split handlers into multiple files?
+      </h3>
+      <p>
+        All files in <code>handlers/</code> belong to the same
+        <code>handlers</code> package. Splitting by domain (accounts,
+        affiliates, labels) keeps each file focused on one area. When you&#39;re
+        working on account logic, you open <code>accounts_handler.go</code> —
+        you don&#39;t wade through 800 lines of unrelated code.
+      </p>
+      <hr />
+      <h2 id="4-maingo--the-applications-front-door">
+        4. main.go — the application&#39;s front door
+      </h2>
+      <p>
+        <code>main.go</code> is the only file that directly touches everything.
+        It&#39;s the glue. Its job is to:
+      </p>
+      <ol>
+        <li>Load configuration (environment variables)</li>
+        <li>Connect to the database</li>
+        <li>Build all the stores</li>
+        <li>Build the handler (injecting the stores into it)</li>
+        <li>Set up the router and its middleware</li>
+        <li>Start the server</li>
+      </ol>
+      <pre><code class="language-go">// cmd/server/main.go
 func main() {
     // 1. Load .env file into environment variables.
     //    If there&#39;s no .env file, reads from the process environment (correct for production).
@@ -238,27 +538,62 @@ func main() {
     r.Run(&quot;:&quot; + port)
 }
 </code></pre>
-<h3 id="why-is-maingo-so-short">Why is main.go so short?</h3>
-<p>Intentionally. <code>main.go</code> does construction, not logic. It creates things and wires them together. All actual business logic lives in <code>internal/</code>. This makes it easy to read and the dependencies are explicit — you can see at a glance what the application needs to start.</p>
-<h3 id="what-is-dependency-injection">What is dependency injection?</h3>
-<p>When <code>handlers.New(handlers.Deps{...})</code> is called, the stores are <strong>injected</strong> into the handler. The handler doesn&#39;t create its own database connection — it receives one from the caller. This is dependency injection (DI).</p>
-<p>Why does it matter?</p>
-<ul>
-<li>In tests, you can pass a fake store instead of a real database</li>
-<li>In <code>main.go</code>, you can see exactly what each part of the app needs to function</li>
-<li>No hidden global state that causes surprises</li>
-</ul>
-<h3 id="gindefault-vs-ginnew"><code>gin.Default()</code> vs <code>gin.New()</code></h3>
-<p><code>gin.Default()</code> includes two built-in middleware automatically:</p>
-<ul>
-<li><strong>Logger</strong> — prints every request to stdout: <code>GET /accounts 200 1.2ms</code></li>
-<li><strong>Recovery</strong> — catches panics and returns a 500 error instead of crashing the server</li>
-</ul>
-<p><code>gin.New()</code> starts completely bare. Use <code>gin.Default()</code> for development; in production swap the logger for a structured one (e.g. <code>zap</code>).</p>
-<hr>
-<h2 id="5-models--what-your-data-looks-like-in-go">5. models — what your data looks like in Go</h2>
-<p>Models are plain Go structs that mirror your database tables. No methods, no active record pattern — just data containers. They live in <code>internal/models/models.go</code>.</p>
-<pre><code class="language-go">type User struct {
+      <h3 id="why-is-maingo-so-short">Why is main.go so short?</h3>
+      <p>
+        Intentionally. <code>main.go</code> does construction, not logic. It
+        creates things and wires them together. All actual business logic lives
+        in <code>internal/</code>. This makes it easy to read and the
+        dependencies are explicit — you can see at a glance what the application
+        needs to start.
+      </p>
+      <h3 id="what-is-dependency-injection">What is dependency injection?</h3>
+      <p>
+        When <code>handlers.New(handlers.Deps{...})</code> is called, the stores
+        are <strong>injected</strong> into the handler. The handler doesn&#39;t
+        create its own database connection — it receives one from the caller.
+        This is dependency injection (DI).
+      </p>
+      <p>Why does it matter?</p>
+      <ul>
+        <li>In tests, you can pass a fake store instead of a real database</li>
+        <li>
+          In <code>main.go</code>, you can see exactly what each part of the app
+          needs to function
+        </li>
+        <li>No hidden global state that causes surprises</li>
+      </ul>
+      <h3 id="gindefault-vs-ginnew">
+        <code>gin.Default()</code> vs <code>gin.New()</code>
+      </h3>
+      <p>
+        <code>gin.Default()</code> includes two built-in middleware
+        automatically:
+      </p>
+      <ul>
+        <li>
+          <strong>Logger</strong> — prints every request to stdout:
+          <code>GET /accounts 200 1.2ms</code>
+        </li>
+        <li>
+          <strong>Recovery</strong> — catches panics and returns a 500 error
+          instead of crashing the server
+        </li>
+      </ul>
+      <p>
+        <code>gin.New()</code> starts completely bare. Use
+        <code>gin.Default()</code> for development; in production swap the
+        logger for a structured one (e.g. <code>zap</code>).
+      </p>
+      <hr />
+      <h2 id="5-models--what-your-data-looks-like-in-go">
+        5. models — what your data looks like in Go
+      </h2>
+      <p>
+        Models are plain Go structs that mirror your database tables. No
+        methods, no active record pattern — just data containers. They live in
+        <code>internal/models/models.go</code>.
+      </p>
+      <pre><code class="language-go">type User struct {
     ID        uint    `db:&quot;id&quot;         json:&quot;id&quot;`
     Name      string  `db:&quot;name&quot;       json:&quot;name&quot;`
     Email     string  `db:&quot;email&quot;      json:&quot;email&quot;`
@@ -269,29 +604,61 @@ func main() {
     CreatedAt *time.Time `db:&quot;created_at&quot; json:&quot;created_at&quot;`
 }
 </code></pre>
-<h3 id="what-are-struct-tags">What are struct tags?</h3>
-<p>The backtick annotations after each field are <strong>struct tags</strong> — metadata that tells external libraries how to interpret this field:</p>
-<ul>
-<li><code>db:&quot;column_name&quot;</code> — used by <strong>sqlx</strong> to map a database column to this field when scanning query results. Without it, sqlx would try to match <code>CreatedAt</code> to a column named <code>CreatedAt</code> (capital C), but the database column is <code>created_at</code> (lowercase).</li>
-<li><code>json:&quot;key_name&quot;</code> — used when serializing this struct to JSON for the API. Without it, the JSON key would be <code>CreatedAt</code> instead of <code>created_at</code>.</li>
-</ul>
-<h3 id="why-pointers-for-nullable-fields">Why pointers for nullable fields?</h3>
-<p>In Go, <code>string</code> always has a value — it can&#39;t be absent. But in the database, <code>company</code> might be <code>NULL</code>. A <code>*string</code> can be either <code>nil</code> (NULL) or point to an actual string. This lets you tell the difference between &quot;empty string&quot; and &quot;not set.&quot;</p>
-<pre><code class="language-go">Company *string  // nil means NULL in the database
+      <h3 id="what-are-struct-tags">What are struct tags?</h3>
+      <p>
+        The backtick annotations after each field are
+        <strong>struct tags</strong> — metadata that tells external libraries
+        how to interpret this field:
+      </p>
+      <ul>
+        <li>
+          <code>db:&quot;column_name&quot;</code> — used by
+          <strong>sqlx</strong> to map a database column to this field when
+          scanning query results. Without it, sqlx would try to match
+          <code>CreatedAt</code> to a column named
+          <code>CreatedAt</code> (capital C), but the database column is
+          <code>created_at</code> (lowercase).
+        </li>
+        <li>
+          <code>json:&quot;key_name&quot;</code> — used when serializing this
+          struct to JSON for the API. Without it, the JSON key would be
+          <code>CreatedAt</code> instead of <code>created_at</code>.
+        </li>
+      </ul>
+      <h3 id="why-pointers-for-nullable-fields">
+        Why pointers for nullable fields?
+      </h3>
+      <p>
+        In Go, <code>string</code> always has a value — it can&#39;t be absent.
+        But in the database, <code>company</code> might be <code>NULL</code>. A
+        <code>*string</code> can be either <code>nil</code> (NULL) or point to
+        an actual string. This lets you tell the difference between &quot;empty
+        string&quot; and &quot;not set.&quot;
+      </p>
+      <pre><code class="language-go">Company *string  // nil means NULL in the database
 </code></pre>
-<p>In templates, handle this with a helper:</p>
-<pre><code class="language-go">func strOrDash(s *string) string {
+      <p>In templates, handle this with a helper:</p>
+      <pre><code class="language-go">func strOrDash(s *string) string {
     if s == nil { return &quot;—&quot; }
     return *s  // *s dereferences the pointer to get the string value
 }
 </code></pre>
-<h3 id="models-are-passive">Models are passive</h3>
-<p>Models don&#39;t have methods that talk to the database (unlike Active Record in Rails or Django ORM). All database logic lives in the store layer. This keeps models simple and testable in isolation.</p>
-<hr>
-<h2 id="6-store--talking-to-the-database">6. store — talking to the database</h2>
-<p>The store layer is where all SQL lives. Nothing outside this directory writes SQL. When a query is slow or wrong, you look here.</p>
-<h3 id="the-database-connection">The database connection</h3>
-<pre><code class="language-go">// internal/store/db.go
+      <h3 id="models-are-passive">Models are passive</h3>
+      <p>
+        Models don&#39;t have methods that talk to the database (unlike Active
+        Record in Rails or Django ORM). All database logic lives in the store
+        layer. This keeps models simple and testable in isolation.
+      </p>
+      <hr />
+      <h2 id="6-store--talking-to-the-database">
+        6. store — talking to the database
+      </h2>
+      <p>
+        The store layer is where all SQL lives. Nothing outside this directory
+        writes SQL. When a query is slow or wrong, you look here.
+      </p>
+      <h3 id="the-database-connection">The database connection</h3>
+      <pre><code class="language-go">// internal/store/db.go
 func Connect() (*sqlx.DB, error) {
     dsn := os.Getenv(&quot;DATABASE_URL&quot;)
     // Format: user:password@tcp(host:port)/dbname?parseTime=true
@@ -313,10 +680,14 @@ func Connect() (*sqlx.DB, error) {
     return db, nil
 }
 </code></pre>
-<p><code>sqlx.Open</code> is <strong>lazy</strong> — it doesn&#39;t connect until you call <code>Ping()</code>. The pool means the app doesn&#39;t open a new database connection for every HTTP request.</p>
-<h3 id="store-structs">Store structs</h3>
-<p>Each store wraps <code>*sqlx.DB</code> with typed query methods:</p>
-<pre><code class="language-go">type UserStore struct {
+      <p>
+        <code>sqlx.Open</code> is <strong>lazy</strong> — it doesn&#39;t connect
+        until you call <code>Ping()</code>. The pool means the app doesn&#39;t
+        open a new database connection for every HTTP request.
+      </p>
+      <h3 id="store-structs">Store structs</h3>
+      <p>Each store wraps <code>*sqlx.DB</code> with typed query methods:</p>
+      <pre><code class="language-go">type UserStore struct {
     db *sqlx.DB
 }
 
@@ -335,8 +706,10 @@ func (s *UserStore) GetUserByID(id uint) (*models.User, error) {
     return &amp;u, nil
 }
 </code></pre>
-<h3 id="sqlxget-vs-sqlxselect"><code>sqlx.Get</code> vs <code>sqlx.Select</code></h3>
-<pre><code class="language-go">// Expecting one row — use Get
+      <h3 id="sqlxget-vs-sqlxselect">
+        <code>sqlx.Get</code> vs <code>sqlx.Select</code>
+      </h3>
+      <pre><code class="language-go">// Expecting one row — use Get
 var u models.User
 err := s.db.Get(&amp;u, &quot;SELECT ... WHERE id = ?&quot;, id)
 // If no row found: err == sql.ErrNoRows
@@ -346,9 +719,12 @@ var users []models.User
 err := s.db.Select(&amp;users, &quot;SELECT ... WHERE role_id = ?&quot;, roleID)
 // If no rows found: users is an empty slice, err is nil
 </code></pre>
-<h3 id="dynamic-query-building">Dynamic query building</h3>
-<p>When a query has optional conditions, build the SQL string programmatically with a filter type:</p>
-<pre><code class="language-go">type UserFilter struct {
+      <h3 id="dynamic-query-building">Dynamic query building</h3>
+      <p>
+        When a query has optional conditions, build the SQL string
+        programmatically with a filter type:
+      </p>
+      <pre><code class="language-go">type UserFilter struct {
     Search  string
     RoleID  *uint  // nil = don&#39;t filter by role
     Deleted bool   // true = show only soft-deleted users
@@ -383,9 +759,14 @@ func buildUserWhere(f UserFilter) (string, []interface{}) {
     return &quot;WHERE &quot; + strings.Join(conds, &quot; AND &quot;), args
 }
 </code></pre>
-<p>SQL conditions and their argument values are <strong>built together</strong> — each <code>?</code> placeholder and its matching value in <code>args</code> are appended as a pair, so they never go out of sync.</p>
-<h3 id="pagination">Pagination</h3>
-<pre><code class="language-go">func (s *UserStore) ListUsers(f UserFilter) ([]models.User, int64, error) {
+      <p>
+        SQL conditions and their argument values are
+        <strong>built together</strong> — each <code>?</code> placeholder and
+        its matching value in <code>args</code> are appended as a pair, so they
+        never go out of sync.
+      </p>
+      <h3 id="pagination">Pagination</h3>
+      <pre><code class="language-go">func (s *UserStore) ListUsers(f UserFilter) ([]models.User, int64, error) {
     where, args := buildUserWhere(f)
     offset := (f.Page - 1) * f.Limit  // page 1 = offset 0, page 2 = offset 50
 
@@ -405,11 +786,17 @@ func buildUserWhere(f UserFilter) (string, []interface{}) {
     return users, total, nil
 }
 </code></pre>
-<p>Two queries share the same <code>WHERE</code> clause — the total count and the page of data always stay in sync.</p>
-<hr>
-<h2 id="7-routes--the-url-map">7. routes — the URL map</h2>
-<p><code>routes.go</code> maps every URL to a handler function. Think of it as the table of contents for the entire application.</p>
-<pre><code class="language-go">// internal/http/handlers/routes.go
+      <p>
+        Two queries share the same <code>WHERE</code> clause — the total count
+        and the page of data always stay in sync.
+      </p>
+      <hr />
+      <h2 id="7-routes--the-url-map">7. routes — the URL map</h2>
+      <p>
+        <code>routes.go</code> maps every URL to a handler function. Think of it
+        as the table of contents for the entire application.
+      </p>
+      <pre><code class="language-go">// internal/http/handlers/routes.go
 func (h *Handler) RegisterRoutes(r *gin.Engine) {
 
     // Health check — no auth required
@@ -447,11 +834,17 @@ func (h *Handler) RegisterRoutes(r *gin.Engine) {
     }
 }
 </code></pre>
-<h3 id="why-keep-all-routes-in-one-file">Why keep all routes in one file?</h3>
-<p>When something breaks, the first question is &quot;which handler owns this URL?&quot; With all routes in one file, the answer is one <code>Ctrl+F</code> away. You never hunt through handler files.</p>
-<h3 id="route-groups-rgroup">Route groups: <code>r.Group()</code></h3>
-<p>A route group applies middleware to a set of routes at once:</p>
-<pre><code class="language-go">// Without groups — repeat middleware on every route:
+      <h3 id="why-keep-all-routes-in-one-file">
+        Why keep all routes in one file?
+      </h3>
+      <p>
+        When something breaks, the first question is &quot;which handler owns
+        this URL?&quot; With all routes in one file, the answer is one
+        <code>Ctrl+F</code> away. You never hunt through handler files.
+      </p>
+      <h3 id="route-groups-rgroup">Route groups: <code>r.Group()</code></h3>
+      <p>A route group applies middleware to a set of routes at once:</p>
+      <pre><code class="language-go">// Without groups — repeat middleware on every route:
 r.GET(&quot;/accounts&quot;, middleware.SessionAuth(), h.GetAccounts)
 r.GET(&quot;/accounts/:id&quot;, middleware.SessionAuth(), h.GetAccountDetail)
 
@@ -460,30 +853,53 @@ protected := r.Group(&quot;/&quot;, middleware.SessionAuth())
 protected.GET(&quot;/accounts&quot;, h.GetAccounts)
 protected.GET(&quot;/accounts/:id&quot;, h.GetAccountDetail)
 </code></pre>
-<h3 id="url-parameters-id">URL parameters: <code>:id</code></h3>
-<p>A colon prefix creates a named URL parameter:</p>
-<pre><code class="language-go">protected.GET(&quot;/accounts/:id&quot;, h.GetAccountDetail)
+      <h3 id="url-parameters-id">URL parameters: <code>:id</code></h3>
+      <p>A colon prefix creates a named URL parameter:</p>
+      <pre><code class="language-go">protected.GET(&quot;/accounts/:id&quot;, h.GetAccountDetail)
 </code></pre>
-<p>Read it in the handler with <code>c.Param(&quot;id&quot;)</code>:</p>
-<pre><code class="language-go">idStr := c.Param(&quot;id&quot;)                       // &quot;42&quot;
+      <p>Read it in the handler with <code>c.Param(&quot;id&quot;)</code>:</p>
+      <pre><code class="language-go">idStr := c.Param(&quot;id&quot;)                       // &quot;42&quot;
 id, _ := strconv.ParseUint(idStr, 10, 64)   // convert to number
 </code></pre>
-<h3 id="two-route-groups-for-two-audiences">Two route groups for two audiences</h3>
-<p>This app serves:</p>
-<ul>
-<li><strong>Browser users</strong> — admins logging in via the HTML UI. They get a session cookie after login; the browser sends it automatically on every request.</li>
-<li><strong>API clients</strong> — a separate frontend app, mobile client, or integration. They send a JWT token in a header on every request.</li>
-</ul>
-<p>Two route groups, two auth strategies, one binary.</p>
-<hr>
-<h2 id="8-handlers--what-happens-when-a-url-is-hit">8. handlers — what happens when a URL is hit</h2>
-<p>A handler is a Go function that receives an HTTP request and writes a response. In Gin, every handler has this signature:</p>
-<pre><code class="language-go">func(c *gin.Context)
+      <h3 id="two-route-groups-for-two-audiences">
+        Two route groups for two audiences
+      </h3>
+      <p>This app serves:</p>
+      <ul>
+        <li>
+          <strong>Browser users</strong> — admins logging in via the HTML UI.
+          They get a session cookie after login; the browser sends it
+          automatically on every request.
+        </li>
+        <li>
+          <strong>API clients</strong> — a separate frontend app, mobile client,
+          or integration. They send a JWT token in a header on every request.
+        </li>
+      </ul>
+      <p>Two route groups, two auth strategies, one binary.</p>
+      <hr />
+      <h2 id="8-handlers--what-happens-when-a-url-is-hit">
+        8. handlers — what happens when a URL is hit
+      </h2>
+      <p>
+        A handler is a Go function that receives an HTTP request and writes a
+        response. In Gin, every handler has this signature:
+      </p>
+      <pre><code class="language-go">func(c *gin.Context)
 </code></pre>
-<p><code>*gin.Context</code> gives you everything about the request (query params, form data, URL params, headers) and the tools to write a response (HTML, JSON, redirects).</p>
-<h3 id="the-handler-struct-and-deps">The <code>Handler</code> struct and <code>Deps</code></h3>
-<p>All handler functions are methods on a single <code>Handler</code> struct, which holds the stores they need:</p>
-<pre><code class="language-go">// internal/http/handlers/deps.go
+      <p>
+        <code>*gin.Context</code> gives you everything about the request (query
+        params, form data, URL params, headers) and the tools to write a
+        response (HTML, JSON, redirects).
+      </p>
+      <h3 id="the-handler-struct-and-deps">
+        The <code>Handler</code> struct and <code>Deps</code>
+      </h3>
+      <p>
+        All handler functions are methods on a single
+        <code>Handler</code> struct, which holds the stores they need:
+      </p>
+      <pre><code class="language-go">// internal/http/handlers/deps.go
 type Deps struct {
     AdminStore *store.AdminStore
     UserStore  *store.UserStore
@@ -499,8 +915,8 @@ func New(d Deps) *Handler {
     return &amp;Handler{Deps: d}
 }
 </code></pre>
-<h3 id="an-html-handler">An HTML handler</h3>
-<pre><code class="language-go">func (h *Handler) GetAccountDetail(c *gin.Context) {
+      <h3 id="an-html-handler">An HTML handler</h3>
+      <pre><code class="language-go">func (h *Handler) GetAccountDetail(c *gin.Context) {
     // 1. Parse the :id URL parameter
     idStr := c.Param(&quot;id&quot;)
     id, err := strconv.ParseUint(idStr, 10, 64)
@@ -527,9 +943,12 @@ func New(d Deps) *Handler {
     }).Render(c.Request.Context(), c.Writer)
 }
 </code></pre>
-<p>The handler&#39;s job: parse inputs → get data → render output. No SQL. No HTML building.</p>
-<h3 id="a-json-api-handler">A JSON API handler</h3>
-<pre><code class="language-go">func (h *Handler) APILogin(c *gin.Context) {
+      <p>
+        The handler&#39;s job: parse inputs → get data → render output. No SQL.
+        No HTML building.
+      </p>
+      <h3 id="a-json-api-handler">A JSON API handler</h3>
+      <pre><code class="language-go">func (h *Handler) APILogin(c *gin.Context) {
     var req struct {
         Email    string `json:&quot;email&quot;    binding:&quot;required&quot;`
         Password string `json:&quot;password&quot; binding:&quot;required&quot;`
@@ -553,9 +972,14 @@ func New(d Deps) *Handler {
     c.JSON(http.StatusOK, token)
 }
 </code></pre>
-<h3 id="the-loaduser-shared-helper">The <code>loadUser</code> shared helper</h3>
-<p>Several handlers parse <code>:id</code> and look up the user. Rather than repeat it everywhere, extract a helper:</p>
-<pre><code class="language-go">func loadUser(c *gin.Context, h *Handler) (*models.User, bool) {
+      <h3 id="the-loaduser-shared-helper">
+        The <code>loadUser</code> shared helper
+      </h3>
+      <p>
+        Several handlers parse <code>:id</code> and look up the user. Rather
+        than repeat it everywhere, extract a helper:
+      </p>
+      <pre><code class="language-go">func loadUser(c *gin.Context, h *Handler) (*models.User, bool) {
     id, err := strconv.ParseUint(c.Param(&quot;id&quot;), 10, 64)
     if err != nil {
         c.Status(http.StatusBadRequest)
@@ -569,8 +993,8 @@ func New(d Deps) *Handler {
     return u, true
 }
 </code></pre>
-<p>Handlers call it like this:</p>
-<pre><code class="language-go">func (h *Handler) PostToggleFavorite(c *gin.Context) {
+      <p>Handlers call it like this:</p>
+      <pre><code class="language-go">func (h *Handler) PostToggleFavorite(c *gin.Context) {
     u, ok := loadUser(c, h)
     if !ok { return }  // response already written — just stop
 
@@ -579,18 +1003,39 @@ func New(d Deps) *Handler {
     c.Redirect(http.StatusFound, fmt.Sprintf(&quot;/accounts/%d?flash=Updated&quot;, u.ID))
 }
 </code></pre>
-<h3 id="flash-messages">Flash messages</h3>
-<p>After a successful action, redirect with <code>?flash=</code> in the URL:</p>
-<pre><code class="language-go">c.Redirect(http.StatusFound, fmt.Sprintf(&quot;/accounts/%d?flash=Password+updated&quot;, u.ID))
+      <h3 id="flash-messages">Flash messages</h3>
+      <p>
+        After a successful action, redirect with <code>?flash=</code> in the
+        URL:
+      </p>
+      <pre><code class="language-go">c.Redirect(http.StatusFound, fmt.Sprintf(&quot;/accounts/%d?flash=Password+updated&quot;, u.ID))
 </code></pre>
-<p>The destination handler reads it and passes it to the template, which shows it if non-empty. The message disappears on the next refresh — correct behavior for a one-time success notice.</p>
-<hr>
-<h2 id="9-pages-templ--turning-data-into-html">9. pages (templ) — turning data into HTML</h2>
-<p><a href="https://templ.guide">templ</a> is a Go library that compiles <code>.templ</code> files to type-safe Go code. Think of it like JSX — HTML mixed with Go logic — but it runs on the server and produces plain HTML.</p>
-<h3 id="why-templ-instead-of-gos-built-in-htmltemplate">Why templ instead of Go&#39;s built-in <code>html/template</code>?</h3>
-<p>Go&#39;s standard library <code>html/template</code> uses string-based templates where errors only appear at runtime. templ compiles to Go, so missing variables or wrong types are <strong>compile-time errors</strong> — you find them before users do.</p>
-<h3 id="basic-syntax">Basic syntax</h3>
-<pre><code class="language-go">// internal/views/pages/login.templ
+      <p>
+        The destination handler reads it and passes it to the template, which
+        shows it if non-empty. The message disappears on the next refresh —
+        correct behavior for a one-time success notice.
+      </p>
+      <hr />
+      <h2 id="9-pages-templ--turning-data-into-html">
+        9. pages (templ) — turning data into HTML
+      </h2>
+      <p>
+        <a href="https://templ.guide">templ</a> is a Go library that compiles
+        <code>.templ</code> files to type-safe Go code. Think of it like JSX —
+        HTML mixed with Go logic — but it runs on the server and produces plain
+        HTML.
+      </p>
+      <h3 id="why-templ-instead-of-gos-built-in-htmltemplate">
+        Why templ instead of Go&#39;s built-in <code>html/template</code>?
+      </h3>
+      <p>
+        Go&#39;s standard library <code>html/template</code> uses string-based
+        templates where errors only appear at runtime. templ compiles to Go, so
+        missing variables or wrong types are
+        <strong>compile-time errors</strong> — you find them before users do.
+      </p>
+      <h3 id="basic-syntax">Basic syntax</h3>
+      <pre><code class="language-go">// internal/views/pages/login.templ
 package pages
 
 templ Login(errorMsg string) {
@@ -611,17 +1056,32 @@ templ Login(errorMsg string) {
     }
 }
 </code></pre>
-<p>Key syntax rules:</p>
-<ul>
-<li><code>{ variable }</code> — renders a string. <strong>HTML-escaped automatically</strong> — no XSS.</li>
-<li><code>if condition { }</code> — standard Go <code>if</code>, no extra template syntax</li>
-<li><code>for _, item := range items { }</code> — standard Go <code>for</code></li>
-<li><code>@ComponentName(args)</code> — renders another templ component inline</li>
-<li><code>{ children... }</code> — slot: renders whatever the caller passes in <code>{ }</code></li>
-</ul>
-<h3 id="passing-data-to-a-component">Passing data to a component</h3>
-<p>Define a data struct for each page:</p>
-<pre><code class="language-go">type AccountDetailData struct {
+      <p>Key syntax rules:</p>
+      <ul>
+        <li>
+          <code>{ variable }</code> — renders a string.
+          <strong>HTML-escaped automatically</strong> — no XSS.
+        </li>
+        <li>
+          <code>if condition { }</code> — standard Go <code>if</code>, no extra
+          template syntax
+        </li>
+        <li>
+          <code>for _, item := range items { }</code> — standard Go
+          <code>for</code>
+        </li>
+        <li>
+          <code>@ComponentName(args)</code> — renders another templ component
+          inline
+        </li>
+        <li>
+          <code>{ children... }</code> — slot: renders whatever the caller
+          passes in <code>{ }</code>
+        </li>
+      </ul>
+      <h3 id="passing-data-to-a-component">Passing data to a component</h3>
+      <p>Define a data struct for each page:</p>
+      <pre><code class="language-go">type AccountDetailData struct {
     User       *models.User
     Activities []models.AdminActivity
     Flash      string
@@ -637,19 +1097,29 @@ templ AccountDetail(d AccountDetailData) {
     }
 }
 </code></pre>
-<p>Using a struct means the compiler tells you if you forgot a field or passed the wrong type.</p>
-<h3 id="rendering-in-a-handler">Rendering in a handler</h3>
-<pre><code class="language-go">c.Header(&quot;Content-Type&quot;, &quot;text/html; charset=utf-8&quot;)
+      <p>
+        Using a struct means the compiler tells you if you forgot a field or
+        passed the wrong type.
+      </p>
+      <h3 id="rendering-in-a-handler">Rendering in a handler</h3>
+      <pre><code class="language-go">c.Header(&quot;Content-Type&quot;, &quot;text/html; charset=utf-8&quot;)
 pages.AccountDetail(pages.AccountDetailData{
     User:       u,
     Activities: activities,
     Flash:      flash,
 }).Render(c.Request.Context(), c.Writer)
 </code></pre>
-<p><code>Render(ctx, w)</code> writes HTML directly to the HTTP response writer. No buffering, no intermediate string — it streams as it generates.</p>
-<h3 id="helper-functions">Helper functions</h3>
-<p>Regular Go functions can live alongside components in a <code>.templ</code> file:</p>
-<pre><code class="language-go">func fmtTime(t *time.Time) string {
+      <p>
+        <code>Render(ctx, w)</code> writes HTML directly to the HTTP response
+        writer. No buffering, no intermediate string — it streams as it
+        generates.
+      </p>
+      <h3 id="helper-functions">Helper functions</h3>
+      <p>
+        Regular Go functions can live alongside components in a
+        <code>.templ</code> file:
+      </p>
+      <pre><code class="language-go">func fmtTime(t *time.Time) string {
     if t == nil { return &quot;—&quot; }
     return t.Format(&quot;Jan 2, 2006&quot;)
 }
@@ -659,13 +1129,16 @@ func strOrDash(s *string) string {
     return *s
 }
 </code></pre>
-<p>Use them directly in templates:</p>
-<pre><code class="language-go">&lt;td&gt;{ fmtTime(u.CreatedAt) }&lt;/td&gt;
+      <p>Use them directly in templates:</p>
+      <pre><code class="language-go">&lt;td&gt;{ fmtTime(u.CreatedAt) }&lt;/td&gt;
 &lt;td&gt;{ strOrDash(u.Company) }&lt;/td&gt;
 </code></pre>
-<h3 id="sub-components">Sub-components</h3>
-<p>Large pages are split into smaller private components. Lowercase names are unexported (private to the package):</p>
-<pre><code class="language-go">templ AccountDetail(d AccountDetailData) {
+      <h3 id="sub-components">Sub-components</h3>
+      <p>
+        Large pages are split into smaller private components. Lowercase names
+        are unexported (private to the package):
+      </p>
+      <pre><code class="language-go">templ AccountDetail(d AccountDetailData) {
     @layouts.Dashboard(&quot;...&quot;) {
         &lt;div class=&quot;grid grid-cols-3 gap-6&quot;&gt;
             @userInfoCard(d.User)                     // private — only used here
@@ -681,21 +1154,37 @@ templ userInfoCard(u *models.User) {
     &lt;/div&gt;
 }
 </code></pre>
-<h3 id="safe-urls">Safe URLs</h3>
-<p>templ prevents URL injection. Dynamic values in <code>href</code> attributes must go through <code>templ.URL()</code>:</p>
-<pre><code class="language-go">// ✅ Safe — templ.URL validates and escapes the value
+      <h3 id="safe-urls">Safe URLs</h3>
+      <p>
+        templ prevents URL injection. Dynamic values in
+        <code>href</code> attributes must go through <code>templ.URL()</code>:
+      </p>
+      <pre><code class="language-go">// ✅ Safe — templ.URL validates and escapes the value
 &lt;a href={ templ.URL(fmt.Sprintf(&quot;/accounts/%d&quot;, u.ID)) }&gt;View&lt;/a&gt;
 
 // ❌ Won&#39;t compile — templ rejects raw expressions in href
 &lt;a href={ &quot;/accounts/&quot; + someVar }&gt;View&lt;/a&gt;
 </code></pre>
-<p>This prevents attacker-controlled strings from becoming <code>javascript:evil()</code> in an href.</p>
-<h3 id="generated-files">Generated files</h3>
-<p><code>make generate</code> (or <code>templ generate ./...</code>) writes a <code>*_templ.go</code> file next to each <code>.templ</code> file. These are regular Go code you can read and debug, but they&#39;re overwritten on every <code>make generate</code> — don&#39;t edit them.</p>
-<hr>
-<h2 id="10-layouts--the-shared-shell-around-every-page">10. layouts — the shared shell around every page</h2>
-<p>A layout is a component that wraps other components. It provides the HTML skeleton, CSS link, scripts, and navigation that every page shares.</p>
-<pre><code class="language-go">// internal/views/layouts/base.templ
+      <p>
+        This prevents attacker-controlled strings from becoming
+        <code>javascript:evil()</code> in an href.
+      </p>
+      <h3 id="generated-files">Generated files</h3>
+      <p>
+        <code>make generate</code> (or <code>templ generate ./...</code>) writes
+        a <code>*_templ.go</code> file next to each <code>.templ</code> file.
+        These are regular Go code you can read and debug, but they&#39;re
+        overwritten on every <code>make generate</code> — don&#39;t edit them.
+      </p>
+      <hr />
+      <h2 id="10-layouts--the-shared-shell-around-every-page">
+        10. layouts — the shared shell around every page
+      </h2>
+      <p>
+        A layout is a component that wraps other components. It provides the
+        HTML skeleton, CSS link, scripts, and navigation that every page shares.
+      </p>
+      <pre><code class="language-go">// internal/views/layouts/base.templ
 
 // Base: outermost HTML shell
 templ Base(title string) {
@@ -730,21 +1219,49 @@ templ Dashboard(title string) {
     }
 }
 </code></pre>
-<h3 id="how-nesting-works">How nesting works</h3>
-<p>When a page calls <code>@layouts.Dashboard(&quot;Accounts&quot;) { ... }</code>, its content fills the <code>{ children... }</code> slot inside Dashboard. Dashboard in turn calls <code>@Base(title) { ... }</code>, so its own content fills the slot inside Base. The chain:</p>
-<pre><code>Page content
+      <h3 id="how-nesting-works">How nesting works</h3>
+      <p>
+        When a page calls
+        <code>@layouts.Dashboard(&quot;Accounts&quot;) { ... }</code>, its
+        content fills the <code>{ children... }</code> slot inside Dashboard.
+        Dashboard in turn calls <code>@Base(title) { ... }</code>, so its own
+        content fills the slot inside Base. The chain:
+      </p>
+      <pre><code>Page content
   → Dashboard (sidebar + topbar, wrapped in Base)
       → Base (HTML boilerplate, CSS, Datastar script)
           → Full HTML response sent to browser
 </code></pre>
-<p>No &quot;extends&quot; keyword. No inheritance. Just components calling components, each passing their slot content down.</p>
-<h3 id="why-separate-base-and-dashboard">Why separate <code>Base</code> and <code>Dashboard</code>?</h3>
-<p>The login page doesn&#39;t have a sidebar — it uses <code>@layouts.Base(&quot;Login&quot;)</code> directly. The dashboard pages use <code>@layouts.Dashboard(&quot;Accounts&quot;)</code>. Both share the HTML boilerplate from <code>Base</code>. Separating them avoids special-casing the login page inside the layout.</p>
-<hr>
-<h2 id="11-middleware--code-that-runs-before-your-handler">11. middleware — code that runs before your handler</h2>
-<p>Middleware is a function that runs before (and optionally after) your handler for every matching request. It can add data to the context, check auth, or abort the request (e.g. &quot;not logged in → redirect to /login&quot;).</p>
-<p>In Gin, middleware has the same signature as a handler — <code>func(c *gin.Context)</code> — but it calls <code>c.Next()</code> to pass control forward.</p>
-<pre><code>Request
+      <p>
+        No &quot;extends&quot; keyword. No inheritance. Just components calling
+        components, each passing their slot content down.
+      </p>
+      <h3 id="why-separate-base-and-dashboard">
+        Why separate <code>Base</code> and <code>Dashboard</code>?
+      </h3>
+      <p>
+        The login page doesn&#39;t have a sidebar — it uses
+        <code>@layouts.Base(&quot;Login&quot;)</code> directly. The dashboard
+        pages use <code>@layouts.Dashboard(&quot;Accounts&quot;)</code>. Both
+        share the HTML boilerplate from <code>Base</code>. Separating them
+        avoids special-casing the login page inside the layout.
+      </p>
+      <hr />
+      <h2 id="11-middleware--code-that-runs-before-your-handler">
+        11. middleware — code that runs before your handler
+      </h2>
+      <p>
+        Middleware is a function that runs before (and optionally after) your
+        handler for every matching request. It can add data to the context,
+        check auth, or abort the request (e.g. &quot;not logged in → redirect to
+        /login&quot;).
+      </p>
+      <p>
+        In Gin, middleware has the same signature as a handler —
+        <code>func(c *gin.Context)</code> — but it calls
+        <code>c.Next()</code> to pass control forward.
+      </p>
+      <pre><code>Request
    │
    ▼
 Sessions()         ← reads/writes the session cookie
@@ -758,8 +1275,10 @@ SessionAuth()      ← checks if admin ID is in context; redirects if not
    ▼
 YourHandler()      ← finally, the actual handler runs
 </code></pre>
-<h3 id="how-cnext-and-cabort-work">How <code>c.Next()</code> and <code>c.Abort()</code> work</h3>
-<pre><code class="language-go">func MyMiddleware() gin.HandlerFunc {
+      <h3 id="how-cnext-and-cabort-work">
+        How <code>c.Next()</code> and <code>c.Abort()</code> work
+      </h3>
+      <pre><code class="language-go">func MyMiddleware() gin.HandlerFunc {
     return func(c *gin.Context) {
         // Code here runs BEFORE the handler
 
@@ -775,9 +1294,15 @@ YourHandler()      ← finally, the actual handler runs
     }
 }
 </code></pre>
-<p>Without <code>c.Abort()</code>, the chain continues even after a redirect — meaning the handler runs and potentially writes a second response.</p>
-<h3 id="session-middleware-three-functions-three-jobs">Session middleware (three functions, three jobs)</h3>
-<pre><code class="language-go">// 1. Initialize the session store (must run first on every request)
+      <p>
+        Without <code>c.Abort()</code>, the chain continues even after a
+        redirect — meaning the handler runs and potentially writes a second
+        response.
+      </p>
+      <h3 id="session-middleware-three-functions-three-jobs">
+        Session middleware (three functions, three jobs)
+      </h3>
+      <pre><code class="language-go">// 1. Initialize the session store (must run first on every request)
 func Sessions() gin.HandlerFunc {
     secret := os.Getenv(&quot;SESSION_SECRET&quot;)
     store := cookie.NewStore([]byte(secret))
@@ -810,19 +1335,49 @@ func SessionAuth() gin.HandlerFunc {
     }
 }
 </code></pre>
-<p>Why three separate functions? <code>LoadSessionAdmin</code> runs on every request — including public ones — so templates can optionally show the logged-in admin&#39;s name. <code>SessionAuth</code> runs only on protected routes. Separating them keeps each function&#39;s responsibility clear.</p>
-<hr>
-<h2 id="12-authentication-session-cookies--jwt">12. Authentication: session cookies + JWT</h2>
-<p>The app has two authentication systems running side by side, because it serves two different types of clients.</p>
-<h3 id="why-two-systems">Why two systems?</h3>
-<ul>
-<li><strong>Browser users</strong> (admins) log in once through a form. The browser automatically sends a cookie on every subsequent request. This is the session cookie system.</li>
-<li><strong>API clients</strong> (a separate frontend, mobile app, or integration) send a JWT token in a header on every request. Cookies don&#39;t work well for programmatic clients.</li>
-</ul>
-<p>Both systems set the same <code>admin_id</code> value in Gin&#39;s context. Once it&#39;s there, the rest of the code doesn&#39;t need to know how the user authenticated.</p>
-<h3 id="session-cookies--for-the-browser">Session cookies — for the browser</h3>
-<p>The session store uses Gorilla&#39;s encrypted cookies. No database, no Redis — the session data is encrypted and signed inside the cookie itself, and only the server (which holds <code>SESSION_SECRET</code>) can read or forge it.</p>
-<pre><code class="language-go">// internal/middleware/session.go
+      <p>
+        Why three separate functions? <code>LoadSessionAdmin</code> runs on
+        every request — including public ones — so templates can optionally show
+        the logged-in admin&#39;s name. <code>SessionAuth</code> runs only on
+        protected routes. Separating them keeps each function&#39;s
+        responsibility clear.
+      </p>
+      <hr />
+      <h2 id="12-authentication-session-cookies--jwt">
+        12. Authentication: session cookies + JWT
+      </h2>
+      <p>
+        The app has two authentication systems running side by side, because it
+        serves two different types of clients.
+      </p>
+      <h3 id="why-two-systems">Why two systems?</h3>
+      <ul>
+        <li>
+          <strong>Browser users</strong> (admins) log in once through a form.
+          The browser automatically sends a cookie on every subsequent request.
+          This is the session cookie system.
+        </li>
+        <li>
+          <strong>API clients</strong> (a separate frontend, mobile app, or
+          integration) send a JWT token in a header on every request. Cookies
+          don&#39;t work well for programmatic clients.
+        </li>
+      </ul>
+      <p>
+        Both systems set the same <code>admin_id</code> value in Gin&#39;s
+        context. Once it&#39;s there, the rest of the code doesn&#39;t need to
+        know how the user authenticated.
+      </p>
+      <h3 id="session-cookies--for-the-browser">
+        Session cookies — for the browser
+      </h3>
+      <p>
+        The session store uses Gorilla&#39;s encrypted cookies. No database, no
+        Redis — the session data is encrypted and signed inside the cookie
+        itself, and only the server (which holds <code>SESSION_SECRET</code>)
+        can read or forge it.
+      </p>
+      <pre><code class="language-go">// internal/middleware/session.go
 func Sessions() gin.HandlerFunc {
     secret := os.Getenv(&quot;SESSION_SECRET&quot;) // 32-byte random string
     store := cookie.NewStore([]byte(secret))
@@ -835,8 +1390,11 @@ func SetSessionAdmin(c *gin.Context, adminID uint) {
     session.Save()
 }
 </code></pre>
-<p>The login handler verifies the password, then writes the admin&#39;s ID into the session:</p>
-<pre><code class="language-go">func (h *Handler) PostLogin(c *gin.Context) {
+      <p>
+        The login handler verifies the password, then writes the admin&#39;s ID
+        into the session:
+      </p>
+      <pre><code class="language-go">func (h *Handler) PostLogin(c *gin.Context) {
     email    := c.PostForm(&quot;email&quot;)
     password := c.PostForm(&quot;password&quot;)
 
@@ -859,10 +1417,20 @@ func SetSessionAdmin(c *gin.Context, adminID uint) {
     c.Redirect(http.StatusFound, &quot;/&quot;)
 }
 </code></pre>
-<p>Why is the error message identical for &quot;user not found&quot; and &quot;wrong password&quot;? If it said &quot;no such user&quot; for one and &quot;wrong password&quot; for the other, an attacker could probe which email addresses have accounts. Returning the same message for both closes that leak.</p>
-<h3 id="jwt--for-api-clients">JWT — for API clients</h3>
-<p>A JWT (JSON Web Token) is a signed token the client stores and sends on every request. The server can verify it without looking anything up in a database — the signature proves the token is authentic.</p>
-<pre><code class="language-go">func generateJWT(adminID uint) (string, error) {
+      <p>
+        Why is the error message identical for &quot;user not found&quot; and
+        &quot;wrong password&quot;? If it said &quot;no such user&quot; for one
+        and &quot;wrong password&quot; for the other, an attacker could probe
+        which email addresses have accounts. Returning the same message for both
+        closes that leak.
+      </p>
+      <h3 id="jwt--for-api-clients">JWT — for API clients</h3>
+      <p>
+        A JWT (JSON Web Token) is a signed token the client stores and sends on
+        every request. The server can verify it without looking anything up in a
+        database — the signature proves the token is authentic.
+      </p>
+      <pre><code class="language-go">func generateJWT(adminID uint) (string, error) {
     secret := []byte(os.Getenv(&quot;JWT_KEY&quot;))
     claims := jwt.MapClaims{
         &quot;id&quot;:  adminID,
@@ -871,21 +1439,26 @@ func SetSessionAdmin(c *gin.Context, adminID uint) {
     return jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString(secret)
 }
 </code></pre>
-<p>The API login endpoint returns this token:</p>
-<pre><code class="language-go">func (h *Handler) APILogin(c *gin.Context) {
+      <p>The API login endpoint returns this token:</p>
+      <pre><code class="language-go">func (h *Handler) APILogin(c *gin.Context) {
     // ... validate credentials ...
     token, _ := generateJWT(admin.ID)
     c.JSON(http.StatusOK, token)
 }
 </code></pre>
-<p>API clients then send it on every request as either:</p>
-<pre><code>x-auth-token: eyJhbGci...
+      <p>API clients then send it on every request as either:</p>
+      <pre><code>x-auth-token: eyJhbGci...
 </code></pre>
-<p>or:</p>
-<pre><code>Authorization: Bearer eyJhbGci...
+      <p>or:</p>
+      <pre><code>Authorization: Bearer eyJhbGci...
 </code></pre>
-<p>The <code>RequireAuth</code> middleware verifies it. It accepts either header (for compatibility with the existing frontend) and also falls back to the session — so the same API routes work from both a logged-in browser and an external client:</p>
-<pre><code class="language-go">func RequireAuth() gin.HandlerFunc {
+      <p>
+        The <code>RequireAuth</code> middleware verifies it. It accepts either
+        header (for compatibility with the existing frontend) and also falls
+        back to the session — so the same API routes work from both a logged-in
+        browser and an external client:
+      </p>
+      <pre><code class="language-go">func RequireAuth() gin.HandlerFunc {
     return func(c *gin.Context) {
         token := c.GetHeader(&quot;x-auth-token&quot;)
         if token == &quot;&quot; {
@@ -908,20 +1481,40 @@ func SetSessionAdmin(c *gin.Context, adminID uint) {
     }
 }
 </code></pre>
-<hr>
-<h2 id="13-reactive-ui-with-datastar">13. Reactive UI with Datastar</h2>
-<p><a href="https://data-star.dev">Datastar</a> is a hypermedia framework that wires reactive signals to SSE-driven DOM updates using only HTML attributes — no build step, no virtual DOM, no JavaScript you write. It&#39;s loaded from CDN as a single <code>&lt;script&gt;</code> tag (~14 KB, ESM module):</p>
-<pre><code class="language-html">&lt;!-- layouts/base.templ --&gt;
+      <hr />
+      <h2 id="13-reactive-ui-with-datastar">13. Reactive UI with Datastar</h2>
+      <p>
+        <a href="https://data-star.dev">Datastar</a> is a hypermedia framework
+        that wires reactive signals to SSE-driven DOM updates using only HTML
+        attributes — no build step, no virtual DOM, no JavaScript you write.
+        It&#39;s loaded from CDN as a single <code>&lt;script&gt;</code> tag
+        (~14 KB, ESM module):
+      </p>
+      <pre><code class="language-html">&lt;!-- layouts/base.templ --&gt;
 &lt;script type=&quot;module&quot;
     src=&quot;https://cdn.jsdelivr.net/npm/@sudodevnull/datastar@0.20.1/dist/datastar.iife.js&quot;&gt;
 &lt;/script&gt;
 </code></pre>
-<p>Datastar is deliberately different from HTMX. The key distinction: Datastar has a built-in signal graph (<code>data-store</code>/<code>data-bind</code>), so client state lives as declared reactive values rather than being encoded in URL parameters or form fields. This matters for debounced search, multi-field filter forms, and any UI where several inputs jointly determine what gets fetched.</p>
-<hr>
-<h3 id="core-concepts">Core concepts</h3>
-<h4 id="signals-data-store--data-bind">Signals: <code>data-store</code> + <code>data-bind</code></h4>
-<p><code>data-store</code> declares a reactive signal map on any element. Signals are scoped to the element and all its descendants (like CSS custom properties).</p>
-<pre><code class="language-html">&lt;!-- Declare signals --&gt;
+      <p>
+        Datastar is deliberately different from HTMX. The key distinction:
+        Datastar has a built-in signal graph
+        (<code>data-store</code>/<code>data-bind</code>), so client state lives
+        as declared reactive values rather than being encoded in URL parameters
+        or form fields. This matters for debounced search, multi-field filter
+        forms, and any UI where several inputs jointly determine what gets
+        fetched.
+      </p>
+      <hr />
+      <h3 id="core-concepts">Core concepts</h3>
+      <h4 id="signals-data-store--data-bind">
+        Signals: <code>data-store</code> + <code>data-bind</code>
+      </h4>
+      <p>
+        <code>data-store</code> declares a reactive signal map on any element.
+        Signals are scoped to the element and all its descendants (like CSS
+        custom properties).
+      </p>
+      <pre><code class="language-html">&lt;!-- Declare signals --&gt;
 &lt;div data-store=&#39;{&quot;q&quot;: &quot;&quot;, &quot;page&quot;: 1, &quot;loading&quot;: false}&#39;&gt;
 
     &lt;!-- Two-way bind: input value ↔ $q signal --&gt;
@@ -935,18 +1528,42 @@ func SetSessionAdmin(c *gin.Context, adminID uint) {
 
 &lt;/div&gt;
 </code></pre>
-<p>Key attributes:</p>
-<ul>
-<li><code>data-store=&#39;{&quot;key&quot;: value}&#39;</code> — declares signals. Values are JSON literals.</li>
-<li><code>data-bind=&quot;signalName&quot;</code> — two-way binds an input/select/textarea to a signal.</li>
-<li><code>data-text=&quot;$signal&quot;</code> — sets the element&#39;s <code>textContent</code> reactively.</li>
-<li><code>data-show=&quot;$signal&quot;</code> — toggles <code>display:none</code> based on a boolean expression.</li>
-<li><code>data-class-foo=&quot;$signal&quot;</code> — conditionally applies class <code>foo</code>.</li>
-</ul>
-<p>Signals are referenced as <code>$signalName</code> in expressions. Signal scope is hierarchical: a child element can read signals declared on any ancestor.</p>
-<h4 id="event-reactions-data-on-">Event reactions: <code>data-on-*</code></h4>
-<p><code>data-on-&lt;event&gt;</code> attaches a handler to any DOM event. The value is a Datastar expression, not arbitrary JavaScript.</p>
-<pre><code class="language-html">&lt;!-- Fire GET request on every click --&gt;
+      <p>Key attributes:</p>
+      <ul>
+        <li>
+          <code>data-store=&#39;{&quot;key&quot;: value}&#39;</code> — declares
+          signals. Values are JSON literals.
+        </li>
+        <li>
+          <code>data-bind=&quot;signalName&quot;</code> — two-way binds an
+          input/select/textarea to a signal.
+        </li>
+        <li>
+          <code>data-text=&quot;$signal&quot;</code> — sets the element&#39;s
+          <code>textContent</code> reactively.
+        </li>
+        <li>
+          <code>data-show=&quot;$signal&quot;</code> — toggles
+          <code>display:none</code> based on a boolean expression.
+        </li>
+        <li>
+          <code>data-class-foo=&quot;$signal&quot;</code> — conditionally
+          applies class <code>foo</code>.
+        </li>
+      </ul>
+      <p>
+        Signals are referenced as <code>$signalName</code> in expressions.
+        Signal scope is hierarchical: a child element can read signals declared
+        on any ancestor.
+      </p>
+      <h4 id="event-reactions-data-on-">
+        Event reactions: <code>data-on-*</code>
+      </h4>
+      <p>
+        <code>data-on-&lt;event&gt;</code> attaches a handler to any DOM event.
+        The value is a Datastar expression, not arbitrary JavaScript.
+      </p>
+      <pre><code class="language-html">&lt;!-- Fire GET request on every click --&gt;
 &lt;button data-on-click=&quot;@get(&#39;/api/ping&#39;)&quot;&gt;Ping&lt;/button&gt;
 
 &lt;!-- Fire GET on input, debounced 300ms, using current signal value --&gt;
@@ -958,39 +1575,83 @@ func SetSessionAdmin(c *gin.Context, adminID uint) {
 &lt;!-- Run on page load (fires once when the element enters the DOM) --&gt;
 &lt;div data-on-load=&quot;@get(&#39;/stats/summary&#39;)&quot;&gt;&lt;/div&gt;
 </code></pre>
-<p><strong>Modifiers</strong> are appended with <code>__</code>:</p>
-<ul>
-<li><code>__debounce.300ms</code> — wait N ms of silence before firing (resets on each event)</li>
-<li><code>__throttle.500ms</code> — fire at most once per N ms</li>
-<li><code>__prevent</code> — call <code>event.preventDefault()</code></li>
-<li><code>__stop</code> — call <code>event.stopPropagation()</code></li>
-<li><code>__once</code> — fire only once, then remove the listener</li>
-</ul>
-<p>You can chain modifiers: <code>data-on-input__debounce.300ms__prevent=&quot;...&quot;</code>.</p>
-<h4 id="actions-get-post-patch-put-delete">Actions: <code>@get</code>, <code>@post</code>, <code>@patch</code>, <code>@put</code>, <code>@delete</code></h4>
-<p>These are Datastar&#39;s HTTP actions. They fire a fetch request to the given URL and merge the response HTML into the DOM.</p>
-<pre><code class="language-html">data-on-click=&quot;@get(&#39;/accounts/search?q=&#39; + $q)&quot;
+      <p><strong>Modifiers</strong> are appended with <code>__</code>:</p>
+      <ul>
+        <li>
+          <code>__debounce.300ms</code> — wait N ms of silence before firing
+          (resets on each event)
+        </li>
+        <li><code>__throttle.500ms</code> — fire at most once per N ms</li>
+        <li>
+          <code>__prevent</code> — call <code>event.preventDefault()</code>
+        </li>
+        <li><code>__stop</code> — call <code>event.stopPropagation()</code></li>
+        <li><code>__once</code> — fire only once, then remove the listener</li>
+      </ul>
+      <p>
+        You can chain modifiers:
+        <code>data-on-input__debounce.300ms__prevent=&quot;...&quot;</code>.
+      </p>
+      <h4 id="actions-get-post-patch-put-delete">
+        Actions: <code>@get</code>, <code>@post</code>, <code>@patch</code>,
+        <code>@put</code>, <code>@delete</code>
+      </h4>
+      <p>
+        These are Datastar&#39;s HTTP actions. They fire a fetch request to the
+        given URL and merge the response HTML into the DOM.
+      </p>
+      <pre><code class="language-html">data-on-click=&quot;@get(&#39;/accounts/search?q=&#39; + $q)&quot;
 data-on-submit__prevent=&quot;@post(&#39;/accounts/&#39; + $id + &#39;/favorite&#39;)&quot;
 </code></pre>
-<p>The response is expected to contain one or more HTML fragments. Datastar finds each fragment&#39;s root element by <code>id</code> and replaces the matching element in the live DOM. If no <code>id</code> matches, the response is ignored (logged in dev mode).</p>
-<p><strong>Merging strategy</strong>: by default Datastar replaces the <code>innerHTML</code> of the matching element. You can control this with <code>data-merge-mode</code> on the returned fragment element:</p>
-<ul>
-<li><code>data-merge-mode=&quot;morph&quot;</code> — morphdom diff, preserves input focus</li>
-<li><code>data-merge-mode=&quot;inner&quot;</code> — replace innerHTML (default)</li>
-<li><code>data-merge-mode=&quot;outer&quot;</code> — replace outerHTML (replaces the element itself)</li>
-<li><code>data-merge-mode=&quot;prepend&quot;</code> / <code>data-merge-mode=&quot;append&quot;</code> — insert before/after existing children</li>
-</ul>
-<h4 id="sse-responses-advanced">SSE responses (advanced)</h4>
-<p>For streaming updates, Datastar supports Server-Sent Events. Instead of returning plain HTML, the server writes an SSE stream with <code>Content-Type: text/event-stream</code>. Each event can patch signals or merge HTML fragments:</p>
-<pre><code>event: datastar-merge-fragments
+      <p>
+        The response is expected to contain one or more HTML fragments. Datastar
+        finds each fragment&#39;s root element by <code>id</code> and replaces
+        the matching element in the live DOM. If no <code>id</code> matches, the
+        response is ignored (logged in dev mode).
+      </p>
+      <p>
+        <strong>Merging strategy</strong>: by default Datastar replaces the
+        <code>innerHTML</code> of the matching element. You can control this
+        with <code>data-merge-mode</code> on the returned fragment element:
+      </p>
+      <ul>
+        <li>
+          <code>data-merge-mode=&quot;morph&quot;</code> — morphdom diff,
+          preserves input focus
+        </li>
+        <li>
+          <code>data-merge-mode=&quot;inner&quot;</code> — replace innerHTML
+          (default)
+        </li>
+        <li>
+          <code>data-merge-mode=&quot;outer&quot;</code> — replace outerHTML
+          (replaces the element itself)
+        </li>
+        <li>
+          <code>data-merge-mode=&quot;prepend&quot;</code> /
+          <code>data-merge-mode=&quot;append&quot;</code> — insert before/after
+          existing children
+        </li>
+      </ul>
+      <h4 id="sse-responses-advanced">SSE responses (advanced)</h4>
+      <p>
+        For streaming updates, Datastar supports Server-Sent Events. Instead of
+        returning plain HTML, the server writes an SSE stream with
+        <code>Content-Type: text/event-stream</code>. Each event can patch
+        signals or merge HTML fragments:
+      </p>
+      <pre><code>event: datastar-merge-fragments
 data: fragments &lt;div id=&quot;stats&quot;&gt;...&lt;/div&gt;
 
 event: datastar-merge-signals
 data: signals {&quot;loading&quot;:false,&quot;count&quot;:42}
 </code></pre>
-<p>This is useful for long-running operations (report generation, file uploads) where you want to stream progress without polling.</p>
-<p>In Gin:</p>
-<pre><code class="language-go">func (h *Handler) StreamReport(c *gin.Context) {
+      <p>
+        This is useful for long-running operations (report generation, file
+        uploads) where you want to stream progress without polling.
+      </p>
+      <p>In Gin:</p>
+      <pre><code class="language-go">func (h *Handler) StreamReport(c *gin.Context) {
     c.Header(&quot;Content-Type&quot;, &quot;text/event-stream&quot;)
     c.Header(&quot;Cache-Control&quot;, &quot;no-cache&quot;)
     c.Header(&quot;Connection&quot;, &quot;keep-alive&quot;)
@@ -1014,14 +1675,23 @@ data: signals {&quot;loading&quot;:false,&quot;count&quot;:42}
     flusher.Flush()
 }
 </code></pre>
-<hr>
-<h3 id="the-fragment-pattern">The fragment pattern</h3>
-<p>This is the most important pattern in a Datastar + templ app. Every page that has a refreshable section is split into two components:</p>
-<ol>
-<li><strong>The full page</strong> — rendered on first load, contains the layout and the Datastar wiring</li>
-<li><strong>The inner fragment</strong> — rendered on partial updates, contains only the replaceable section</li>
-</ol>
-<pre><code class="language-go">// Full page — served at GET /accounts
+      <hr />
+      <h3 id="the-fragment-pattern">The fragment pattern</h3>
+      <p>
+        This is the most important pattern in a Datastar + templ app. Every page
+        that has a refreshable section is split into two components:
+      </p>
+      <ol>
+        <li>
+          <strong>The full page</strong> — rendered on first load, contains the
+          layout and the Datastar wiring
+        </li>
+        <li>
+          <strong>The inner fragment</strong> — rendered on partial updates,
+          contains only the replaceable section
+        </li>
+      </ol>
+      <pre><code class="language-go">// Full page — served at GET /accounts
 templ Accounts(d AccountsData) {
     @layouts.Dashboard(&quot;Accounts&quot;) {
         // Search form with Datastar signals
@@ -1075,8 +1745,8 @@ templ AccountsTable(d AccountsData) {
     @Pagination(&quot;/accounts&quot;, d.Page, d.Limit, d.TotalItems, d.Search)
 }
 </code></pre>
-<p>The handler for the fragment endpoint:</p>
-<pre><code class="language-go">// GET /accounts/search — returns only the AccountsTable fragment
+      <p>The handler for the fragment endpoint:</p>
+      <pre><code class="language-go">// GET /accounts/search — returns only the AccountsTable fragment
 func (h *Handler) GetAccountsSearch(c *gin.Context) {
     f := buildUserFilter(c, nil)
     users, total, _ := h.UserStore.ListUsers(f)
@@ -1088,11 +1758,21 @@ func (h *Handler) GetAccountsSearch(c *gin.Context) {
     }).Render(c.Request.Context(), c.Writer)
 }
 </code></pre>
-<p>Datastar receives the HTML, finds the root element&#39;s <code>id=&quot;accounts-table&quot;</code> (or the first element if no match), and replaces the live DOM node. No full navigation, no scroll reset, no lost input focus elsewhere on the page.</p>
-<hr>
-<h3 id="inline-form-actions-toggles-soft-actions">Inline form actions (toggles, soft actions)</h3>
-<p>When a form action should update part of the page without a full redirect:</p>
-<pre><code class="language-go">// The toggle button renders as a form for progressive enhancement
+      <p>
+        Datastar receives the HTML, finds the root element&#39;s
+        <code>id=&quot;accounts-table&quot;</code> (or the first element if no
+        match), and replaces the live DOM node. No full navigation, no scroll
+        reset, no lost input focus elsewhere on the page.
+      </p>
+      <hr />
+      <h3 id="inline-form-actions-toggles-soft-actions">
+        Inline form actions (toggles, soft actions)
+      </h3>
+      <p>
+        When a form action should update part of the page without a full
+        redirect:
+      </p>
+      <pre><code class="language-go">// The toggle button renders as a form for progressive enhancement
 templ accountActionsCard(u *models.User) {
     &lt;form method=&quot;post&quot; action={ templ.URL(fmt.Sprintf(&quot;/accounts/%d/favorite&quot;, u.ID)) }
         data-on-submit__prevent=&quot;@post(&#39;/accounts/&#39; + $id + &#39;/favorite&#39;)&quot;&gt;
@@ -1104,100 +1784,123 @@ templ accountActionsCard(u *models.User) {
     &lt;/form&gt;
 }
 </code></pre>
-<p>The server handler responds with a fragment for the actions card, which gets swapped in. If JavaScript is disabled, the native form POST fires instead — full-page reload, same result.</p>
-<hr>
-<h3 id="when-to-use-datastar-vs-a-plain-form">When to use Datastar vs. a plain form</h3>
-<table>
-<thead>
-<tr>
-<th>Scenario</th>
-<th>Datastar</th>
-<th>Plain form</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Search with debounce</td>
-<td>✅ <code>data-on-input__debounce</code></td>
-<td>❌ page reloads on every keystroke</td>
-</tr>
-<tr>
-<td>Inline toggle (favorite, suspend)</td>
-<td>✅ swap action card fragment</td>
-<td>✅ acceptable redirect</td>
-</tr>
-<tr>
-<td>Password change with feedback</td>
-<td>✅ <code>data-on-submit__prevent</code> + fragment</td>
-<td>✅ redirect with flash query param</td>
-</tr>
-<tr>
-<td>Full form creation (new affiliate)</td>
-<td>✅ or ❌ — no clear win</td>
-<td>✅ simpler, no extra route</td>
-</tr>
-<tr>
-<td>Real-time streaming (report progress)</td>
-<td>✅ SSE stream</td>
-<td>❌ not possible</td>
-</tr>
-<tr>
-<td>Static page (settings list)</td>
-<td>❌ no benefit</td>
-<td>✅ simpler</td>
-</tr>
-</tbody></table>
-<p>Use Datastar where a full-page reload creates noticeable UX friction. Static pages that redirect after a POST need nothing from Datastar.</p>
-<hr>
-<h3 id="datastar-vs-htmx-practical-differences">Datastar vs. HTMX (practical differences)</h3>
-<table>
-<thead>
-<tr>
-<th>Feature</th>
-<th>Datastar</th>
-<th>HTMX</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Signal graph</td>
-<td>✅ <code>data-store</code> / <code>data-bind</code></td>
-<td>❌ no built-in state</td>
-</tr>
-<tr>
-<td>SSE streaming</td>
-<td>✅ native, structured</td>
-<td>✅ <code>hx-ext=&quot;sse&quot;</code></td>
-</tr>
-<tr>
-<td>Debounce modifier</td>
-<td>✅ <code>__debounce.300ms</code></td>
-<td>✅ <code>hx-trigger=&quot;keyup delay:300ms&quot;</code></td>
-</tr>
-<tr>
-<td>Merge modes</td>
-<td>✅ <code>data-merge-mode</code></td>
-<td>✅ <code>hx-swap</code></td>
-</tr>
-<tr>
-<td>Client-side expressions</td>
-<td>✅ <code>$signal</code> in attributes</td>
-<td>❌ no expression language</td>
-</tr>
-<tr>
-<td>Bundle size</td>
-<td>~14 KB</td>
-<td>~14 KB</td>
-</tr>
-<tr>
-<td>Ecosystem maturity</td>
-<td>younger</td>
-<td>older, more resources</td>
-</tr>
-</tbody></table>
-<p>The signal graph is the decisive difference for this app. The search form needs to compose <code>$q</code> + <code>$page</code> + <code>$roleFilter</code> into a URL without encoding that state in DOM attributes or hidden inputs. With Datastar you declare signals once and reference them anywhere in the subtree.</p>
-<hr>
-<h2 id="14-styling-with-tailwind-css-v3">14. Styling with Tailwind CSS v3</h2>
-<h3 id="setup">Setup</h3>
-<pre><code class="language-js">// tailwind.config.js
+      <p>
+        The server handler responds with a fragment for the actions card, which
+        gets swapped in. If JavaScript is disabled, the native form POST fires
+        instead — full-page reload, same result.
+      </p>
+      <hr />
+      <h3 id="when-to-use-datastar-vs-a-plain-form">
+        When to use Datastar vs. a plain form
+      </h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Scenario</th>
+            <th>Datastar</th>
+            <th>Plain form</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Search with debounce</td>
+            <td>✅ <code>data-on-input__debounce</code></td>
+            <td>❌ page reloads on every keystroke</td>
+          </tr>
+          <tr>
+            <td>Inline toggle (favorite, suspend)</td>
+            <td>✅ swap action card fragment</td>
+            <td>✅ acceptable redirect</td>
+          </tr>
+          <tr>
+            <td>Password change with feedback</td>
+            <td>✅ <code>data-on-submit__prevent</code> + fragment</td>
+            <td>✅ redirect with flash query param</td>
+          </tr>
+          <tr>
+            <td>Full form creation (new affiliate)</td>
+            <td>✅ or ❌ — no clear win</td>
+            <td>✅ simpler, no extra route</td>
+          </tr>
+          <tr>
+            <td>Real-time streaming (report progress)</td>
+            <td>✅ SSE stream</td>
+            <td>❌ not possible</td>
+          </tr>
+          <tr>
+            <td>Static page (settings list)</td>
+            <td>❌ no benefit</td>
+            <td>✅ simpler</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        Use Datastar where a full-page reload creates noticeable UX friction.
+        Static pages that redirect after a POST need nothing from Datastar.
+      </p>
+      <hr />
+      <h3 id="datastar-vs-htmx-practical-differences">
+        Datastar vs. HTMX (practical differences)
+      </h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Datastar</th>
+            <th>HTMX</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Signal graph</td>
+            <td>✅ <code>data-store</code> / <code>data-bind</code></td>
+            <td>❌ no built-in state</td>
+          </tr>
+          <tr>
+            <td>SSE streaming</td>
+            <td>✅ native, structured</td>
+            <td>✅ <code>hx-ext=&quot;sse&quot;</code></td>
+          </tr>
+          <tr>
+            <td>Debounce modifier</td>
+            <td>✅ <code>__debounce.300ms</code></td>
+            <td>✅ <code>hx-trigger=&quot;keyup delay:300ms&quot;</code></td>
+          </tr>
+          <tr>
+            <td>Merge modes</td>
+            <td>✅ <code>data-merge-mode</code></td>
+            <td>✅ <code>hx-swap</code></td>
+          </tr>
+          <tr>
+            <td>Client-side expressions</td>
+            <td>✅ <code>$signal</code> in attributes</td>
+            <td>❌ no expression language</td>
+          </tr>
+          <tr>
+            <td>Bundle size</td>
+            <td>~14 KB</td>
+            <td>~14 KB</td>
+          </tr>
+          <tr>
+            <td>Ecosystem maturity</td>
+            <td>younger</td>
+            <td>older, more resources</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        The signal graph is the decisive difference for this app. The search
+        form needs to compose <code>$q</code> + <code>$page</code> +
+        <code>$roleFilter</code> into a URL without encoding that state in DOM
+        attributes or hidden inputs. With Datastar you declare signals once and
+        reference them anywhere in the subtree.
+      </p>
+      <hr />
+      <h2 id="14-styling-with-tailwind-css-v3">
+        14. Styling with Tailwind CSS v3
+      </h2>
+      <h3 id="setup">Setup</h3>
+      <pre><code class="language-js">// tailwind.config.js
 module.exports = {
     content: [
         &quot;./internal/views/**/*.templ&quot;,
@@ -1207,8 +1910,12 @@ module.exports = {
     plugins: [],
 }
 </code></pre>
-<p>The <code>content</code> paths tell Tailwind what files to scan for class names. <code>.templ</code> files work because Tailwind just looks for class strings — it doesn&#39;t need to understand the language.</p>
-<pre><code class="language-css">/* static/css/input.css */
+      <p>
+        The <code>content</code> paths tell Tailwind what files to scan for
+        class names. <code>.templ</code> files work because Tailwind just looks
+        for class strings — it doesn&#39;t need to understand the language.
+      </p>
+      <pre><code class="language-css">/* static/css/input.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -1218,12 +1925,17 @@ module.exports = {
     @apply bg-indigo-50 text-indigo-700 font-semibold;
 }
 </code></pre>
-<p>Build:</p>
-<pre><code class="language-bash">./node_modules/.bin/tailwindcss -i static/css/input.css -o static/css/app.css --minify
+      <p>Build:</p>
+      <pre><code class="language-bash">./node_modules/.bin/tailwindcss -i static/css/input.css -o static/css/app.css --minify
 </code></pre>
-<h3 id="component-classes">Component classes</h3>
-<p>Tailwind in server-rendered HTML is used exactly like in React — classes on elements. The difference is there&#39;s no <code>clsx</code> or conditional class logic from JS; you use Go&#39;s <code>if</code> in templ:</p>
-<pre><code class="language-go">templ statusBadge(u models.User) {
+      <h3 id="component-classes">Component classes</h3>
+      <p>
+        Tailwind in server-rendered HTML is used exactly like in React — classes
+        on elements. The difference is there&#39;s no <code>clsx</code> or
+        conditional class logic from JS; you use Go&#39;s <code>if</code> in
+        templ:
+      </p>
+      <pre><code class="language-go">templ statusBadge(u models.User) {
     if u.Suspend {
         &lt;span class=&quot;bg-red-100 text-red-700 px-2 py-0.5 rounded-full text-xs&quot;&gt;Suspended&lt;/span&gt;
     } else if u.EmailVerifiedAt != nil {
@@ -1233,20 +1945,31 @@ module.exports = {
     }
 }
 </code></pre>
-<hr>
-<h2 id="15-live-reload-with-air">15. Live reload with air</h2>
-<p><a href="https://github.com/air-verse/air">air</a> is a live-reload tool for Go that watches your source files, rebuilds on changes, and restarts the binary. For a stack that has a code-generation step (templ) and an asset build step (Tailwind), the key feature is <code>pre_cmd</code> — commands that run before the Go compile on every triggered rebuild.</p>
-<h3 id="installation">Installation</h3>
-<pre><code class="language-bash">go install github.com/air-verse/air@latest
+      <hr />
+      <h2 id="15-live-reload-with-air">15. Live reload with air</h2>
+      <p>
+        <a href="https://github.com/air-verse/air">air</a> is a live-reload tool
+        for Go that watches your source files, rebuilds on changes, and restarts
+        the binary. For a stack that has a code-generation step (templ) and an
+        asset build step (Tailwind), the key feature is <code>pre_cmd</code> —
+        commands that run before the Go compile on every triggered rebuild.
+      </p>
+      <h3 id="installation">Installation</h3>
+      <pre><code class="language-bash">go install github.com/air-verse/air@latest
 </code></pre>
-<p>air installs to <code>$(go env GOPATH)/bin/air</code>. Make sure <code>$GOPATH/bin</code> is in your <code>$PATH</code>:</p>
-<pre><code class="language-bash">export PATH=&quot;$PATH:$(go env GOPATH)/bin&quot;
+      <p>
+        air installs to <code>$(go env GOPATH)/bin/air</code>. Make sure
+        <code>$GOPATH/bin</code> is in your <code>$PATH</code>:
+      </p>
+      <pre><code class="language-bash">export PATH=&quot;$PATH:$(go env GOPATH)/bin&quot;
 </code></pre>
-<p>Verify:</p>
-<pre><code class="language-bash">air -v   # v1.xx.x
+      <p>Verify:</p>
+      <pre><code class="language-bash">air -v   # v1.xx.x
 </code></pre>
-<h3 id="the-full-airtoml-explained">The full <code>.air.toml</code> explained</h3>
-<pre><code class="language-toml"># Root of the project (where air looks for .air.toml)
+      <h3 id="the-full-airtoml-explained">
+        The full <code>.air.toml</code> explained
+      </h3>
+      <pre><code class="language-toml"># Root of the project (where air looks for .air.toml)
 root = &quot;.&quot;
 
 # Temporary directory for compiled binaries and build logs.
@@ -1322,9 +2045,9 @@ tmp_dir = &quot;.air_tmp&quot;
   # Prevents stale binaries from being left behind.
   clean_on_exit = true
 </code></pre>
-<h3 id="how-the-rebuild-cycle-works">How the rebuild cycle works</h3>
-<p>When you save <code>internal/views/pages/accounts.templ</code>:</p>
-<pre><code>1. air inotify/kqueue detects: accounts.templ changed
+      <h3 id="how-the-rebuild-cycle-works">How the rebuild cycle works</h3>
+      <p>When you save <code>internal/views/pages/accounts.templ</code>:</p>
+      <pre><code>1. air inotify/kqueue detects: accounts.templ changed
    (include_ext matches &quot;templ&quot;, file is in include_dir, not in exclude_dir)
 
 2. air runs pre_cmd[0]: &quot;make generate css&quot;
@@ -1347,8 +2070,10 @@ tmp_dir = &quot;.air_tmp&quot;
 
 Total wall time: ~1-3s on a modern Mac for a single .templ change
 </code></pre>
-<p>When you save a <code>.go</code> file (no templ or CSS changes needed):</p>
-<pre><code>1. air detects: accounts_handler.go changed
+      <p>
+        When you save a <code>.go</code> file (no templ or CSS changes needed):
+      </p>
+      <pre><code>1. air detects: accounts_handler.go changed
 2. pre_cmd still runs (&quot;make generate css&quot;)
    ← templ generate is a no-op if no .templ files changed
    ← tailwindcss is fast (~200ms) even when nothing changed
@@ -1356,29 +2081,54 @@ Total wall time: ~1-3s on a modern Mac for a single .templ change
 4. restart
 Total: ~0.5-1.5s
 </code></pre>
-<p><code>pre_cmd</code> always runs. For a pure Go change this wastes ~200ms on a no-op tailwind pass. If that matters, split the pre_cmd logic to skip CSS when only <code>.go</code> files changed — but in practice 200ms is unnoticeable.</p>
-<h3 id="debugging-rebuild-problems">Debugging rebuild problems</h3>
-<p><strong>Build errors don&#39;t restart the server:</strong></p>
-<p>When <code>stop_on_error = true</code> and the build fails, air prints the error and waits. Fix the compile error, save, air rebuilds automatically.</p>
-<p>Build errors also go to <code>.air_tmp/build-errors.log</code>:</p>
-<pre><code class="language-bash">cat .air_tmp/build-errors.log
+      <p>
+        <code>pre_cmd</code> always runs. For a pure Go change this wastes
+        ~200ms on a no-op tailwind pass. If that matters, split the pre_cmd
+        logic to skip CSS when only <code>.go</code> files changed — but in
+        practice 200ms is unnoticeable.
+      </p>
+      <h3 id="debugging-rebuild-problems">Debugging rebuild problems</h3>
+      <p><strong>Build errors don&#39;t restart the server:</strong></p>
+      <p>
+        When <code>stop_on_error = true</code> and the build fails, air prints
+        the error and waits. Fix the compile error, save, air rebuilds
+        automatically.
+      </p>
+      <p>Build errors also go to <code>.air_tmp/build-errors.log</code>:</p>
+      <pre><code class="language-bash">cat .air_tmp/build-errors.log
 </code></pre>
-<p><strong>Port already in use on restart:</strong></p>
-<p>If the old binary doesn&#39;t release the port before the new one starts, increase <code>kill_delay</code>:</p>
-<pre><code class="language-toml">kill_delay = &quot;500ms&quot;
+      <p><strong>Port already in use on restart:</strong></p>
+      <p>
+        If the old binary doesn&#39;t release the port before the new one
+        starts, increase <code>kill_delay</code>:
+      </p>
+      <pre><code class="language-toml">kill_delay = &quot;500ms&quot;
 </code></pre>
-<p>Or set <code>SO_REUSEPORT</code> on your Gin listener. For local dev, 200–500ms is always sufficient.</p>
-<p><strong>air not detecting changes:</strong></p>
-<p>Check <code>include_dir</code>. If you add a new directory (e.g. <code>internal/services/</code>), air watches it automatically because it&#39;s under <code>internal/</code> which is already in <code>include_dir</code>. But if you create a top-level directory like <code>pkg/</code>, you need to add it:</p>
-<pre><code class="language-toml">include_dir = [&quot;cmd&quot;, &quot;internal&quot;, &quot;static&quot;, &quot;pkg&quot;]
+      <p>
+        Or set <code>SO_REUSEPORT</code> on your Gin listener. For local dev,
+        200–500ms is always sufficient.
+      </p>
+      <p><strong>air not detecting changes:</strong></p>
+      <p>
+        Check <code>include_dir</code>. If you add a new directory (e.g.
+        <code>internal/services/</code>), air watches it automatically because
+        it&#39;s under <code>internal/</code> which is already in
+        <code>include_dir</code>. But if you create a top-level directory like
+        <code>pkg/</code>, you need to add it:
+      </p>
+      <pre><code class="language-toml">include_dir = [&quot;cmd&quot;, &quot;internal&quot;, &quot;static&quot;, &quot;pkg&quot;]
 </code></pre>
-<p><strong>templ generate fails silently:</strong></p>
-<p>If <code>templ</code> isn&#39;t on <code>$PATH</code>, <code>make generate</code> exits non-zero and air aborts with <code>stop_on_error = true</code>. The Makefile resolves this with:</p>
-<pre><code class="language-makefile">TEMPL_CMD=$(shell which templ || echo $(HOME)/go/bin/templ)
+      <p><strong>templ generate fails silently:</strong></p>
+      <p>
+        If <code>templ</code> isn&#39;t on <code>$PATH</code>,
+        <code>make generate</code> exits non-zero and air aborts with
+        <code>stop_on_error = true</code>. The Makefile resolves this with:
+      </p>
+      <pre><code class="language-makefile">TEMPL_CMD=$(shell which templ || echo $(HOME)/go/bin/templ)
 </code></pre>
-<p>It falls back to the absolute path in <code>$GOPATH/bin</code>.</p>
-<h3 id="running-air">Running air</h3>
-<pre><code class="language-bash"># From the v2/ directory (air reads .air.toml automatically)
+      <p>It falls back to the absolute path in <code>$GOPATH/bin</code>.</p>
+      <h3 id="running-air">Running air</h3>
+      <pre><code class="language-bash"># From the v2/ directory (air reads .air.toml automatically)
 air
 
 # With verbose output
@@ -1387,9 +2137,9 @@ air -d
 # Point to a different config
 air -c .air.dev.toml
 </code></pre>
-<h3 id="using-multiple-air-configs">Using multiple air configs</h3>
-<p>For a project with distinct dev and CI modes:</p>
-<pre><code class="language-toml"># .air.dev.toml — development: pre_cmd includes CSS watch
+      <h3 id="using-multiple-air-configs">Using multiple air configs</h3>
+      <p>For a project with distinct dev and CI modes:</p>
+      <pre><code class="language-toml"># .air.dev.toml — development: pre_cmd includes CSS watch
 [build]
   pre_cmd = [&quot;make generate css&quot;]
   include_ext = [&quot;go&quot;, &quot;templ&quot;, &quot;css&quot;, &quot;env&quot;]
@@ -1399,12 +2149,22 @@ air -c .air.dev.toml
   pre_cmd = [&quot;make generate&quot;]
   include_ext = [&quot;go&quot;, &quot;templ&quot;]
 </code></pre>
-<p>Switch with <code>air -c .air.quick.toml</code> when you&#39;re only changing Go/templ and don&#39;t want the Tailwind pass.</p>
-<hr>
-<h2 id="16-the-build-pipeline-makefile">16. The build pipeline (Makefile)</h2>
-<p>The Makefile is the single source of truth for all build steps. Every tool — templ, Tailwind, Go — is invoked here, so <code>make</code> is the one command that always produces a correct build regardless of what changed.</p>
-<h3 id="full-makefile">Full Makefile</h3>
-<pre><code class="language-makefile"># Makefile for admin-v2
+      <p>
+        Switch with <code>air -c .air.quick.toml</code> when you&#39;re only
+        changing Go/templ and don&#39;t want the Tailwind pass.
+      </p>
+      <hr />
+      <h2 id="16-the-build-pipeline-makefile">
+        16. The build pipeline (Makefile)
+      </h2>
+      <p>
+        The Makefile is the single source of truth for all build steps. Every
+        tool — templ, Tailwind, Go — is invoked here, so <code>make</code> is
+        the one command that always produces a correct build regardless of what
+        changed.
+      </p>
+      <h3 id="full-makefile">Full Makefile</h3>
+      <pre><code class="language-makefile"># Makefile for admin-v2
 # Usage: make [target]
 
 BINARY     = bin/admin-v2
@@ -1459,31 +2219,64 @@ tidy:
 help:
 	@grep -E &#39;^## &#39; Makefile | sed &#39;s/## /  /&#39;
 </code></pre>
-<h3 id="target-breakdown">Target breakdown</h3>
-<h4 id="make-all--the-default"><code>make all</code> — the default</h4>
-<pre><code class="language-makefile">all: generate css build
+      <h3 id="target-breakdown">Target breakdown</h3>
+      <h4 id="make-all--the-default"><code>make all</code> — the default</h4>
+      <pre><code class="language-makefile">all: generate css build
 </code></pre>
-<p>Dependencies execute left-to-right: <code>generate</code> → <code>css</code> → <code>build</code>. This is the correct order because:</p>
-<ol>
-<li><code>templ generate</code> writes <code>*_templ.go</code> files — Go won&#39;t compile without them</li>
-<li><code>tailwindcss</code> writes <code>static/css/app.css</code> — the binary serves this at <code>/static/css/app.css</code></li>
-<li><code>go build</code> compiles everything including the generated <code>*_templ.go</code> files</li>
-</ol>
-<p>If you skip <code>generate</code> and run <code>go build</code> directly after adding a new templ component, the build fails with <code>undefined: pages.NewComponent</code>. <code>make all</code> prevents this class of error.</p>
-<h4 id="make-generate--templ-code-generation"><code>make generate</code> — templ code generation</h4>
-<pre><code class="language-makefile">TEMPL_CMD = $(shell which templ || echo $(HOME)/go/bin/templ)
+      <p>
+        Dependencies execute left-to-right: <code>generate</code> →
+        <code>css</code> → <code>build</code>. This is the correct order
+        because:
+      </p>
+      <ol>
+        <li>
+          <code>templ generate</code> writes <code>*_templ.go</code> files — Go
+          won&#39;t compile without them
+        </li>
+        <li>
+          <code>tailwindcss</code> writes <code>static/css/app.css</code> — the
+          binary serves this at <code>/static/css/app.css</code>
+        </li>
+        <li>
+          <code>go build</code> compiles everything including the generated
+          <code>*_templ.go</code> files
+        </li>
+      </ol>
+      <p>
+        If you skip <code>generate</code> and run <code>go build</code> directly
+        after adding a new templ component, the build fails with
+        <code>undefined: pages.NewComponent</code>.
+        <code>make all</code> prevents this class of error.
+      </p>
+      <h4 id="make-generate--templ-code-generation">
+        <code>make generate</code> — templ code generation
+      </h4>
+      <pre><code class="language-makefile">TEMPL_CMD = $(shell which templ || echo $(HOME)/go/bin/templ)
 
 generate:
 	$(TEMPL_CMD) generate ./...
 </code></pre>
-<p><code>$(shell which templ || echo $(HOME)/go/bin/templ)</code> is evaluated at parse time. It resolves <code>templ</code> from <code>$PATH</code> first, then falls back to the absolute GOPATH location. This makes the Makefile work in CI environments where <code>go install</code> writes to <code>~/go/bin</code> but that directory isn&#39;t in <code>$PATH</code>.</p>
-<p><code>templ generate ./...</code> scans all packages recursively. For each <code>*.templ</code> file it finds, it writes a <code>*_templ.go</code> file in the same directory. These files are committed to <code>.gitignore</code> — they&#39;re generated artifacts, not source.</p>
-<p>What gets generated for <code>accounts.templ</code>:</p>
-<pre><code>accounts.templ
+      <p>
+        <code>$(shell which templ || echo $(HOME)/go/bin/templ)</code> is
+        evaluated at parse time. It resolves <code>templ</code> from
+        <code>$PATH</code> first, then falls back to the absolute GOPATH
+        location. This makes the Makefile work in CI environments where
+        <code>go install</code> writes to <code>~/go/bin</code> but that
+        directory isn&#39;t in <code>$PATH</code>.
+      </p>
+      <p>
+        <code>templ generate ./...</code> scans all packages recursively. For
+        each <code>*.templ</code> file it finds, it writes a
+        <code>*_templ.go</code> file in the same directory. These files are
+        committed to <code>.gitignore</code> — they&#39;re generated artifacts,
+        not source.
+      </p>
+      <p>What gets generated for <code>accounts.templ</code>:</p>
+      <pre><code>accounts.templ
     → accounts_templ.go     (the Go implementation of each templ component)
 </code></pre>
-<p>The generated code looks like:</p>
-<pre><code class="language-go">// accounts_templ.go — DO NOT EDIT
+      <p>The generated code looks like:</p>
+      <pre><code class="language-go">// accounts_templ.go — DO NOT EDIT
 func Accounts(d AccountsData) templ.Component {
     return templ.ComponentFunc(func(ctx context.Context, templ_7_w io.Writer) (templ_7_err error) {
         // Writes HTML to templ_7_w using Go&#39;s io.Writer
@@ -1492,107 +2285,201 @@ func Accounts(d AccountsData) templ.Component {
     })
 }
 </code></pre>
-<p>You can read and debug this code, but any edits are overwritten on the next <code>make generate</code>.</p>
-<h4 id="make-css--tailwind-build"><code>make css</code> — Tailwind build</h4>
-<pre><code class="language-makefile">TAILWIND_CMD = ./node_modules/.bin/tailwindcss
+      <p>
+        You can read and debug this code, but any edits are overwritten on the
+        next <code>make generate</code>.
+      </p>
+      <h4 id="make-css--tailwind-build">
+        <code>make css</code> — Tailwind build
+      </h4>
+      <pre><code class="language-makefile">TAILWIND_CMD = ./node_modules/.bin/tailwindcss
 
 css:
 	$(TAILWIND_CMD) -i static/css/input.css -o static/css/app.css --minify
 </code></pre>
-<p>Using the local <code>node_modules/.bin/tailwindcss</code> instead of a global install means every developer and CI run uses the exact version pinned in <code>package.json</code>. The <code>--minify</code> flag strips whitespace and comments — important for production (saves ~30-60 KB on a typical Tailwind build).</p>
-<p>Tailwind scans files listed in <code>tailwind.config.js content</code>:</p>
-<pre><code class="language-js">content: [
+      <p>
+        Using the local <code>node_modules/.bin/tailwindcss</code> instead of a
+        global install means every developer and CI run uses the exact version
+        pinned in <code>package.json</code>. The <code>--minify</code> flag
+        strips whitespace and comments — important for production (saves ~30-60
+        KB on a typical Tailwind build).
+      </p>
+      <p>
+        Tailwind scans files listed in <code>tailwind.config.js content</code>:
+      </p>
+      <pre><code class="language-js">content: [
     &quot;./internal/views/**/*.templ&quot;,   // all templ components
     &quot;./static/**/*.html&quot;,            // any static HTML
 ]
 </code></pre>
-<p>It generates only the CSS for classes actually used in those files. A fresh <code>make css</code> after <code>make clean</code> will produce the exact same <code>app.css</code> as long as the templ files are unchanged.</p>
-<p><strong>Development tip</strong>: For iterative CSS work, use Tailwind&#39;s watch mode directly:</p>
-<pre><code class="language-bash">./node_modules/.bin/tailwindcss -i static/css/input.css -o static/css/app.css --watch
+      <p>
+        It generates only the CSS for classes actually used in those files. A
+        fresh <code>make css</code> after <code>make clean</code> will produce
+        the exact same <code>app.css</code> as long as the templ files are
+        unchanged.
+      </p>
+      <p>
+        <strong>Development tip</strong>: For iterative CSS work, use
+        Tailwind&#39;s watch mode directly:
+      </p>
+      <pre><code class="language-bash">./node_modules/.bin/tailwindcss -i static/css/input.css -o static/css/app.css --watch
 </code></pre>
-<p>This updates <code>app.css</code> in-place on every save without a full rebuild. Pair it with <code>go run ./cmd/server</code> in a separate terminal for fast CSS iteration.</p>
-<h4 id="make-build--go-compile"><code>make build</code> — Go compile</h4>
-<pre><code class="language-makefile">build:
+      <p>
+        This updates <code>app.css</code> in-place on every save without a full
+        rebuild. Pair it with <code>go run ./cmd/server</code> in a separate
+        terminal for fast CSS iteration.
+      </p>
+      <h4 id="make-build--go-compile"><code>make build</code> — Go compile</h4>
+      <pre><code class="language-makefile">build:
 	mkdir -p bin
 	go build -o $(BINARY) ./cmd/server
 </code></pre>
-<p><code>go build ./cmd/server</code> compiles the <code>main</code> package and all its transitive imports into a single static binary at <code>bin/admin-v2</code>. No CGO by default (the MySQL driver uses pure Go).</p>
-<p>For a production binary with debug info stripped:</p>
-<pre><code class="language-makefile">build-prod:
+      <p>
+        <code>go build ./cmd/server</code> compiles the
+        <code>main</code> package and all its transitive imports into a single
+        static binary at <code>bin/admin-v2</code>. No CGO by default (the MySQL
+        driver uses pure Go).
+      </p>
+      <p>For a production binary with debug info stripped:</p>
+      <pre><code class="language-makefile">build-prod:
 	mkdir -p bin
 	go build -ldflags=&quot;-s -w&quot; -o $(BINARY) ./cmd/server
 </code></pre>
-<p><code>-s</code> strips the symbol table, <code>-w</code> strips DWARF debug info. Reduces binary size by ~30%.</p>
-<h4 id="make-run-vs-make-dev"><code>make run</code> vs. <code>make dev</code></h4>
-<pre><code class="language-makefile">run: all          # full rebuild + execute the compiled binary
+      <p>
+        <code>-s</code> strips the symbol table, <code>-w</code> strips DWARF
+        debug info. Reduces binary size by ~30%.
+      </p>
+      <h4 id="make-run-vs-make-dev">
+        <code>make run</code> vs. <code>make dev</code>
+      </h4>
+      <pre><code class="language-makefile">run: all          # full rebuild + execute the compiled binary
 dev: generate css # partial build + go run (no binary written)
     go run ./cmd/server
 </code></pre>
-<p><code>make run</code> is for testing the production build path. <code>make dev</code> is for quick iteration — <code>go run</code> compiles in-memory and skips writing a binary to disk, saving a file-system write. The difference is ~100ms on a fast machine — negligible, but <code>make dev</code> is semantically clearer: &quot;I&#39;m developing, not shipping.&quot;</p>
-<p>For actual hot-reload iteration, use <code>air</code> instead of either.</p>
-<h4 id="make-clean--full-reset"><code>make clean</code> — full reset</h4>
-<pre><code class="language-makefile">clean:
+      <p>
+        <code>make run</code> is for testing the production build path.
+        <code>make dev</code> is for quick iteration —
+        <code>go run</code> compiles in-memory and skips writing a binary to
+        disk, saving a file-system write. The difference is ~100ms on a fast
+        machine — negligible, but <code>make dev</code> is semantically clearer:
+        &quot;I&#39;m developing, not shipping.&quot;
+      </p>
+      <p>
+        For actual hot-reload iteration, use <code>air</code> instead of either.
+      </p>
+      <h4 id="make-clean--full-reset"><code>make clean</code> — full reset</h4>
+      <pre><code class="language-makefile">clean:
 	rm -rf bin/
 	rm -f static/css/app.css
 	find . -name &#39;*_templ.go&#39; -delete
 </code></pre>
-<p>Removes:</p>
-<ul>
-<li><code>bin/</code> — compiled binaries</li>
-<li><code>static/css/app.css</code> — generated Tailwind output</li>
-<li>All <code>*_templ.go</code> files anywhere in the tree — generated templ code</li>
-</ul>
-<p>After <code>make clean</code>, running <code>make all</code> rebuilds everything from scratch. Use this when:</p>
-<ul>
-<li>Upgrading the <code>templ</code> version (generated code format may change)</li>
-<li>Upgrading Tailwind (utility class names may change)</li>
-<li>Debugging a &quot;stale generated file&quot; issue</li>
-<li>Onboarding a new developer who just cloned the repo</li>
-</ul>
-<h4 id="make-test-and-make-tidy"><code>make test</code> and <code>make tidy</code></h4>
-<pre><code class="language-makefile">test:
+      <p>Removes:</p>
+      <ul>
+        <li><code>bin/</code> — compiled binaries</li>
+        <li><code>static/css/app.css</code> — generated Tailwind output</li>
+        <li>
+          All <code>*_templ.go</code> files anywhere in the tree — generated
+          templ code
+        </li>
+      </ul>
+      <p>
+        After <code>make clean</code>, running <code>make all</code> rebuilds
+        everything from scratch. Use this when:
+      </p>
+      <ul>
+        <li>
+          Upgrading the <code>templ</code> version (generated code format may
+          change)
+        </li>
+        <li>Upgrading Tailwind (utility class names may change)</li>
+        <li>Debugging a &quot;stale generated file&quot; issue</li>
+        <li>Onboarding a new developer who just cloned the repo</li>
+      </ul>
+      <h4 id="make-test-and-make-tidy">
+        <code>make test</code> and <code>make tidy</code>
+      </h4>
+      <pre><code class="language-makefile">test:
 	go test ./...   # runs all tests in the module
 
 tidy:
 	go mod tidy     # removes unused deps, adds missing ones
 </code></pre>
-<p>Run <code>make tidy</code> after adding or removing imports. It updates both <code>go.mod</code> and <code>go.sum</code>. Commit both files.</p>
-<h3 id="templ_cmd-resolution-in-ci">TEMPL_CMD resolution in CI</h3>
-<p>In GitHub Actions or similar CI without <code>$GOPATH/bin</code> on <code>$PATH</code>:</p>
-<pre><code class="language-yaml"># .github/workflows/build.yml
+      <p>
+        Run <code>make tidy</code> after adding or removing imports. It updates
+        both <code>go.mod</code> and <code>go.sum</code>. Commit both files.
+      </p>
+      <h3 id="templ_cmd-resolution-in-ci">TEMPL_CMD resolution in CI</h3>
+      <p>
+        In GitHub Actions or similar CI without <code>$GOPATH/bin</code> on
+        <code>$PATH</code>:
+      </p>
+      <pre><code class="language-yaml"># .github/workflows/build.yml
 - name: Install templ
   run: go install github.com/a-h/templ/cmd/templ@latest
 
 - name: Build
   run: make all   # TEMPL_CMD falls back to $HOME/go/bin/templ
 </code></pre>
-<p>The <code>$(shell which templ || echo $(HOME)/go/bin/templ)</code> expansion handles this automatically.</p>
-<h3 id="adding-a-watch-target-without-air">Adding a watch target (without air)</h3>
-<p>If you don&#39;t want to install air but want file watching, add a <code>watch</code> target using <code>entr</code>:</p>
-<pre><code class="language-makefile">watch:
+      <p>
+        The
+        <code>$(shell which templ || echo $(HOME)/go/bin/templ)</code> expansion
+        handles this automatically.
+      </p>
+      <h3 id="adding-a-watch-target-without-air">
+        Adding a watch target (without air)
+      </h3>
+      <p>
+        If you don&#39;t want to install air but want file watching, add a
+        <code>watch</code> target using <code>entr</code>:
+      </p>
+      <pre><code class="language-makefile">watch:
 	find . -name &#39;*.go&#39; -o -name &#39;*.templ&#39; -o -name &#39;input.css&#39; \
 	  | entr -r make dev
 </code></pre>
-<p><code>brew install entr</code> on macOS. <code>entr -r</code> re-runs the whole command on any change. This is cruder than air (no debounce, no partial rebuild), but works without an extra Go install.</p>
-<h3 id="parallel-builds-advanced">Parallel builds (advanced)</h3>
-<p>For large projects where <code>templ generate</code> and other pre-steps can run in parallel:</p>
-<pre><code class="language-makefile">prepare:
+      <p>
+        <code>brew install entr</code> on macOS. <code>entr -r</code> re-runs
+        the whole command on any change. This is cruder than air (no debounce,
+        no partial rebuild), but works without an extra Go install.
+      </p>
+      <h3 id="parallel-builds-advanced">Parallel builds (advanced)</h3>
+      <p>
+        For large projects where <code>templ generate</code> and other pre-steps
+        can run in parallel:
+      </p>
+      <pre><code class="language-makefile">prepare:
 	$(TEMPL_CMD) generate ./... &amp;  \
 	$(TAILWIND_CMD) -i static/css/input.css -o static/css/app.css --minify &amp; \
 	wait
 
 all: prepare build
 </code></pre>
-<p>This runs templ and Tailwind concurrently, then waits for both before compiling. For admin-v2 the sequential approach is fast enough (~2s total), but for larger templ codebases this can save 1-2s per rebuild.</p>
-<hr>
-<h2 id="17-end-to-end-walkthrough-the-accounts-list">17. End-to-end walkthrough: the accounts list</h2>
-<p>This section traces a single request through every layer.</p>
-<h3 id="1-request-arrives-get-accountsqjohnpage2">1. Request arrives: <code>GET /accounts?q=john&amp;page=2</code></h3>
-<p>Gin matches the route to <code>h.GetAccounts</code> (registered in <code>RegisterRoutes</code> under the <code>protected</code> group).</p>
-<h3 id="2-middlewaresessionauth-runs-first">2. <code>middleware.SessionAuth()</code> runs first</h3>
-<p>It checks <code>c.Get(AdminIDKey)</code> — set by <code>LoadSessionAdmin()</code> earlier in the chain. If missing, redirects to <code>/login</code>.</p>
-<h3 id="3-handler-builds-the-filter">3. Handler builds the filter</h3>
-<pre><code class="language-go">func (h *Handler) GetAccounts(c *gin.Context) {
+      <p>
+        This runs templ and Tailwind concurrently, then waits for both before
+        compiling. For admin-v2 the sequential approach is fast enough (~2s
+        total), but for larger templ codebases this can save 1-2s per rebuild.
+      </p>
+      <hr />
+      <h2 id="17-end-to-end-walkthrough-the-accounts-list">
+        17. End-to-end walkthrough: the accounts list
+      </h2>
+      <p>This section traces a single request through every layer.</p>
+      <h3 id="1-request-arrives-get-accountsqjohnpage2">
+        1. Request arrives: <code>GET /accounts?q=john&amp;page=2</code>
+      </h3>
+      <p>
+        Gin matches the route to <code>h.GetAccounts</code> (registered in
+        <code>RegisterRoutes</code> under the <code>protected</code> group).
+      </p>
+      <h3 id="2-middlewaresessionauth-runs-first">
+        2. <code>middleware.SessionAuth()</code> runs first
+      </h3>
+      <p>
+        It checks <code>c.Get(AdminIDKey)</code> — set by
+        <code>LoadSessionAdmin()</code> earlier in the chain. If missing,
+        redirects to <code>/login</code>.
+      </p>
+      <h3 id="3-handler-builds-the-filter">3. Handler builds the filter</h3>
+      <pre><code class="language-go">func (h *Handler) GetAccounts(c *gin.Context) {
     f := buildUserFilter(c, nil)
     roleID := uint(1)
     f.RoleID = &amp;roleID
@@ -1601,9 +2488,15 @@ all: prepare build
     // ...
 }
 </code></pre>
-<p><code>buildUserFilter</code> parses <code>?q=john&amp;page=2</code> from the query string. <code>f.RoleID = &amp;roleID</code> pins the query to accounts (role 1), excluding reps and affiliates.</p>
-<h3 id="4-store-executes-two-sql-queries">4. Store executes two SQL queries</h3>
-<pre><code class="language-go">func (s *UserStore) ListUsers(f UserFilter) ([]models.User, int64, error) {
+      <p>
+        <code>buildUserFilter</code> parses <code>?q=john&amp;page=2</code> from
+        the query string. <code>f.RoleID = &amp;roleID</code> pins the query to
+        accounts (role 1), excluding reps and affiliates.
+      </p>
+      <h3 id="4-store-executes-two-sql-queries">
+        4. Store executes two SQL queries
+      </h3>
+      <pre><code class="language-go">func (s *UserStore) ListUsers(f UserFilter) ([]models.User, int64, error) {
     where, args := buildUserWhere(f)
     // WHERE u.deleted_at IS NULL AND u.user_role_id = 1 AND (u.name LIKE ? OR u.email LIKE ? ...)
 
@@ -1618,17 +2511,27 @@ all: prepare build
     return users, total, nil
 }
 </code></pre>
-<p><code>sqlx.Select</code> scans all rows into <code>[]models.User</code> using the <code>db:</code> struct tags.</p>
-<h3 id="5-handler-renders-the-template">5. Handler renders the template</h3>
-<pre><code class="language-go">c.Header(&quot;Content-Type&quot;, &quot;text/html; charset=utf-8&quot;)
+      <p>
+        <code>sqlx.Select</code> scans all rows into
+        <code>[]models.User</code> using the <code>db:</code> struct tags.
+      </p>
+      <h3 id="5-handler-renders-the-template">
+        5. Handler renders the template
+      </h3>
+      <pre><code class="language-go">c.Header(&quot;Content-Type&quot;, &quot;text/html; charset=utf-8&quot;)
 pages.Accounts(pages.AccountsData{
     Users: users, TotalItems: total,
     Page: f.Page, Limit: f.Limit, Search: f.Search,
 }).Render(c.Request.Context(), c.Writer)
 </code></pre>
-<p><code>Render</code> writes HTML directly to <code>c.Writer</code>. No buffering.</p>
-<h3 id="6-templ-renders-the-component-tree">6. templ renders the component tree</h3>
-<pre><code>Accounts(AccountsData)
+      <p>
+        <code>Render</code> writes HTML directly to <code>c.Writer</code>. No
+        buffering.
+      </p>
+      <h3 id="6-templ-renders-the-component-tree">
+        6. templ renders the component tree
+      </h3>
+      <pre><code>Accounts(AccountsData)
   → layouts.Dashboard(&quot;Accounts&quot;)
       → layouts.Base(&quot;Accounts&quot;)
           → &lt;html&gt;&lt;head&gt;...&lt;/head&gt;&lt;body&gt;
@@ -1642,56 +2545,140 @@ pages.Accounts(pages.AccountsData{
                               → &lt;table&gt;... for _, u := range d.Users { &lt;tr&gt;... } &lt;/table&gt;
                               → Pagination(...)
 </code></pre>
-<h3 id="7-browser-loads-the-page">7. Browser loads the page</h3>
-<p>The page includes the Datastar script. The search form has:</p>
-<pre><code class="language-html">&lt;form
+      <h3 id="7-browser-loads-the-page">7. Browser loads the page</h3>
+      <p>The page includes the Datastar script. The search form has:</p>
+      <pre><code class="language-html">&lt;form
     data-store=&#39;{&quot;q&quot;: &quot;&quot;}&#39;
     data-on-input__debounce.300ms=&quot;@get(&#39;/accounts/search?q=&#39; + $q)&quot;&gt;
     &lt;input type=&quot;text&quot; name=&quot;q&quot; value=&quot;john&quot; data-bind=&quot;q&quot; .../&gt;
 &lt;/form&gt;
 </code></pre>
-<h3 id="8-user-types-in-the-search-box">8. User types in the search box</h3>
-<p>After 300ms idle, Datastar fires <code>GET /accounts/search?q=jo</code>. The server returns just <code>AccountsTable</code> HTML. Datastar replaces the content of <code>#accounts-table</code>.</p>
-<p>The URL bar doesn&#39;t change — this is an in-place DOM update, not a navigation.</p>
-<hr>
-<h2 id="18-patterns-and-tradeoffs">18. Patterns and tradeoffs</h2>
-<h3 id="what-works-well">What works well</h3>
-<p><strong>templ over html/template</strong>. Type-safe components with real Go control flow catch missing data at compile time, not at runtime. The generated code is readable Go — you can set breakpoints in it.</p>
-<p><strong>sqlx over GORM</strong>. You own the queries. N+1 issues are visible, not hidden behind <code>Preload()</code>. The <code>UserFilter</code> pattern makes complex dynamic queries explicit and testable.</p>
-<p><strong>Dual auth layers</strong>. Session cookies for the browser, JWT for the API. Both layers use the same <code>AdminIDKey</code> in the Gin context, so middleware that checks <code>c.Get(AdminIDKey)</code> works transparently for both. Adding new routes doesn&#39;t require thinking about which auth layer to use — they coexist.</p>
-<p><strong>Datastar for selective reactivity</strong>. Use it only where you&#39;d otherwise need a full-page reload that hurts UX: live search, inline form submission feedback, toggles. Static pages stay static. You don&#39;t have to decide upfront whether the whole page is &quot;reactive.&quot;</p>
-<p><strong>air with <code>pre_cmd</code></strong>. Running the full build pipeline (templ → CSS → Go compile) on every save is slower than hot-module replacement but is completely reliable — what you see in the browser is always the compiled output of the current source.</p>
-<h3 id="tradeoffs">Tradeoffs</h3>
-<p><strong>templ requires a code generation step.</strong> <code>make generate</code> must run before <code>go build</code>. In CI, this means two steps. The <code>Makefile</code> handles it with <code>make all</code>. air handles it via <code>pre_cmd</code>. But it&#39;s one more thing to document.</p>
-<p><strong>Datastar is not HTMX.</strong> It&#39;s newer, smaller, and more opinionated about signals. The SSE-based merge is more powerful than HTMX&#39;s <code>hx-swap</code>, but the ecosystem and Stack Overflow answers are thinner. Budget time to read the Datastar docs directly.</p>
-<p><strong>No read/write connection split in the current <code>main.go</code>.</strong> The <code>WritableConnect()</code> function exists in <code>store/db.go</code> but <code>main.go</code> calls only <code>Connect()</code> for all stores. To add a read replica, pass separate pools to stores that only read vs. stores that write.</p>
-<p><strong>PDF merging is naive.</strong> <code>APIGetLabel</code> concatenates PDF bytes — this works for single-page labels but breaks on multi-page PDFs. Replace with <code>pdfcpu</code> (pure Go) or <code>unipdf</code> (commercial, comprehensive) before shipping label download to production.</p>
-<h3 id="extending-the-architecture">Extending the architecture</h3>
-<p><strong>Adding a new page:</strong></p>
-<ol>
-<li>Add a templ component in <code>internal/views/pages/newpage.templ</code></li>
-<li>Add a handler method on <code>*Handler</code> in a new or existing handler file</li>
-<li>Add the route in <code>routes.go</code></li>
-<li>Run <code>make generate</code> (or let air do it)</li>
-</ol>
-<p><strong>Adding a new store method:</strong></p>
-<ol>
-<li>Add the method to the relevant <code>*Store</code> struct</li>
-<li>The method is immediately available in any handler via <code>h.UserStore.NewMethod()</code></li>
-</ol>
-<p><strong>Adding a new API endpoint:</strong></p>
-<ol>
-<li>Write the handler as a method on <code>*Handler</code></li>
-<li>Register it under <code>api := r.Group(&quot;/api&quot;, middleware.RequireAuth())</code> in <code>routes.go</code></li>
-<li>Return JSON with <code>c.JSON(status, payload)</code></li>
-</ol>
-<p>No codegen, no DTO transformers, no reflection magic.</p>
-<hr>
-<h2 id="19-performance-skeleton-first-pages--parallel-queries">19. Performance: skeleton-first pages + parallel queries</h2>
-<p>The original pages did all their database work <strong>before</strong> sending a single byte of HTML. On a slow query, the browser stared at a blank white screen the whole time. This section covers the two techniques that fixed it — and the reasoning behind each.</p>
-<h3 id="the-problem-blocking-render">The problem: blocking render</h3>
-<p>Here&#39;s what the dashboard handler used to do:</p>
-<pre><code class="language-go">// SLOW — the browser waits for all 4 queries before ANY HTML arrives
+      <h3 id="8-user-types-in-the-search-box">
+        8. User types in the search box
+      </h3>
+      <p>
+        After 300ms idle, Datastar fires <code>GET /accounts/search?q=jo</code>.
+        The server returns just <code>AccountsTable</code> HTML. Datastar
+        replaces the content of <code>#accounts-table</code>.
+      </p>
+      <p>
+        The URL bar doesn&#39;t change — this is an in-place DOM update, not a
+        navigation.
+      </p>
+      <hr />
+      <h2 id="18-patterns-and-tradeoffs">18. Patterns and tradeoffs</h2>
+      <h3 id="what-works-well">What works well</h3>
+      <p>
+        <strong>templ over html/template</strong>. Type-safe components with
+        real Go control flow catch missing data at compile time, not at runtime.
+        The generated code is readable Go — you can set breakpoints in it.
+      </p>
+      <p>
+        <strong>sqlx over GORM</strong>. You own the queries. N+1 issues are
+        visible, not hidden behind <code>Preload()</code>. The
+        <code>UserFilter</code> pattern makes complex dynamic queries explicit
+        and testable.
+      </p>
+      <p>
+        <strong>Dual auth layers</strong>. Session cookies for the browser, JWT
+        for the API. Both layers use the same <code>AdminIDKey</code> in the Gin
+        context, so middleware that checks <code>c.Get(AdminIDKey)</code> works
+        transparently for both. Adding new routes doesn&#39;t require thinking
+        about which auth layer to use — they coexist.
+      </p>
+      <p>
+        <strong>Datastar for selective reactivity</strong>. Use it only where
+        you&#39;d otherwise need a full-page reload that hurts UX: live search,
+        inline form submission feedback, toggles. Static pages stay static. You
+        don&#39;t have to decide upfront whether the whole page is
+        &quot;reactive.&quot;
+      </p>
+      <p>
+        <strong>air with <code>pre_cmd</code></strong
+        >. Running the full build pipeline (templ → CSS → Go compile) on every
+        save is slower than hot-module replacement but is completely reliable —
+        what you see in the browser is always the compiled output of the current
+        source.
+      </p>
+      <h3 id="tradeoffs">Tradeoffs</h3>
+      <p>
+        <strong>templ requires a code generation step.</strong>
+        <code>make generate</code> must run before <code>go build</code>. In CI,
+        this means two steps. The <code>Makefile</code> handles it with
+        <code>make all</code>. air handles it via <code>pre_cmd</code>. But
+        it&#39;s one more thing to document.
+      </p>
+      <p>
+        <strong>Datastar is not HTMX.</strong> It&#39;s newer, smaller, and more
+        opinionated about signals. The SSE-based merge is more powerful than
+        HTMX&#39;s <code>hx-swap</code>, but the ecosystem and Stack Overflow
+        answers are thinner. Budget time to read the Datastar docs directly.
+      </p>
+      <p>
+        <strong
+          >No read/write connection split in the current
+          <code>main.go</code>.</strong
+        >
+        The <code>WritableConnect()</code> function exists in
+        <code>store/db.go</code> but <code>main.go</code> calls only
+        <code>Connect()</code> for all stores. To add a read replica, pass
+        separate pools to stores that only read vs. stores that write.
+      </p>
+      <p>
+        <strong>PDF merging is naive.</strong>
+        <code>APIGetLabel</code> concatenates PDF bytes — this works for
+        single-page labels but breaks on multi-page PDFs. Replace with
+        <code>pdfcpu</code> (pure Go) or <code>unipdf</code> (commercial,
+        comprehensive) before shipping label download to production.
+      </p>
+      <h3 id="extending-the-architecture">Extending the architecture</h3>
+      <p><strong>Adding a new page:</strong></p>
+      <ol>
+        <li>
+          Add a templ component in
+          <code>internal/views/pages/newpage.templ</code>
+        </li>
+        <li>
+          Add a handler method on <code>*Handler</code> in a new or existing
+          handler file
+        </li>
+        <li>Add the route in <code>routes.go</code></li>
+        <li>Run <code>make generate</code> (or let air do it)</li>
+      </ol>
+      <p><strong>Adding a new store method:</strong></p>
+      <ol>
+        <li>Add the method to the relevant <code>*Store</code> struct</li>
+        <li>
+          The method is immediately available in any handler via
+          <code>h.UserStore.NewMethod()</code>
+        </li>
+      </ol>
+      <p><strong>Adding a new API endpoint:</strong></p>
+      <ol>
+        <li>Write the handler as a method on <code>*Handler</code></li>
+        <li>
+          Register it under
+          <code
+            >api := r.Group(&quot;/api&quot;, middleware.RequireAuth())</code
+          >
+          in <code>routes.go</code>
+        </li>
+        <li>Return JSON with <code>c.JSON(status, payload)</code></li>
+      </ol>
+      <p>No codegen, no DTO transformers, no reflection magic.</p>
+      <hr />
+      <h2 id="19-performance-skeleton-first-pages--parallel-queries">
+        19. Performance: skeleton-first pages + parallel queries
+      </h2>
+      <p>
+        The original pages did all their database work
+        <strong>before</strong> sending a single byte of HTML. On a slow query,
+        the browser stared at a blank white screen the whole time. This section
+        covers the two techniques that fixed it — and the reasoning behind each.
+      </p>
+      <h3 id="the-problem-blocking-render">The problem: blocking render</h3>
+      <p>Here&#39;s what the dashboard handler used to do:</p>
+      <pre><code class="language-go">// SLOW — the browser waits for all 4 queries before ANY HTML arrives
 func (h *Handler) GetHome(c *gin.Context) {
     start, end := dashboardRange()
     newUsers, _    := h.OrderStore.QueryActiveUsersPerformance(start, end) // wait…
@@ -1702,17 +2689,40 @@ func (h *Handler) GetHome(c *gin.Context) {
     pages.Home(...).Render(c.Request.Context(), c.Writer)
 }
 </code></pre>
-<p>If each query takes 400ms, the user waits 1.6 seconds looking at nothing. Two separate problems are hiding here:</p>
-<ol>
-<li><strong>Blocking render</strong> — no HTML is sent until every query finishes.</li>
-<li><strong>Sequential queries</strong> — the four queries run one after another, even though they don&#39;t depend on each other.</li>
-</ol>
-<p>We fix each one with a different technique.</p>
-<h3 id="technique-1-skeleton-first-with-lazy-fragment-loading">Technique 1: skeleton-first with lazy fragment loading</h3>
-<p>The idea: send the page <strong>shell</strong> instantly (no DB work), with placeholder &quot;skeleton&quot; boxes where the data will go. Each placeholder then fetches its own data in the background and swaps itself out when ready.</p>
-<p>This is what Gmail, LinkedIn, and most modern apps do — you see the layout immediately, then content fills in. It makes the app <em>feel</em> fast even when the queries aren&#39;t.</p>
-<p><strong>Step 1 — the reusable skeleton components</strong> (in <code>internal/views/layouts/base.templ</code>):</p>
-<pre><code class="language-go">// LazySection renders a placeholder that fetches its real content from `src`
+      <p>
+        If each query takes 400ms, the user waits 1.6 seconds looking at
+        nothing. Two separate problems are hiding here:
+      </p>
+      <ol>
+        <li>
+          <strong>Blocking render</strong> — no HTML is sent until every query
+          finishes.
+        </li>
+        <li>
+          <strong>Sequential queries</strong> — the four queries run one after
+          another, even though they don&#39;t depend on each other.
+        </li>
+      </ol>
+      <p>We fix each one with a different technique.</p>
+      <h3 id="technique-1-skeleton-first-with-lazy-fragment-loading">
+        Technique 1: skeleton-first with lazy fragment loading
+      </h3>
+      <p>
+        The idea: send the page <strong>shell</strong> instantly (no DB work),
+        with placeholder &quot;skeleton&quot; boxes where the data will go. Each
+        placeholder then fetches its own data in the background and swaps itself
+        out when ready.
+      </p>
+      <p>
+        This is what Gmail, LinkedIn, and most modern apps do — you see the
+        layout immediately, then content fills in. It makes the app
+        <em>feel</em> fast even when the queries aren&#39;t.
+      </p>
+      <p>
+        <strong>Step 1 — the reusable skeleton components</strong> (in
+        <code>internal/views/layouts/base.templ</code>):
+      </p>
+      <pre><code class="language-go">// LazySection renders a placeholder that fetches its real content from `src`
 // as soon as it appears in the DOM. Datastar&#39;s data-on-load fires the request.
 templ LazySection(id, src string) {
     &lt;div id={ id } data-on-load={ &quot;@get(&#39;&quot; + src + &quot;&#39;)&quot; }&gt;
@@ -1731,16 +2741,24 @@ templ SkeletonCard() {
     &lt;/div&gt;
 }
 </code></pre>
-<p><code>data-on-load</code> is a Datastar trigger that fires <strong>once</strong> when the element enters the DOM. So the moment the shell paints, every <code>LazySection</code> simultaneously fires a <code>@get(...)</code> to its fragment URL.</p>
-<p><strong>Step 2 — the handler renders only the shell</strong> (zero DB work):</p>
-<pre><code class="language-go">// GetHome renders the shell only — paints in ~5ms.
+      <p>
+        <code>data-on-load</code> is a Datastar trigger that fires
+        <strong>once</strong> when the element enters the DOM. So the moment the
+        shell paints, every <code>LazySection</code> simultaneously fires a
+        <code>@get(...)</code> to its fragment URL.
+      </p>
+      <p>
+        <strong>Step 2 — the handler renders only the shell</strong> (zero DB
+        work):
+      </p>
+      <pre><code class="language-go">// GetHome renders the shell only — paints in ~5ms.
 func (h *Handler) GetHome(c *gin.Context) {
     c.Header(&quot;Content-Type&quot;, &quot;text/html; charset=utf-8&quot;)
     pages.Home().Render(c.Request.Context(), c.Writer)  // no query here!
 }
 </code></pre>
-<p><strong>Step 3 — the shell page is a grid of placeholders:</strong></p>
-<pre><code class="language-go">templ Home() {
+      <p><strong>Step 3 — the shell page is a grid of placeholders:</strong></p>
+      <pre><code class="language-go">templ Home() {
     @layouts.Dashboard(&quot;Dashboard&quot;) {
         &lt;div class=&quot;grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6&quot;&gt;
             @layouts.LazySection(&quot;stat-new-users&quot;, &quot;/dashboard/stat/new-users&quot;)
@@ -1756,8 +2774,13 @@ func (h *Handler) GetHome(c *gin.Context) {
     }
 }
 </code></pre>
-<p><strong>Step 4 — each fragment endpoint runs its own query and returns just that section:</strong></p>
-<pre><code class="language-go">func (h *Handler) DashStatNewUsers(c *gin.Context) {
+      <p>
+        <strong
+          >Step 4 — each fragment endpoint runs its own query and returns just
+          that section:</strong
+        >
+      </p>
+      <pre><code class="language-go">func (h *Handler) DashStatNewUsers(c *gin.Context) {
     start, end := dashboardRange()
     rows, err := h.OrderStore.QueryActiveUsersPerformance(start, end)
     h.renderStat(c, &quot;stat-new-users&quot;, &quot;New Users (latest week)&quot;, latestTotal(rows), &quot;indigo&quot;, err)
@@ -1772,25 +2795,55 @@ func (h *Handler) renderStat(c *gin.Context, id, label, value, color string, err
     pages.StatCardFragment(id, label, value, color).Render(c.Request.Context(), c.Writer)
 }
 </code></pre>
-<p>The fragment&#39;s root element carries the <strong>same <code>id</code></strong> as its placeholder (<code>stat-new-users</code>), so Datastar knows which DOM node to replace:</p>
-<pre><code class="language-go">templ StatCardFragment(id, label, value, color string) {
+      <p>
+        The fragment&#39;s root element carries the
+        <strong>same <code>id</code></strong> as its placeholder
+        (<code>stat-new-users</code>), so Datastar knows which DOM node to
+        replace:
+      </p>
+      <pre><code class="language-go">templ StatCardFragment(id, label, value, color string) {
     &lt;div id={ id } class=&quot;bg-white rounded-xl border ...&quot;&gt;
         &lt;p class=&quot;text-xs ...&quot;&gt;{ label }&lt;/p&gt;
         &lt;p class={ &quot;text-2xl font-bold&quot;, colorClass(color) }&gt;{ value }&lt;/p&gt;
     &lt;/div&gt;
 }
 </code></pre>
-<p><strong>The result:</strong> the page paints instantly with 8 shimmering boxes. The browser fires 8 parallel requests. Each box pops in the moment its query returns — the fast ones (a cached stat) appear first, the slow ones (a big aggregation) a moment later. The user never sees a blank screen.</p>
-<p><strong>Why the <code>id</code> must match:</strong> Datastar&#39;s default merge finds the element in the response whose <code>id</code> matches an element already in the DOM, and swaps it. If the fragment&#39;s root <code>id</code> didn&#39;t match the placeholder&#39;s <code>id</code>, nothing would swap. This is the single most common mistake with this pattern.</p>
-<h3 id="technique-2-parallel-queries-with-goroutines">Technique 2: parallel queries with goroutines</h3>
-<p>The skeleton pattern helps when a page has several <em>independent sections</em>. But sometimes a <strong>single</strong> endpoint genuinely needs several queries before it can respond. Running them sequentially wastes time when they don&#39;t depend on each other.</p>
-<p>Go&#39;s goroutines make parallel queries easy. The label report endpoint needs two independent queries — the main service report and the return-label report:</p>
-<pre><code class="language-go">// BEFORE — sequential: total time = queryA + queryB
+      <p>
+        <strong>The result:</strong> the page paints instantly with 8 shimmering
+        boxes. The browser fires 8 parallel requests. Each box pops in the
+        moment its query returns — the fast ones (a cached stat) appear first,
+        the slow ones (a big aggregation) a moment later. The user never sees a
+        blank screen.
+      </p>
+      <p>
+        <strong>Why the <code>id</code> must match:</strong> Datastar&#39;s
+        default merge finds the element in the response whose
+        <code>id</code> matches an element already in the DOM, and swaps it. If
+        the fragment&#39;s root <code>id</code> didn&#39;t match the
+        placeholder&#39;s <code>id</code>, nothing would swap. This is the
+        single most common mistake with this pattern.
+      </p>
+      <h3 id="technique-2-parallel-queries-with-goroutines">
+        Technique 2: parallel queries with goroutines
+      </h3>
+      <p>
+        The skeleton pattern helps when a page has several
+        <em>independent sections</em>. But sometimes a
+        <strong>single</strong> endpoint genuinely needs several queries before
+        it can respond. Running them sequentially wastes time when they
+        don&#39;t depend on each other.
+      </p>
+      <p>
+        Go&#39;s goroutines make parallel queries easy. The label report
+        endpoint needs two independent queries — the main service report and the
+        return-label report:
+      </p>
+      <pre><code class="language-go">// BEFORE — sequential: total time = queryA + queryB
 mainRows, _ := h.OrderStore.QueryLabelReportRows(start, end, mainIDs, userID)
 returnRows, _ := h.OrderStore.QueryReturnLabelReportRows(start, end, userID)
 </code></pre>
-<p>Rewritten to run both at once with <code>errgroup</code>:</p>
-<pre><code class="language-go">import &quot;golang.org/x/sync/errgroup&quot;
+      <p>Rewritten to run both at once with <code>errgroup</code>:</p>
+      <pre><code class="language-go">import &quot;golang.org/x/sync/errgroup&quot;
 
 func (h *Handler) APIReportLabels(c *gin.Context) {
     // ... parse request ...
@@ -1832,13 +2885,43 @@ func (h *Handler) APIReportLabels(c *gin.Context) {
     c.JSON(http.StatusOK, results)
 }
 </code></pre>
-<p>Now total time is <code>max(queryA, queryB)</code> instead of <code>queryA + queryB</code>.</p>
-<p><strong>What is <code>errgroup</code>?</strong> It&#39;s a small helper from <code>golang.org/x/sync</code>. You call <code>g.Go(func)</code> for each concurrent task, then <code>g.Wait()</code> blocks until they all finish. If any returns an error, <code>Wait()</code> returns the first one. It&#39;s the idiomatic Go way to run a fixed set of parallel tasks and collect their results.</p>
-<h3 id="the-critical-rule-no-shared-writes">The critical rule: no shared writes</h3>
-<p>The single most important thing to understand about goroutines: <strong>two goroutines must never write the same variable at the same time.</strong> That&#39;s a <em>data race</em> — it corrupts memory and causes crashes that only appear under load.</p>
-<p>Notice how the code above avoids it: each goroutine writes its <strong>own</strong> variable (<code>mainRows</code> vs <code>returnRows</code>). They never touch the same memory. The merge into the shared <code>results</code> map happens <em>after</em> <code>g.Wait()</code>, when both goroutines have finished and only the main goroutine is running.</p>
-<p>The PDF-fetch code uses the same trick with a pre-sized slice, so concurrent fetches write distinct indices:</p>
-<pre><code class="language-go">fetched := make([][]byte, len(req.URLs))
+      <p>
+        Now total time is <code>max(queryA, queryB)</code> instead of
+        <code>queryA + queryB</code>.
+      </p>
+      <p>
+        <strong>What is <code>errgroup</code>?</strong> It&#39;s a small helper
+        from <code>golang.org/x/sync</code>. You call
+        <code>g.Go(func)</code> for each concurrent task, then
+        <code>g.Wait()</code> blocks until they all finish. If any returns an
+        error, <code>Wait()</code> returns the first one. It&#39;s the idiomatic
+        Go way to run a fixed set of parallel tasks and collect their results.
+      </p>
+      <h3 id="the-critical-rule-no-shared-writes">
+        The critical rule: no shared writes
+      </h3>
+      <p>
+        The single most important thing to understand about goroutines:
+        <strong
+          >two goroutines must never write the same variable at the same
+          time.</strong
+        >
+        That&#39;s a <em>data race</em> — it corrupts memory and causes crashes
+        that only appear under load.
+      </p>
+      <p>
+        Notice how the code above avoids it: each goroutine writes its
+        <strong>own</strong> variable (<code>mainRows</code> vs
+        <code>returnRows</code>). They never touch the same memory. The merge
+        into the shared <code>results</code> map happens <em>after</em>
+        <code>g.Wait()</code>, when both goroutines have finished and only the
+        main goroutine is running.
+      </p>
+      <p>
+        The PDF-fetch code uses the same trick with a pre-sized slice, so
+        concurrent fetches write distinct indices:
+      </p>
+      <pre><code class="language-go">fetched := make([][]byte, len(req.URLs))
 var wg sync.WaitGroup
 for i, url := range req.URLs {
     wg.Add(1)
@@ -1852,51 +2935,110 @@ for i, url := range req.URLs {
 }
 wg.Wait()  // wait for all fetches
 </code></pre>
-<p><code>sync.WaitGroup</code> is the lower-level primitive <code>errgroup</code> is built on: <code>Add(n)</code> to count tasks, <code>Done()</code> as each finishes, <code>Wait()</code> to block until the counter hits zero. Use <code>errgroup</code> when tasks can error; use <code>WaitGroup</code> when they can&#39;t (like a best-effort fetch that just skips failures).</p>
-<p><strong>Why the loop variable is passed as an argument:</strong> <code>go func(idx int, u string){...}(i, url)</code> — the <code>i</code> and <code>url</code> are passed <em>into</em> the goroutine as arguments rather than captured. In older Go this was mandatory to avoid every goroutine seeing the final loop value. As of Go 1.22 the loop variable is per-iteration so capture is safe too, but passing explicitly is still the clearest style.</p>
-<h3 id="does-the-connection-pool-handle-this">Does the connection pool handle this?</h3>
-<p>Yes. Recall from Section 6 that <code>db.SetMaxOpenConns(25)</code> lets up to 25 queries run against MySQL simultaneously. Firing 2–4 concurrent queries per request is well within that budget. <code>sqlx</code> is safe for concurrent use — each goroutine gets its own connection from the pool automatically.</p>
-<h3 id="when-to-reach-for-each-technique">When to reach for each technique</h3>
-<table>
-<thead>
-<tr>
-<th>Situation</th>
-<th>Technique</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Page has several independent sections</td>
-<td>Skeleton + lazy <code>LazySection</code> per section</td>
-</tr>
-<tr>
-<td>One endpoint needs several independent queries</td>
-<td><code>errgroup</code> parallel goroutines</td>
-</tr>
-<tr>
-<td>Fetching many URLs / files</td>
-<td><code>sync.WaitGroup</code> + pre-sized slice</td>
-</tr>
-<tr>
-<td>A single fast query</td>
-<td>Neither — just render synchronously</td>
-</tr>
-</tbody></table>
-<p>Don&#39;t over-apply this. The login page and settings page still render synchronously — they&#39;re fast and adding lazy-loading would only add complexity. Use these patterns where there&#39;s a real latency problem to solve.</p>
-<hr>
-<h2 id="20-end-to-end-testing-with-playwright">20. End-to-end testing with Playwright</h2>
-<p>Unit tests check one function. <strong>End-to-end (e2e) tests</strong> check the whole app the way a real user does: they open a browser, click buttons, fill forms, and assert on what appears on screen. For a server-rendered app like this, e2e tests are especially valuable — they catch broken templates, bad routes, and auth bugs that a unit test would miss.</p>
-<p><a href="https://playwright.dev">Playwright</a> is a browser-automation library from Microsoft. It drives a real Chromium/Firefox/WebKit browser from code.</p>
-<h3 id="why-e2e-tests-matter-for-this-app">Why e2e tests matter for this app</h3>
-<p>The lazy-loading change from Section 19 is a perfect example. A unit test on <code>DashStatNewUsers</code> proves the handler returns the right HTML. But only an e2e test proves the <strong>whole chain</strong> works: the shell renders, Datastar fires the <code>data-on-load</code> request, the fragment comes back, and the skeleton actually gets replaced by real data in the browser. That integration is exactly where bugs hide.</p>
-<h3 id="setup">Setup</h3>
-<p>Playwright is a Node tool (there&#39;s also a Go port, but the Node version has the richest tooling). Install it in a <code>tests/</code> directory:</p>
-<pre><code class="language-bash">mkdir -p tests &amp;&amp; cd tests
+      <p>
+        <code>sync.WaitGroup</code> is the lower-level primitive
+        <code>errgroup</code> is built on: <code>Add(n)</code> to count tasks,
+        <code>Done()</code> as each finishes, <code>Wait()</code> to block until
+        the counter hits zero. Use <code>errgroup</code> when tasks can error;
+        use <code>WaitGroup</code> when they can&#39;t (like a best-effort fetch
+        that just skips failures).
+      </p>
+      <p>
+        <strong>Why the loop variable is passed as an argument:</strong>
+        <code>go func(idx int, u string){...}(i, url)</code> — the
+        <code>i</code> and <code>url</code> are passed <em>into</em> the
+        goroutine as arguments rather than captured. In older Go this was
+        mandatory to avoid every goroutine seeing the final loop value. As of Go
+        1.22 the loop variable is per-iteration so capture is safe too, but
+        passing explicitly is still the clearest style.
+      </p>
+      <h3 id="does-the-connection-pool-handle-this">
+        Does the connection pool handle this?
+      </h3>
+      <p>
+        Yes. Recall from Section 6 that <code>db.SetMaxOpenConns(25)</code> lets
+        up to 25 queries run against MySQL simultaneously. Firing 2–4 concurrent
+        queries per request is well within that budget. <code>sqlx</code> is
+        safe for concurrent use — each goroutine gets its own connection from
+        the pool automatically.
+      </p>
+      <h3 id="when-to-reach-for-each-technique">
+        When to reach for each technique
+      </h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Situation</th>
+            <th>Technique</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Page has several independent sections</td>
+            <td>Skeleton + lazy <code>LazySection</code> per section</td>
+          </tr>
+          <tr>
+            <td>One endpoint needs several independent queries</td>
+            <td><code>errgroup</code> parallel goroutines</td>
+          </tr>
+          <tr>
+            <td>Fetching many URLs / files</td>
+            <td><code>sync.WaitGroup</code> + pre-sized slice</td>
+          </tr>
+          <tr>
+            <td>A single fast query</td>
+            <td>Neither — just render synchronously</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        Don&#39;t over-apply this. The login page and settings page still render
+        synchronously — they&#39;re fast and adding lazy-loading would only add
+        complexity. Use these patterns where there&#39;s a real latency problem
+        to solve.
+      </p>
+      <hr />
+      <h2 id="20-end-to-end-testing-with-playwright">
+        20. End-to-end testing with Playwright
+      </h2>
+      <p>
+        Unit tests check one function.
+        <strong>End-to-end (e2e) tests</strong> check the whole app the way a
+        real user does: they open a browser, click buttons, fill forms, and
+        assert on what appears on screen. For a server-rendered app like this,
+        e2e tests are especially valuable — they catch broken templates, bad
+        routes, and auth bugs that a unit test would miss.
+      </p>
+      <p>
+        <a href="https://playwright.dev">Playwright</a> is a browser-automation
+        library from Microsoft. It drives a real Chromium/Firefox/WebKit browser
+        from code.
+      </p>
+      <h3 id="why-e2e-tests-matter-for-this-app">
+        Why e2e tests matter for this app
+      </h3>
+      <p>
+        The lazy-loading change from Section 19 is a perfect example. A unit
+        test on <code>DashStatNewUsers</code> proves the handler returns the
+        right HTML. But only an e2e test proves the
+        <strong>whole chain</strong> works: the shell renders, Datastar fires
+        the <code>data-on-load</code> request, the fragment comes back, and the
+        skeleton actually gets replaced by real data in the browser. That
+        integration is exactly where bugs hide.
+      </p>
+      <h3 id="setup">Setup</h3>
+      <p>
+        Playwright is a Node tool (there&#39;s also a Go port, but the Node
+        version has the richest tooling). Install it in a
+        <code>tests/</code> directory:
+      </p>
+      <pre><code class="language-bash">mkdir -p tests &amp;&amp; cd tests
 npm init -y
 npm install -D @playwright/test
 npx playwright install chromium   # downloads the browser binary
 </code></pre>
-<p>Create <code>tests/playwright.config.ts</code>:</p>
-<pre><code class="language-ts">import { defineConfig } from &#39;@playwright/test&#39;;
+      <p>Create <code>tests/playwright.config.ts</code>:</p>
+      <pre><code class="language-ts">import { defineConfig } from &#39;@playwright/test&#39;;
 
 export default defineConfig({
   testDir: &#39;./e2e&#39;,
@@ -1915,10 +3057,16 @@ export default defineConfig({
   },
 });
 </code></pre>
-<p>The <code>webServer</code> block is the key convenience: Playwright boots your Go server, waits for <code>/ping</code> to answer, runs the tests, then shuts it down.</p>
-<h3 id="a-first-test-the-login-page-renders">A first test: the login page renders</h3>
-<p>Create <code>tests/e2e/login.spec.ts</code>:</p>
-<pre><code class="language-ts">import { test, expect } from &#39;@playwright/test&#39;;
+      <p>
+        The <code>webServer</code> block is the key convenience: Playwright
+        boots your Go server, waits for <code>/ping</code> to answer, runs the
+        tests, then shuts it down.
+      </p>
+      <h3 id="a-first-test-the-login-page-renders">
+        A first test: the login page renders
+      </h3>
+      <p>Create <code>tests/e2e/login.spec.ts</code>:</p>
+      <pre><code class="language-ts">import { test, expect } from &#39;@playwright/test&#39;;
 
 test(&#39;login page shows the sign-in form&#39;, async ({ page }) =&gt; {
   await page.goto(&#39;/login&#39;);
@@ -1940,12 +3088,16 @@ test(&#39;protected routes redirect to login when logged out&#39;, async ({ page
   await expect(page).toHaveURL(/\/login$/);
 });
 </code></pre>
-<p>Run it:</p>
-<pre><code class="language-bash">npx playwright test
+      <p>Run it:</p>
+      <pre><code class="language-bash">npx playwright test
 </code></pre>
-<p>The second test proves the auth middleware from Section 11 works — visiting <code>/accounts</code> logged-out lands you on <code>/login</code>.</p>
-<h3 id="testing-the-login-flow">Testing the login flow</h3>
-<pre><code class="language-ts">test(&#39;valid credentials log the user in&#39;, async ({ page }) =&gt; {
+      <p>
+        The second test proves the auth middleware from Section 11 works —
+        visiting <code>/accounts</code> logged-out lands you on
+        <code>/login</code>.
+      </p>
+      <h3 id="testing-the-login-flow">Testing the login flow</h3>
+      <pre><code class="language-ts">test(&#39;valid credentials log the user in&#39;, async ({ page }) =&gt; {
   await page.goto(&#39;/login&#39;);
 
   await page.getByPlaceholder(&#39;admin@example.com&#39;).fill(&#39;admin@grandshipper.com&#39;);
@@ -1966,12 +3118,23 @@ test(&#39;bad credentials show an error&#39;, async ({ page }) =&gt; {
   await expect(page.getByText(&quot;Email or password don&#39;t match&quot;)).toBeVisible();
 });
 </code></pre>
-<blockquote>
-<p><strong>Test data:</strong> never test against production. Point <code>DATABASE_URL</code> at a local or throwaway database seeded with known test accounts. The <code>webServer.command</code> in the config can set it: <code>DATABASE_URL=... make run</code>.</p>
-</blockquote>
-<h3 id="testing-the-lazy-loading-dashboard">Testing the lazy-loading dashboard</h3>
-<p>This is the test that proves Section 19 actually works end to end. We need a <strong>logged-in</strong> session first, so we use a <code>beforeEach</code> hook:</p>
-<pre><code class="language-ts">import { test, expect } from &#39;@playwright/test&#39;;
+      <blockquote>
+        <p>
+          <strong>Test data:</strong> never test against production. Point
+          <code>DATABASE_URL</code> at a local or throwaway database seeded with
+          known test accounts. The <code>webServer.command</code> in the config
+          can set it: <code>DATABASE_URL=... make run</code>.
+        </p>
+      </blockquote>
+      <h3 id="testing-the-lazy-loading-dashboard">
+        Testing the lazy-loading dashboard
+      </h3>
+      <p>
+        This is the test that proves Section 19 actually works end to end. We
+        need a <strong>logged-in</strong> session first, so we use a
+        <code>beforeEach</code> hook:
+      </p>
+      <pre><code class="language-ts">import { test, expect } from &#39;@playwright/test&#39;;
 
 test.beforeEach(async ({ page }) =&gt; {
   // Log in before each test in this file
@@ -2004,10 +3167,19 @@ test(&#39;dashboard skeletons are replaced by real data&#39;, async ({ page }) =
   }
 });
 </code></pre>
-<p>The assertion <code>not.toHaveClass(/animate-pulse/)</code> is the crux: the skeleton <em>has</em> that class, the loaded fragment does <em>not</em>. Playwright&#39;s <code>expect</code> auto-retries for a few seconds, so it naturally waits for the async fragment to arrive and swap in — no manual <code>sleep</code> needed.</p>
-<h3 id="testing-debounced-search">Testing debounced search</h3>
-<p>The accounts search fires a Datastar request 300ms after you stop typing, swapping the table fragment:</p>
-<pre><code class="language-ts">test(&#39;typing in accounts search filters the table&#39;, async ({ page }) =&gt; {
+      <p>
+        The assertion <code>not.toHaveClass(/animate-pulse/)</code> is the crux:
+        the skeleton <em>has</em> that class, the loaded fragment does
+        <em>not</em>. Playwright&#39;s <code>expect</code> auto-retries for a
+        few seconds, so it naturally waits for the async fragment to arrive and
+        swap in — no manual <code>sleep</code> needed.
+      </p>
+      <h3 id="testing-debounced-search">Testing debounced search</h3>
+      <p>
+        The accounts search fires a Datastar request 300ms after you stop
+        typing, swapping the table fragment:
+      </p>
+      <pre><code class="language-ts">test(&#39;typing in accounts search filters the table&#39;, async ({ page }) =&gt; {
   await page.goto(&#39;/accounts&#39;);
 
   // Wait for the initial table to load
@@ -2024,20 +3196,40 @@ test(&#39;dashboard skeletons are replaced by real data&#39;, async ({ page }) =
   });
 });
 </code></pre>
-<h3 id="useful-playwright-commands">Useful Playwright commands</h3>
-<pre><code class="language-bash">npx playwright test                    # run all tests headless
+      <h3 id="useful-playwright-commands">Useful Playwright commands</h3>
+      <pre><code class="language-bash">npx playwright test                    # run all tests headless
 npx playwright test --headed           # watch the browser drive itself
 npx playwright test login.spec.ts      # run one file
 npx playwright test --ui               # interactive UI mode — great for debugging
 npx playwright show-report             # open the HTML report after a run
 npx playwright codegen localhost:8080  # RECORD a test by clicking through the app
 </code></pre>
-<p><code>codegen</code> is the best way to start: it opens a browser, records your clicks and types, and writes the test code for you. You then clean it up and add assertions.</p>
-<h3 id="how-playwright-waits-and-why-you-rarely-need-sleep">How Playwright waits (and why you rarely need sleep)</h3>
-<p>The most common mistake coming from other tools is sprinkling <code>sleep(1000)</code> everywhere. Playwright&#39;s <code>expect(...).toBeVisible()</code> and locator actions <strong>auto-wait</strong> — they retry for up to 5 seconds (configurable) until the condition is met. For an app with async fragment loading like ours, this is exactly right: the test waits for the fragment to arrive without you hard-coding a delay. Only reach for an explicit wait (<code>page.waitForResponse(&#39;/dashboard/stat/new-users&#39;)</code>) when you need to assert on the network request itself.</p>
-<h3 id="ci-integration">CI integration</h3>
-<p>Playwright runs headless in CI with no extra setup. A GitHub Actions job:</p>
-<pre><code class="language-yaml">- uses: actions/setup-node@v4
+      <p>
+        <code>codegen</code> is the best way to start: it opens a browser,
+        records your clicks and types, and writes the test code for you. You
+        then clean it up and add assertions.
+      </p>
+      <h3 id="how-playwright-waits-and-why-you-rarely-need-sleep">
+        How Playwright waits (and why you rarely need sleep)
+      </h3>
+      <p>
+        The most common mistake coming from other tools is sprinkling
+        <code>sleep(1000)</code> everywhere. Playwright&#39;s
+        <code>expect(...).toBeVisible()</code> and locator actions
+        <strong>auto-wait</strong> — they retry for up to 5 seconds
+        (configurable) until the condition is met. For an app with async
+        fragment loading like ours, this is exactly right: the test waits for
+        the fragment to arrive without you hard-coding a delay. Only reach for
+        an explicit wait
+        (<code>page.waitForResponse(&#39;/dashboard/stat/new-users&#39;)</code>)
+        when you need to assert on the network request itself.
+      </p>
+      <h3 id="ci-integration">CI integration</h3>
+      <p>
+        Playwright runs headless in CI with no extra setup. A GitHub Actions
+        job:
+      </p>
+      <pre><code class="language-yaml">- uses: actions/setup-node@v4
   with: { node-version: 20 }
 - uses: actions/setup-go@v5
   with: { go-version: &#39;1.26&#39; }
@@ -2045,11 +3237,21 @@ npx playwright codegen localhost:8080  # RECORD a test by clicking through the a
 - run: cd tests &amp;&amp; npm ci &amp;&amp; npx playwright install --with-deps chromium
 - run: cd tests &amp;&amp; npx playwright test
 </code></pre>
-<p>The <code>webServer</code> config boots the Go app, so CI needs only a test database. On failure, Playwright saves a trace you can open locally with <code>npx playwright show-trace trace.zip</code> — it&#39;s a full timeline of the run with DOM snapshots at every step.</p>
-<hr>
-<p><em>This tutorial is derived from the actual <code>admin-v2</code> source code. All code examples are taken directly from the running application.</em></p>
-
-</div>
-<a href="#table-of-contents" class="toc-back">↑ Contents</a>
-</body>
+      <p>
+        The <code>webServer</code> config boots the Go app, so CI needs only a
+        test database. On failure, Playwright saves a trace you can open locally
+        with <code>npx playwright show-trace trace.zip</code> — it&#39;s a full
+        timeline of the run with DOM snapshots at every step.
+      </p>
+      <hr />
+      <p>
+        <em
+          >This tutorial is derived from the actual <code>admin-v2</code> source
+          code. All code examples are taken directly from the running
+          application.</em
+        >
+      </p>
+    </div>
+    <a href="#table-of-contents" class="toc-back">↑ Contents</a>
+  </body>
 </html>

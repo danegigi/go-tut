@@ -1,119 +1,531 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Go Standard Library — gin-templ-datastar</title>
-<style>
-:root{--bg:#0f1117;--surface:#1a1d27;--border:#2d3148;--text:#e2e4f0;--muted:#8b8fa8;--accent:#7c87ff;--code-bg:#1e2130;}
-*{box-sizing:border-box;margin:0;padding:0;}
-html{scroll-behavior:smooth;}
-html{scroll-behavior:smooth;}
-body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:15px;line-height:1.75;}
-.nav{position:sticky;top:0;z-index:10;background:rgba(15,17,23,.9);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:16px;}
-.nav a{color:var(--accent);text-decoration:none;font-weight:600;font-size:0.9rem;}
-.nav a:hover{text-decoration:underline;}
-.nav .crumb{color:var(--muted);font-size:0.85rem;}
-.container{max-width:920px;margin:0 auto;padding:40px 36px 96px;}
-h1{font-size:2.5rem;font-weight:800;color:#fff;margin:28px 0 16px;line-height:1.2;letter-spacing:-0.01em;}
-h2{font-size:1.45rem;font-weight:600;color:var(--accent);margin:44px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--border);scroll-margin-top:70px;}
-h3{font-size:1.15rem;font-weight:600;color:#c5caff;margin:30px 0 10px;scroll-margin-top:70px;}
-h4,h5,h6{font-size:1rem;font-weight:600;color:var(--muted);margin:22px 0 8px;}
-h4.gbe-topic{color:#c5caff;font-size:1.02rem;margin:26px 0 8px;padding-left:20px;position:relative;scroll-margin-top:70px;}
-h4.gbe-topic::before{content:"▸";position:absolute;left:0;color:var(--accent);}
-p{margin-bottom:14px;color:#cdd0e0;}
-a{color:var(--accent);}
-strong{color:#eef0fb;}
-code{background:#252836;color:#c5caff;padding:2px 6px;border-radius:4px;font-family:"JetBrains Mono","Fira Code",ui-monospace,SFMono-Regular,Menlo,monospace;font-size:0.9em;font-weight:400;}
-pre{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;padding:18px 22px;overflow-x:auto;margin:18px 0;}
-pre code{background:none;padding:0;color:#e6e9f5;font-size:0.95rem;line-height:1.7;white-space:pre;font-weight:400;}
-pre code strong, pre code b{font-weight:400;color:inherit;}
-table{width:100%;border-collapse:collapse;margin:20px 0;font-size:0.9em;}
-th{background:#252836;color:var(--accent);text-align:left;padding:10px 14px;font-weight:600;font-size:0.8em;border-bottom:2px solid var(--border);}
-td{padding:9px 14px;border-bottom:1px solid var(--border);color:#cdd0e0;vertical-align:top;}
-ul,ol{padding-left:26px;margin-bottom:14px;}
-li{margin-bottom:6px;color:#cdd0e0;}
-blockquote{border-left:3px solid var(--accent);margin:18px 0;padding:12px 18px;background:rgba(124,135,255,.07);color:var(--muted);border-radius:0 6px 6px 0;}
-img{max-width:100%;border-radius:8px;}
-hr{border:none;border-top:1px solid var(--border);margin:36px 0;}
-.toc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 22px;margin:24px 0 36px;}
-.toc-title{font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 10px;}
-.toc ul{list-style:none;padding:0;margin:0;}
-.toc li{margin:2px 0;}
-.toc a{color:#c5caff;text-decoration:none;font-size:0.92rem;}
-.toc a:hover{color:var(--accent);text-decoration:underline;}
-.toc-l2{margin-left:0;}
-.toc-l3{margin-left:18px;}
-.toc-l3 a{color:var(--muted);font-size:0.88rem;}
-.toc-back{position:fixed;bottom:24px;right:24px;background:var(--accent);color:#fff;padding:9px 14px;border-radius:8px;font-size:0.8rem;font-weight:600;text-decoration:none;box-shadow:0 4px 12px rgba(0,0,0,.4);opacity:.88;}
-.toc-back:hover{opacity:1;}
-.playground-float{position:fixed;bottom:24px;right:90px;background:#1a1d27;color:var(--accent);border:1px solid var(--accent);padding:8px 12px;border-radius:8px;font-size:0.75rem;font-weight:600;text-decoration:none;box-shadow:0 4px 12px rgba(0,0,0,.4);opacity:.88;}
-.playground-float:hover{opacity:1;background:rgba(124,135,255,.12);text-decoration:none;}
-pre{position:relative;}
-.copy-btn{position:absolute;top:8px;right:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:var(--muted);padding:4px 8px;border-radius:5px;font-size:0.7rem;font-family:inherit;cursor:pointer;opacity:0;transition:opacity .2s,background .15s;}
-pre:hover .copy-btn{opacity:1;}
-.copy-btn:hover{background:rgba(124,135,255,.15);color:var(--accent);border-color:var(--accent);}
-.copy-btn.copied{color:#4ade80;border-color:#4ade80;}
-</style>
-</head>
-<body>
-<nav class="nav">
-  <a href="index.html">&#8592; Home</a>
-  <span class="crumb">Go Standard Library</span>
-</nav>
-<div class="container">
-<h1 class="page-title">Go Standard Library</h1>
-<nav class="toc" aria-label="Table of contents">
-  <p class="toc-title">Contents</p>
-  <ul>
-<li class="toc-l2"><a href="#1-introduction">1. Introduction</a></li>
-<li class="toc-l2"><a href="#2-fmt-formatting-and-printing">2. "fmt": Formatting and Printing</a></li>
-<li class="toc-l2"><a href="#3-errors-creating-and-inspecting-errors">3. "errors": Creating and Inspecting Errors</a></li>
-<li class="toc-l2"><a href="#4-strings-working-with-strings">4. "strings": Working with Strings</a></li>
-<li class="toc-l2"><a href="#5-strconv-converting-strings-and-numbers">5. "strconv": Converting Strings and Numbers</a></li>
-<li class="toc-l2"><a href="#6-slices-and-maps-collection-helpers">6. "slices" and "maps": Collection Helpers</a></li>
-<li class="toc-l2"><a href="#7-sort-sorting-collections">7. "sort": Sorting Collections</a></li>
-<li class="toc-l2"><a href="#8-time-dates-durations-and-timers">8. "time": Dates, Durations, and Timers</a></li>
-<li class="toc-l2"><a href="#9-os-files-environment-variables-and-processes">9. "os": Files, Environment Variables, and Processes</a></li>
-<li class="toc-l2"><a href="#10-pathfilepath-file-system-paths">10. "path/filepath": File-System Paths</a></li>
-<li class="toc-l2"><a href="#11-io-general-input-and-output">11. "io": General Input and Output</a></li>
-<li class="toc-l2"><a href="#12-bufio-buffered-input-and-output">12. "bufio": Buffered Input and Output</a></li>
-<li class="toc-l2"><a href="#13-bytes-working-with-byte-slices">13. "bytes": Working with Byte Slices</a></li>
-<li class="toc-l2"><a href="#14-encodingjson-json-encoding-and-decoding">14. "encoding/json": JSON Encoding and Decoding</a></li>
-<li class="toc-l2"><a href="#15-neturl-urls-and-query-parameters">15. "net/url": URLs and Query Parameters</a></li>
-<li class="toc-l2"><a href="#16-nethttp-http-clients">16. "net/http": HTTP Clients</a></li>
-<li class="toc-l2"><a href="#17-nethttp-http-servers">17. "net/http": HTTP Servers</a></li>
-<li class="toc-l2"><a href="#18-context-cancellation-deadlines-and-request-values">18. "context": Cancellation, Deadlines, and Request Values</a></li>
-<li class="toc-l2"><a href="#19-sync-synchronizing-goroutines">19. "sync": Synchronizing Goroutines</a></li>
-<li class="toc-l2"><a href="#20-syncatomic-atomic-values">20. "sync/atomic": Atomic Values</a></li>
-<li class="toc-l2"><a href="#21-channels-and-select">21. Channels and "select"</a></li>
-<li class="toc-l2"><a href="#22-log-and-logslog-application-logging">22. "log" and "log/slog": Application Logging</a></li>
-<li class="toc-l2"><a href="#23-flag-command-line-flags">23. "flag": Command-Line Flags</a></li>
-<li class="toc-l2"><a href="#24-regexp-regular-expressions">24. "regexp": Regular Expressions</a></li>
-<li class="toc-l2"><a href="#25-math-and-mathrandv2">25. "math" and "math/rand/v2"</a></li>
-<li class="toc-l2"><a href="#26-cryptorand-secure-random-values">26. "crypto/rand": Secure Random Values</a></li>
-<li class="toc-l2"><a href="#27-cryptosha256-and-encodinghex">27. "crypto/sha256" and "encoding/hex"</a></li>
-<li class="toc-l2"><a href="#28-encodingbase64">28. "encoding/base64"</a></li>
-<li class="toc-l2"><a href="#29-databasesql-database-access">29. "database/sql": Database Access</a></li>
-<li class="toc-l2"><a href="#30-htmltemplate-safe-html-templates">30. "html/template": Safe HTML Templates</a></li>
-<li class="toc-l2"><a href="#31-embed-embedding-files-in-a-binary">31. "embed": Embedding Files in a Binary</a></li>
-<li class="toc-l2"><a href="#32-testing-unit-tests">32. "testing": Unit Tests</a></li>
-<li class="toc-l2"><a href="#33-nethttphttptest-testing-http-handlers">33. "net/http/httptest": Testing HTTP Handlers</a></li>
-<li class="toc-l2"><a href="#34-benchmarks">34. Benchmarks</a></li>
-<li class="toc-l2"><a href="#35-fuzz-testing">35. Fuzz Testing</a></li>
-<li class="toc-l2"><a href="#36-runtime-runtime-information">36. "runtime": Runtime Information</a></li>
-<li class="toc-l2"><a href="#37-ossignal-graceful-shutdown">37. "os/signal": Graceful Shutdown</a></li>
-<li class="toc-l2"><a href="#38-compressgzip-compressing-data">38. "compress/gzip": Compressing Data</a></li>
-<li class="toc-l2"><a href="#39-archivezip-zip-archives">39. "archive/zip": ZIP Archives</a></li>
-<li class="toc-l2"><a href="#40-reflect-runtime-type-inspection">40. "reflect": Runtime Type Inspection</a></li>
-<li class="toc-l2"><a href="#41-complete-example-small-json-api">41. Complete Example: Small JSON API</a></li>
-<li class="toc-l2"><a href="#42-recommended-learning-order">42. Recommended Learning Order</a></li>
-<li class="toc-l2"><a href="#43-standard-library-best-practices">43. Standard-Library Best Practices</a></li>
-<li class="toc-l2"><a href="#44-package-cheat-sheet">44. Package Cheat Sheet</a></li>
-<li class="toc-l2"><a href="#45-further-reading">45. Further Reading</a></li>
-  </ul>
-</nav>
-<p><strong>Practical Go Standard Library Tutorial</strong></p><h2 id="1-introduction">1. Introduction</h2><p>Go includes a large standard library covering:</p><pre><code>- Text manipulation
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Go Standard Library — gin-templ-datastar</title>
+    <style>
+      :root {
+        --bg: #0f1117;
+        --surface: #1a1d27;
+        --border: #2d3148;
+        --text: #e2e4f0;
+        --muted: #8b8fa8;
+        --accent: #7c87ff;
+        --code-bg: #1e2130;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 15px;
+        line-height: 1.75;
+      }
+      .nav {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: rgba(15, 17, 23, 0.9);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid var(--border);
+        padding: 12px 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .nav a {
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+      .nav a:hover {
+        text-decoration: underline;
+      }
+      .nav .crumb {
+        color: var(--muted);
+        font-size: 0.85rem;
+      }
+      .container {
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 40px 36px 96px;
+      }
+      h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #fff;
+        margin: 28px 0 16px;
+        line-height: 1.2;
+        letter-spacing: -0.01em;
+      }
+      h2 {
+        font-size: 1.45rem;
+        font-weight: 600;
+        color: var(--accent);
+        margin: 44px 0 14px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border);
+        scroll-margin-top: 70px;
+      }
+      h3 {
+        font-size: 1.15rem;
+        font-weight: 600;
+        color: #c5caff;
+        margin: 30px 0 10px;
+        scroll-margin-top: 70px;
+      }
+      h4,
+      h5,
+      h6 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--muted);
+        margin: 22px 0 8px;
+      }
+      h4.gbe-topic {
+        color: #c5caff;
+        font-size: 1.02rem;
+        margin: 26px 0 8px;
+        padding-left: 20px;
+        position: relative;
+        scroll-margin-top: 70px;
+      }
+      h4.gbe-topic::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent);
+      }
+      p {
+        margin-bottom: 14px;
+        color: #cdd0e0;
+      }
+      a {
+        color: var(--accent);
+      }
+      strong {
+        color: #eef0fb;
+      }
+      code {
+        background: #252836;
+        color: #c5caff;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family:
+          "JetBrains Mono", "Fira Code", ui-monospace, SFMono-Regular, Menlo,
+          monospace;
+        font-size: 0.9em;
+        font-weight: 400;
+      }
+      pre {
+        background: var(--code-bg);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 18px 22px;
+        overflow-x: auto;
+        margin: 18px 0;
+      }
+      pre code {
+        background: none;
+        padding: 0;
+        color: #e6e9f5;
+        font-size: 0.95rem;
+        line-height: 1.7;
+        white-space: pre;
+        font-weight: 400;
+      }
+      pre code strong,
+      pre code b {
+        font-weight: 400;
+        color: inherit;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        font-size: 0.9em;
+      }
+      th {
+        background: #252836;
+        color: var(--accent);
+        text-align: left;
+        padding: 10px 14px;
+        font-weight: 600;
+        font-size: 0.8em;
+        border-bottom: 2px solid var(--border);
+      }
+      td {
+        padding: 9px 14px;
+        border-bottom: 1px solid var(--border);
+        color: #cdd0e0;
+        vertical-align: top;
+      }
+      ul,
+      ol {
+        padding-left: 26px;
+        margin-bottom: 14px;
+      }
+      li {
+        margin-bottom: 6px;
+        color: #cdd0e0;
+      }
+      blockquote {
+        border-left: 3px solid var(--accent);
+        margin: 18px 0;
+        padding: 12px 18px;
+        background: rgba(124, 135, 255, 0.07);
+        color: var(--muted);
+        border-radius: 0 6px 6px 0;
+      }
+      img {
+        max-width: 100%;
+        border-radius: 8px;
+      }
+      hr {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 36px 0;
+      }
+      .toc {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 18px 22px;
+        margin: 24px 0 36px;
+      }
+      .toc-title {
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+        margin: 0 0 10px;
+      }
+      .toc ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .toc li {
+        margin: 2px 0;
+      }
+      .toc a {
+        color: #c5caff;
+        text-decoration: none;
+        font-size: 0.92rem;
+      }
+      .toc a:hover {
+        color: var(--accent);
+        text-decoration: underline;
+      }
+      .toc-l2 {
+        margin-left: 0;
+      }
+      .toc-l3 {
+        margin-left: 18px;
+      }
+      .toc-l3 a {
+        color: var(--muted);
+        font-size: 0.88rem;
+      }
+      .toc-back {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background: var(--accent);
+        color: #fff;
+        padding: 9px 14px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-decoration: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        opacity: 0.88;
+      }
+      .toc-back:hover {
+        opacity: 1;
+      }
+      .playground-float {
+        position: fixed;
+        bottom: 24px;
+        right: 90px;
+        background: #1a1d27;
+        color: var(--accent);
+        border: 1px solid var(--accent);
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-decoration: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        opacity: 0.88;
+      }
+      .playground-float:hover {
+        opacity: 1;
+        background: rgba(124, 135, 255, 0.12);
+        text-decoration: none;
+      }
+      pre {
+        position: relative;
+      }
+      .copy-btn {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: var(--muted);
+        padding: 4px 8px;
+        border-radius: 5px;
+        font-size: 0.7rem;
+        font-family: inherit;
+        cursor: pointer;
+        opacity: 0;
+        transition:
+          opacity 0.2s,
+          background 0.15s;
+      }
+      pre:hover .copy-btn {
+        opacity: 1;
+      }
+      .copy-btn:hover {
+        background: rgba(124, 135, 255, 0.15);
+        color: var(--accent);
+        border-color: var(--accent);
+      }
+      .copy-btn.copied {
+        color: #4ade80;
+        border-color: #4ade80;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="nav">
+      <a href="index.html">&#8592; Home</a>
+      <span class="crumb">Go Standard Library</span>
+    </nav>
+    <div class="container">
+      <h1 class="page-title">Go Standard Library</h1>
+      <nav class="toc" aria-label="Table of contents">
+        <p class="toc-title">Contents</p>
+        <ul>
+          <li class="toc-l2"><a href="#1-introduction">1. Introduction</a></li>
+          <li class="toc-l2">
+            <a href="#2-fmt-formatting-and-printing"
+              >2. "fmt": Formatting and Printing</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#3-errors-creating-and-inspecting-errors"
+              >3. "errors": Creating and Inspecting Errors</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#4-strings-working-with-strings"
+              >4. "strings": Working with Strings</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#5-strconv-converting-strings-and-numbers"
+              >5. "strconv": Converting Strings and Numbers</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#6-slices-and-maps-collection-helpers"
+              >6. "slices" and "maps": Collection Helpers</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#7-sort-sorting-collections"
+              >7. "sort": Sorting Collections</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#8-time-dates-durations-and-timers"
+              >8. "time": Dates, Durations, and Timers</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#9-os-files-environment-variables-and-processes"
+              >9. "os": Files, Environment Variables, and Processes</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#10-pathfilepath-file-system-paths"
+              >10. "path/filepath": File-System Paths</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#11-io-general-input-and-output"
+              >11. "io": General Input and Output</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#12-bufio-buffered-input-and-output"
+              >12. "bufio": Buffered Input and Output</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#13-bytes-working-with-byte-slices"
+              >13. "bytes": Working with Byte Slices</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#14-encodingjson-json-encoding-and-decoding"
+              >14. "encoding/json": JSON Encoding and Decoding</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#15-neturl-urls-and-query-parameters"
+              >15. "net/url": URLs and Query Parameters</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#16-nethttp-http-clients">16. "net/http": HTTP Clients</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#17-nethttp-http-servers">17. "net/http": HTTP Servers</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#18-context-cancellation-deadlines-and-request-values"
+              >18. "context": Cancellation, Deadlines, and Request Values</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#19-sync-synchronizing-goroutines"
+              >19. "sync": Synchronizing Goroutines</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#20-syncatomic-atomic-values"
+              >20. "sync/atomic": Atomic Values</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#21-channels-and-select">21. Channels and "select"</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#22-log-and-logslog-application-logging"
+              >22. "log" and "log/slog": Application Logging</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#23-flag-command-line-flags"
+              >23. "flag": Command-Line Flags</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#24-regexp-regular-expressions"
+              >24. "regexp": Regular Expressions</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#25-math-and-mathrandv2">25. "math" and "math/rand/v2"</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#26-cryptorand-secure-random-values"
+              >26. "crypto/rand": Secure Random Values</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#27-cryptosha256-and-encodinghex"
+              >27. "crypto/sha256" and "encoding/hex"</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#28-encodingbase64">28. "encoding/base64"</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#29-databasesql-database-access"
+              >29. "database/sql": Database Access</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#30-htmltemplate-safe-html-templates"
+              >30. "html/template": Safe HTML Templates</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#31-embed-embedding-files-in-a-binary"
+              >31. "embed": Embedding Files in a Binary</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#32-testing-unit-tests">32. "testing": Unit Tests</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#33-nethttphttptest-testing-http-handlers"
+              >33. "net/http/httptest": Testing HTTP Handlers</a
+            >
+          </li>
+          <li class="toc-l2"><a href="#34-benchmarks">34. Benchmarks</a></li>
+          <li class="toc-l2">
+            <a href="#35-fuzz-testing">35. Fuzz Testing</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#36-runtime-runtime-information"
+              >36. "runtime": Runtime Information</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#37-ossignal-graceful-shutdown"
+              >37. "os/signal": Graceful Shutdown</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#38-compressgzip-compressing-data"
+              >38. "compress/gzip": Compressing Data</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#39-archivezip-zip-archives"
+              >39. "archive/zip": ZIP Archives</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#40-reflect-runtime-type-inspection"
+              >40. "reflect": Runtime Type Inspection</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#41-complete-example-small-json-api"
+              >41. Complete Example: Small JSON API</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#42-recommended-learning-order"
+              >42. Recommended Learning Order</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#43-standard-library-best-practices"
+              >43. Standard-Library Best Practices</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#44-package-cheat-sheet">44. Package Cheat Sheet</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#45-further-reading">45. Further Reading</a>
+          </li>
+        </ul>
+      </nav>
+      <p><strong>Practical Go Standard Library Tutorial</strong></p>
+      <h2 id="1-introduction">1. Introduction</h2>
+      <p>Go includes a large standard library covering:</p>
+      <pre><code>- Text manipulation
 - Input and output
 - Files and directories
 - JSON and other data formats
@@ -124,11 +536,31 @@ pre:hover .copy-btn{opacity:1;}
 - Logging
 - Testing
 - Cryptography
-- Database access</code></pre><p>A package belongs to the standard library when its import path does not contain an external domain.</p><p>For example:</p><pre><code>import (
+- Database access</code></pre>
+      <p>
+        A package belongs to the standard library when its import path does not
+        contain an external domain.
+      </p>
+      <p>For example:</p>
+      <pre><code>import (
 	"fmt"
 	"net/http"
 	"strings"
-)</code></pre><p>These are standard-library packages.</p><p>An external package usually has an import path such as:</p><pre><code>import "github.com/go-chi/chi/v5"</code></pre><p>This tutorial focuses on the packages you are most likely to use in everyday Go development.</p><p>---</p><h2 id="2-fmt-formatting-and-printing">2. "fmt": Formatting and Printing</h2><p>The "fmt" package handles formatted input and output.</p><p>Printing values</p><pre><code>package main
+)</code></pre>
+      <p>These are standard-library packages.</p>
+      <p>An external package usually has an import path such as:</p>
+      <pre><code>import "github.com/go-chi/chi/v5"</code></pre>
+      <p>
+        This tutorial focuses on the packages you are most likely to use in
+        everyday Go development.
+      </p>
+      <p>---</p>
+      <h2 id="2-fmt-formatting-and-printing">
+        2. "fmt": Formatting and Printing
+      </h2>
+      <p>The "fmt" package handles formatted input and output.</p>
+      <p>Printing values</p>
+      <pre><code>package main
 
 import "fmt"
 
@@ -139,11 +571,27 @@ func main() {
 	fmt.Println("Hello, Go!")
 	fmt.Println(name, age)
 	fmt.Printf("%s is %d years old\n", name, age)
-}</code></pre><p><strong>Common functions:</strong></p><p>Function - Purpose</p><pre><code>fmt.Println - Prints values followed by a newline
+}</code></pre>
+      <p><strong>Common functions:</strong></p>
+      <p>Function - Purpose</p>
+      <pre><code>fmt.Println - Prints values followed by a newline
 fmt.Print - Prints values without automatically adding a newline
 fmt.Printf - Prints formatted output
 fmt.Sprintf - Creates and returns a formatted string
-fmt.Errorf - Creates a formatted error</code></pre><p><strong>Common formatting verbs</strong></p><p>Verb - Meaning</p><p>%<strong>s</strong> - String</p><p>%<strong>d</strong> - Integer</p><p>%<strong>f</strong> - Floating-point number</p><p>%<strong>t</strong> - Boolean</p><p>%<strong>v</strong> - Default representation</p><p>%+v - Detailed struct representation</p><p>%<strong>T</strong> - Value type</p><p>%<strong>q</strong> - Quoted string</p><p>%<strong>x</strong> - Hexadecimal</p><p>Example:</p><pre><code>package main
+fmt.Errorf - Creates a formatted error</code></pre>
+      <p><strong>Common formatting verbs</strong></p>
+      <p>Verb - Meaning</p>
+      <p>%<strong>s</strong> - String</p>
+      <p>%<strong>d</strong> - Integer</p>
+      <p>%<strong>f</strong> - Floating-point number</p>
+      <p>%<strong>t</strong> - Boolean</p>
+      <p>%<strong>v</strong> - Default representation</p>
+      <p>%+v - Detailed struct representation</p>
+      <p>%<strong>T</strong> - Value type</p>
+      <p>%<strong>q</strong> - Quoted string</p>
+      <p>%<strong>x</strong> - Hexadecimal</p>
+      <p>Example:</p>
+      <pre><code>package main
 
 import "fmt"
 
@@ -161,12 +609,28 @@ func main() {
 	fmt.Printf("Default: %v\n", user)
 	fmt.Printf("Detailed: %+v\n", user)
 	fmt.Printf("Type: %T\n", user)
-}</code></pre><p>Output:</p><pre><code>Default: {Ginad 28}
+}</code></pre>
+      <p>Output:</p>
+      <pre><code>Default: {Ginad 28}
 Detailed: {Name:Ginad Age:28}
-Type: main.User</code></pre><p><strong>Creating strings</strong></p><p>Use "<strong>fmt</strong>.Sprintf" when you need the result as a string:</p><pre><code>message := fmt.Sprintf("User %s has ID %d", "Ginad", 1001)
-fmt.Println(message)</code></pre><p>Creating formatted errors</p><pre><code>func findUser(id int) error {
+Type: main.User</code></pre>
+      <p><strong>Creating strings</strong></p>
+      <p>
+        Use "<strong>fmt</strong>.Sprintf" when you need the result as a string:
+      </p>
+      <pre><code>message := fmt.Sprintf("User %s has ID %d", "Ginad", 1001)
+fmt.Println(message)</code></pre>
+      <p>Creating formatted errors</p>
+      <pre><code>func findUser(id int) error {
 	return fmt.Errorf("user with ID %d was not found", id)
-}</code></pre><p>---</p><h2 id="3-errors-creating-and-inspecting-errors">3. "errors": Creating and Inspecting Errors</h2><p>The "errors" package provides basic error creation and inspection.</p><p>Creating an error</p><pre><code>package main
+}</code></pre>
+      <p>---</p>
+      <h2 id="3-errors-creating-and-inspecting-errors">
+        3. "errors": Creating and Inspecting Errors
+      </h2>
+      <p>The "errors" package provides basic error creation and inspection.</p>
+      <p>Creating an error</p>
+      <pre><code>package main
 
 import (
 	"errors"
@@ -186,22 +650,37 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-}</code></pre><p><strong>Sentinel errors</strong></p><p>A sentinel error is a package-level error value used to represent a known condition.</p><pre><code>package user
+}</code></pre>
+      <p><strong>Sentinel errors</strong></p>
+      <p>
+        A sentinel error is a package-level error value used to represent a
+        known condition.
+      </p>
+      <pre><code>package user
 
 import "errors"
 
-var ErrNotFound = errors.New("user not found")</code></pre><p>Callers can check it with "errors.<strong>Is</strong>":</p><pre><code>if errors.Is(err, user.ErrNotFound) {
+var ErrNotFound = errors.New("user not found")</code></pre>
+      <p>Callers can check it with "errors.<strong>Is</strong>":</p>
+      <pre><code>if errors.Is(err, user.ErrNotFound) {
 	fmt.Println("The requested user does not exist")
-}</code></pre><p>Wrapping errors</p><p>Use "%<strong>w</strong>" with "<strong>fmt</strong>.Errorf":</p><pre><code>func loadConfig() error {
+}</code></pre>
+      <p>Wrapping errors</p>
+      <p>Use "%<strong>w</strong>" with "<strong>fmt</strong>.Errorf":</p>
+      <pre><code>func loadConfig() error {
 	err := readConfigFile()
 	if err != nil {
 		return fmt.Errorf("load configuration: %w", err)
 	}
 
 	return nil
-}</code></pre><p>The wrapped error preserves the original error.</p><pre><code>if errors.Is(err, os.ErrNotExist) {
+}</code></pre>
+      <p>The wrapped error preserves the original error.</p>
+      <pre><code>if errors.Is(err, os.ErrNotExist) {
 	fmt.Println("Configuration file does not exist")
-}</code></pre><p>Extracting custom error types</p><pre><code>package main
+}</code></pre>
+      <p>Extracting custom error types</p>
+      <pre><code>package main
 
 import (
 	"errors"
@@ -235,7 +714,22 @@ func main() {
 	if errors.As(err, &amp;validationErr) {
 		fmt.Println("Invalid field:", validationErr.Field)
 	}
-}</code></pre><p>Use:</p><p>- "errors.<strong>Is</strong>" to check whether an error matches a particular error value.</p><p>- "errors.<strong>As</strong>" to extract a particular error type.</p><p>---</p><h2 id="4-strings-working-with-strings">4. "strings": Working with Strings</h2><p>The "strings" package provides functions for searching, modifying, splitting, and joining strings.</p><pre><code>package main
+}</code></pre>
+      <p>Use:</p>
+      <p>
+        - "errors.<strong>Is</strong>" to check whether an error matches a
+        particular error value.
+      </p>
+      <p>- "errors.<strong>As</strong>" to extract a particular error type.</p>
+      <p>---</p>
+      <h2 id="4-strings-working-with-strings">
+        4. "strings": Working with Strings
+      </h2>
+      <p>
+        The "strings" package provides functions for searching, modifying,
+        splitting, and joining strings.
+      </p>
+      <pre><code>package main
 
 import (
 	"fmt"
@@ -249,7 +743,22 @@ func main() {
 	fmt.Println(strings.ToLower(text))
 	fmt.Println(strings.ToUpper(text))
 	fmt.Println(strings.Contains(text, "Go"))
-}</code></pre><p><strong>Frequently used functions</strong></p><p>Function - Purpose</p><p>"strings.Contains" - Checks whether text contains another string</p><p>"strings.HasPrefix" - Checks a prefix</p><p>"strings.HasSuffix" - Checks a suffix</p><p>"strings.Split" - Splits a string</p><p>"strings.Join" - Joins strings</p><p>"strings.TrimSpace" - Removes surrounding whitespace</p><p>"strings.ReplaceAll" - Replaces matching text</p><p>"strings.ToLower" - Converts text to lowercase</p><p>"strings.ToUpper" - Converts text to uppercase</p><p>"strings.Fields" - Splits text by whitespace</p><p>"strings.Builder" - Builds strings efficiently</p><p>Splitting and joining</p><pre><code>csv := "apple,banana,orange"
+}</code></pre>
+      <p><strong>Frequently used functions</strong></p>
+      <p>Function - Purpose</p>
+      <p>"strings.Contains" - Checks whether text contains another string</p>
+      <p>"strings.HasPrefix" - Checks a prefix</p>
+      <p>"strings.HasSuffix" - Checks a suffix</p>
+      <p>"strings.Split" - Splits a string</p>
+      <p>"strings.Join" - Joins strings</p>
+      <p>"strings.TrimSpace" - Removes surrounding whitespace</p>
+      <p>"strings.ReplaceAll" - Replaces matching text</p>
+      <p>"strings.ToLower" - Converts text to lowercase</p>
+      <p>"strings.ToUpper" - Converts text to uppercase</p>
+      <p>"strings.Fields" - Splits text by whitespace</p>
+      <p>"strings.Builder" - Builds strings efficiently</p>
+      <p>Splitting and joining</p>
+      <pre><code>csv := "apple,banana,orange"
 
 fruits := strings.Split(csv, ",")
 
@@ -258,16 +767,36 @@ for _, fruit := range fruits {
 }
 
 result := strings.Join(fruits, "  - ")
-fmt.Println(result)</code></pre><p>Output:</p><pre><code>apple
+fmt.Println(result)</code></pre>
+      <p>Output:</p>
+      <pre><code>apple
 banana
 orange
-apple  - banana  - orange</code></pre><p>Replacing text</p><pre><code>slug := strings.ReplaceAll(
+apple  - banana  - orange</code></pre>
+      <p>Replacing text</p>
+      <pre><code>slug := strings.ReplaceAll(
 	strings.ToLower("Go Standard Library"),
 	" ",
 	"-",
 )
 
-fmt.Println(slug)</code></pre><p>Output:</p><table><thead><tr><th><p>go-standard-<strong>library</strong></p></th></tr></thead></table><p><strong>Using "strings.Builder"</strong></p><p>Repeated string concatenation can create unnecessary allocations. Use "strings.Builder" when constructing larger strings.</p><pre><code>package main
+fmt.Println(slug)</code></pre>
+      <p>Output:</p>
+      <table>
+        <thead>
+          <tr>
+            <th>
+              <p>go-standard-<strong>library</strong></p>
+            </th>
+          </tr>
+        </thead>
+      </table>
+      <p><strong>Using "strings.Builder"</strong></p>
+      <p>
+        Repeated string concatenation can create unnecessary allocations. Use
+        "strings.Builder" when constructing larger strings.
+      </p>
+      <pre><code>package main
 
 import (
 	"fmt"
@@ -283,7 +812,9 @@ func main() {
 
 	result := builder.String()
 	fmt.Println(result)
-}</code></pre><p>Building HTML:</p><pre><code>func buildList(items []string) string {
+}</code></pre>
+      <p>Building HTML:</p>
+      <pre><code>func buildList(items []string) string {
 	var builder strings.Builder
 
 	builder.WriteString("&lt;ul&gt;")
@@ -297,7 +828,21 @@ func main() {
 	builder.WriteString("&lt;/ul&gt;")
 
 	return builder.String()
-}</code></pre><p>For untrusted content, use "html/template" instead of manually constructing HTML.</p><p>---</p><h2 id="5-strconv-converting-strings-and-numbers">5. "strconv": Converting Strings and Numbers</h2><p>The "strconv" package converts strings to primitive values and primitive values to strings.</p><p><strong>String to integer</strong></p><pre><code>package main
+}</code></pre>
+      <p>
+        For untrusted content, use "html/template" instead of manually
+        constructing HTML.
+      </p>
+      <p>---</p>
+      <h2 id="5-strconv-converting-strings-and-numbers">
+        5. "strconv": Converting Strings and Numbers
+      </h2>
+      <p>
+        The "strconv" package converts strings to primitive values and primitive
+        values to strings.
+      </p>
+      <p><strong>String to integer</strong></p>
+      <pre><code>package main
 
 import (
 	"fmt"
@@ -314,7 +859,9 @@ func main() {
 	}
 
 	fmt.Println(number + 8)
-}</code></pre><p><strong>Integer to string</strong></p><pre><code>id := 1001
+}</code></pre>
+      <p><strong>Integer to string</strong></p>
+      <pre><code>id := 1001
 text := strconv.Itoa(id)
 
 fmt.Println("User ID: " + text)
@@ -334,9 +881,18 @@ if err != nil {
 count, err := strconv.ParseInt("500", 10, 64)
 if err != nil {
 	return
-}</code></pre><p><strong>Format values</strong></p><pre><code>priceText := strconv.FormatFloat(19.95, 'f', 2, 64)
+}</code></pre>
+      <p><strong>Format values</strong></p>
+      <pre><code>priceText := strconv.FormatFloat(19.95, 'f', 2, 64)
 enabledText := strconv.FormatBool(true)
-countText := strconv.FormatInt(500, 10)</code></pre><p>---</p><h2 id="6-slices-and-maps-collection-helpers">6. "slices" and "maps": Collection Helpers</h2><p>Modern Go includes standard-library helpers for slices and maps.</p><p><strong>slices</strong></p><pre><code>package main
+countText := strconv.FormatInt(500, 10)</code></pre>
+      <p>---</p>
+      <h2 id="6-slices-and-maps-collection-helpers">
+        6. "slices" and "maps": Collection Helpers
+      </h2>
+      <p>Modern Go includes standard-library helpers for slices and maps.</p>
+      <p><strong>slices</strong></p>
+      <pre><code>package main
 
 import (
 	"fmt"
@@ -351,12 +907,16 @@ func main() {
 
 	fmt.Println(slices.Contains(numbers, 5))
 	fmt.Println(slices.Index(numbers, 9))
-}</code></pre><p>Useful operations include:</p><pre><code>values := []string{"go", "java", "go", "python"}
+}</code></pre>
+      <p>Useful operations include:</p>
+      <pre><code>values := []string{"go", "java", "go", "python"}
 
 values = slices.Delete(values, 1, 2)
 values = slices.Compact(values)
 
-copyOfValues := slices.Clone(values)</code></pre><p>Sorting custom values</p><pre><code>package main
+copyOfValues := slices.Clone(values)</code></pre>
+      <p>Sorting custom values</p>
+      <pre><code>package main
 
 import (
 	"fmt"
@@ -380,7 +940,9 @@ func main() {
 	})
 
 	fmt.Println(users)
-}</code></pre><p><strong>maps</strong></p><pre><code>package main
+}</code></pre>
+      <p><strong>maps</strong></p>
+      <pre><code>package main
 
 import (
 	"fmt"
@@ -396,10 +958,17 @@ func main() {
 	cloned := maps.Clone(original)
 
 	fmt.Println(cloned)
-}</code></pre><p>Comparing maps:</p><pre><code>a := map[string]int{"one": 1}
+}</code></pre>
+      <p>Comparing maps:</p>
+      <pre><code>a := map[string]int{"one": 1}
 b := map[string]int{"one": 1}
 
-fmt.Println(maps.Equal(a, b))</code></pre><p>---</p><h2 id="7-sort-sorting-collections">7. "sort": Sorting Collections</h2><p>The "sort" package is still commonly found in existing Go projects.</p><p>Sorting primitive slices</p><pre><code>package main
+fmt.Println(maps.Equal(a, b))</code></pre>
+      <p>---</p>
+      <h2 id="7-sort-sorting-collections">7. "sort": Sorting Collections</h2>
+      <p>The "sort" package is still commonly found in existing Go projects.</p>
+      <p>Sorting primitive slices</p>
+      <pre><code>package main
 
 import (
 	"fmt"
@@ -415,11 +984,27 @@ func main() {
 
 	fmt.Println(numbers)
 	fmt.Println(names)
-}</code></pre><p>For new code, the generic "slices" package is usually more convenient.</p><p>Sorting structs</p><pre><code>sort.Slice(users, func(i, j int) bool {
+}</code></pre>
+      <p>
+        For new code, the generic "slices" package is usually more convenient.
+      </p>
+      <p>Sorting structs</p>
+      <pre><code>sort.Slice(users, func(i, j int) bool {
 	return users[i].Age &lt; users[j].Age
-})</code></pre><p>Descending:</p><pre><code>sort.Slice(users, func(i, j int) bool {
+})</code></pre>
+      <p>Descending:</p>
+      <pre><code>sort.Slice(users, func(i, j int) bool {
 	return users[i].Age &gt; users[j].Age
-})</code></pre><p>---</p><h2 id="8-time-dates-durations-and-timers">8. "time": Dates, Durations, and Timers</h2><p>The "time" package handles dates, times, durations, timers, and tickers.</p><p><strong>Current time</strong></p><pre><code>package main
+})</code></pre>
+      <p>---</p>
+      <h2 id="8-time-dates-durations-and-timers">
+        8. "time": Dates, Durations, and Timers
+      </h2>
+      <p>
+        The "time" package handles dates, times, durations, timers, and tickers.
+      </p>
+      <p><strong>Current time</strong></p>
+      <pre><code>package main
 
 import (
 	"fmt"
@@ -433,37 +1018,63 @@ func main() {
 	fmt.Println(now.Year())
 	fmt.Println(now.Month())
 	fmt.Println(now.Day())
-}</code></pre><p>Formatting time</p><p>Go uses a reference date rather than tokens such as "YYYY-MM-DD".</p><p>The <strong>reference</strong> is:</p><p>Mon Jan 2 15:04:05 MST 2006</p><p>Example:</p><p>now := time.Now()</p><pre><code>fmt.Println(now.Format("2006-01-02"))
+}</code></pre>
+      <p>Formatting time</p>
+      <p>Go uses a reference date rather than tokens such as "YYYY-MM-DD".</p>
+      <p>The <strong>reference</strong> is:</p>
+      <p>Mon Jan 2 15:04:05 MST 2006</p>
+      <p>Example:</p>
+      <p>now := time.Now()</p>
+      <pre><code>fmt.Println(now.Format("2006-01-02"))
 fmt.Println(now.Format("2006-01-02 15:04:05"))
-fmt.Println(now.Format("January 2, 2006"))</code></pre><p>Parsing time</p><pre><code>date, err := time.Parse("2006-01-02", "2026-07-15")
+fmt.Println(now.Format("January 2, 2006"))</code></pre>
+      <p>Parsing time</p>
+      <pre><code>date, err := time.Parse("2006-01-02", "2026-07-15")
 if err != nil {
 	fmt.Println("Invalid date:", err)
 	return
 }
 
-fmt.Println(date)</code></pre><p>Adding and subtracting time</p><pre><code>now := time.Now()
+fmt.Println(date)</code></pre>
+      <p>Adding and subtracting time</p>
+      <pre><code>now := time.Now()
 
 tomorrow := now.Add(24 * time.Hour)
 thirtyMinutesLater := now.Add(30 * time.Minute)
 
 fmt.Println(tomorrow)
-fmt.Println(thirtyMinutesLater)</code></pre><p>Calendar-based operations:</p><pre><code>nextMonth := now.AddDate(0, 1, 0)
-nextYear := now.AddDate(1, 0, 0)</code></pre><p>Calculating duration</p><pre><code>start := time.Now()
+fmt.Println(thirtyMinutesLater)</code></pre>
+      <p>Calendar-based operations:</p>
+      <pre><code>nextMonth := now.AddDate(0, 1, 0)
+nextYear := now.AddDate(1, 0, 0)</code></pre>
+      <p>Calculating duration</p>
+      <pre><code>start := time.Now()
 
 time.Sleep(500 * time.Millisecond)
 
 elapsed := time.Since(start)
-fmt.Println("Elapsed:", elapsed)</code></pre><p>Timer</p><pre><code>timer := time.NewTimer(2 * time.Second)
+fmt.Println("Elapsed:", elapsed)</code></pre>
+      <p>Timer</p>
+      <pre><code>timer := time.NewTimer(2 * time.Second)
 
 fmt.Println("Waiting...")
 &lt;-timer.C
-fmt.Println("Timer completed")</code></pre><p>Ticker</p><pre><code>ticker := time.NewTicker(1 * time.Second)
+fmt.Println("Timer completed")</code></pre>
+      <p>Ticker</p>
+      <pre><code>ticker := time.NewTicker(1 * time.Second)
 defer ticker.Stop()
 
 for i := 0; i &lt; 3; i++ {
 	&lt;-ticker.C
 	fmt.Println("Tick:", time.Now())
-}</code></pre><p>---</p><h2 id="9-os-files-environment-variables-and-processes">9. "os": Files, Environment Variables, and Processes</h2><p>The "os" package provides operating-system functionality.</p><p>Environment variables</p><pre><code>package main
+}</code></pre>
+      <p>---</p>
+      <h2 id="9-os-files-environment-variables-and-processes">
+        9. "os": Files, Environment Variables, and Processes
+      </h2>
+      <p>The "os" package provides operating-system functionality.</p>
+      <p>Environment variables</p>
+      <pre><code>package main
 
 import (
 	"fmt"
@@ -478,13 +1089,20 @@ func main() {
 	}
 
 	fmt.Println("Port:", port)
-}</code></pre><p>Use "<strong>LookupEnv</strong>" when you need to distinguish between an unset variable and an empty variable:</p><pre><code>value, exists := os.LookupEnv("DATABASE_URL")
+}</code></pre>
+      <p>
+        Use "<strong>LookupEnv</strong>" when you need to distinguish between an
+        unset variable and an empty variable:
+      </p>
+      <pre><code>value, exists := os.LookupEnv("DATABASE_URL")
 if !exists {
 	fmt.Println("DATABASE_URL is not set")
 	return
 }
 
-fmt.Println(value)</code></pre><p>Command-line arguments</p><pre><code>package main
+fmt.Println(value)</code></pre>
+      <p>Command-line arguments</p>
+      <pre><code>package main
 
 import (
 	"fmt"
@@ -497,17 +1115,25 @@ func main() {
 	if len(os.Args) &gt; 1 {
 		fmt.Println("First argument:", os.Args[1])
 	}
-}</code></pre><p>Command:</p><pre><code>go run . hello</code></pre><p><strong>Reading</strong> a file</p><pre><code>content, err := os.ReadFile("config.txt")
+}</code></pre>
+      <p>Command:</p>
+      <pre><code>go run . hello</code></pre>
+      <p><strong>Reading</strong> a file</p>
+      <pre><code>content, err := os.ReadFile("config.txt")
 if err != nil {
 	return err
 }
 
-fmt.Println(string(content))</code></pre><p><strong>Writing</strong> a file</p><pre><code>content := []byte("Hello from Go\n")
+fmt.Println(string(content))</code></pre>
+      <p><strong>Writing</strong> a file</p>
+      <pre><code>content := []byte("Hello from Go\n")
 
 err := os.WriteFile("output.txt", content, 0644)
 if err != nil {
 	return err
-}</code></pre><p><strong>Opening</strong> a file</p><pre><code>file, err := os.Open("data.txt")
+}</code></pre>
+      <p><strong>Opening</strong> a file</p>
+      <pre><code>file, err := os.Open("data.txt")
 if err != nil {
 	return err
 }
@@ -524,10 +1150,14 @@ defer file.Close()
 _, err = file.WriteString("Hello, Go!")
 if err != nil {
 	return err
-}</code></pre><p><strong>Creating</strong> directories</p><pre><code>err := os.MkdirAll("storage/uploads/images", 0755)
+}</code></pre>
+      <p><strong>Creating</strong> directories</p>
+      <pre><code>err := os.MkdirAll("storage/uploads/images", 0755)
 if err != nil {
 	return err
-}</code></pre><p><strong>Checking</strong> whether a file <strong>exists</strong></p><pre><code>_, err := os.Stat("config.json")
+}</code></pre>
+      <p><strong>Checking</strong> whether a file <strong>exists</strong></p>
+      <pre><code>_, err := os.Stat("config.json")
 
 if errors.Is(err, os.ErrNotExist) {
 	fmt.Println("File does not exist")
@@ -535,7 +1165,13 @@ if errors.Is(err, os.ErrNotExist) {
 	fmt.Println("Unable to inspect file:", err)
 } else {
 	fmt.Println("File exists")
-}</code></pre><p>---</p><h2 id="10-pathfilepath-file-system-paths">10. "path/filepath": File-System Paths</h2><p>Use path/filepath for paths on the local operating system.</p><pre><code>package main
+}</code></pre>
+      <p>---</p>
+      <h2 id="10-pathfilepath-file-system-paths">
+        10. "path/filepath": File-System Paths
+      </h2>
+      <p>Use path/filepath for paths on the local operating system.</p>
+      <pre><code>package main
 
 import (
 	"fmt"
@@ -549,10 +1185,14 @@ func main() {
 	fmt.Println(filepath.Base(path))
 	fmt.Println(filepath.Dir(path))
 	fmt.Println(filepath.Ext(path))
-}</code></pre><p>Possible output on Linux:</p><pre><code>storage/uploads/image.jpg
+}</code></pre>
+      <p>Possible output on Linux:</p>
+      <pre><code>storage/uploads/image.jpg
 image.jpg
 storage/uploads
-.jpg</code></pre><p><strong>Walking through</strong> a directory</p><pre><code>err := filepath.WalkDir(".", func(
+.jpg</code></pre>
+      <p><strong>Walking through</strong> a directory</p>
+      <pre><code>err := filepath.WalkDir(".", func(
 	path string,
 	entry os.DirEntry,
 	err error,
@@ -568,20 +1208,44 @@ storage/uploads
 
 if err != nil {
 	return err
-}</code></pre><p><strong>Matching</strong> files</p><pre><code>files, err := filepath.Glob("*.json")
+}</code></pre>
+      <p><strong>Matching</strong> files</p>
+      <pre><code>files, err := filepath.Glob("*.json")
 if err != nil {
 	return err
 }
 
 for _, file := range files {
 	fmt.Println(file)
-}</code></pre><p>Use "path", not "path/filepath", for slash-separated URL paths.</p><p>---</p><h2 id="11-io-general-input-and-output">11. "io": General Input and Output</h2><p>The <strong>io</strong> package defines interfaces and utilities used throughout Go.</p><p>Two important interfaces are:</p><pre><code>type Reader interface {
+}</code></pre>
+      <p>Use "path", not "path/filepath", for slash-separated URL paths.</p>
+      <p>---</p>
+      <h2 id="11-io-general-input-and-output">
+        11. "io": General Input and Output
+      </h2>
+      <p>
+        The <strong>io</strong> package defines interfaces and utilities used
+        throughout Go.
+      </p>
+      <p>Two important interfaces are:</p>
+      <pre><code>type Reader interface {
 	Read(p []byte) (n int, err error)
 }
 
 type Writer interface {
 	Write(p []byte) (n int, err error)
-}</code></pre><p>Many Go types implement these interfaces:</p><p>- Files</p><p>- HTTP request bodies</p><p>- HTTP response bodies</p><p>- Network connections</p><p>- Buffers</p><p>- Compressed streams</p><p>- Strings readers</p><p>This lets functions work with many data sources.</p><p>Copying data</p><pre><code>source, err := os.Open("source.txt")
+}</code></pre>
+      <p>Many Go types implement these interfaces:</p>
+      <p>- Files</p>
+      <p>- HTTP request bodies</p>
+      <p>- HTTP response bodies</p>
+      <p>- Network connections</p>
+      <p>- Buffers</p>
+      <p>- Compressed streams</p>
+      <p>- Strings readers</p>
+      <p>This lets functions work with many data sources.</p>
+      <p>Copying data</p>
+      <pre><code>source, err := os.Open("source.txt")
 if err != nil {
 	return err
 }
@@ -596,20 +1260,40 @@ defer destination.Close()
 _, err = io.Copy(destination, source)
 if err != nil {
 	return err
-}</code></pre><p>Reading all data</p><pre><code>data, err := io.ReadAll(file)
+}</code></pre>
+      <p>Reading all data</p>
+      <pre><code>data, err := io.ReadAll(file)
 if err != nil {
 	return err
 }
 
-fmt.Println(string(data))</code></pre><p>Avoid "io.ReadAll" for very large or untrusted streams unless you enforce a size limit.</p><pre><code>limited := io.LimitReader(file, 10*1024*1024) // appox 10MB
+fmt.Println(string(data))</code></pre>
+      <p>
+        Avoid "io.ReadAll" for very large or untrusted streams unless you
+        enforce a size limit.
+      </p>
+      <pre><code>limited := io.LimitReader(file, 10*1024*1024) // appox 10MB
 
-data, err := io.ReadAll(limited)</code></pre><p>Writing a string</p><pre><code>_, err := io.WriteString(file, "Hello, Go!\n")</code></pre><p>Reading from multiple readers</p><pre><code>reader := io.MultiReader(
+data, err := io.ReadAll(limited)</code></pre>
+      <p>Writing a string</p>
+      <pre><code>_, err := io.WriteString(file, "Hello, Go!\n")</code></pre>
+      <p>Reading from multiple readers</p>
+      <pre><code>reader := io.MultiReader(
 	strings.NewReader("Hello "),
 	strings.NewReader("from "),
 	strings.NewReader("Go"),
 )
 
-data, err := io.ReadAll(reader)</code></pre><p>---</p><h2 id="12-bufio-buffered-input-and-output">12. "bufio": Buffered Input and Output</h2><p>Use <strong>bufio</strong> for efficient buffered reading and writing.</p><p>Reading line by line</p><pre><code>package main
+data, err := io.ReadAll(reader)</code></pre>
+      <p>---</p>
+      <h2 id="12-bufio-buffered-input-and-output">
+        12. "bufio": Buffered Input and Output
+      </h2>
+      <p>
+        Use <strong>bufio</strong> for efficient buffered reading and writing.
+      </p>
+      <p>Reading line by line</p>
+      <pre><code>package main
 
 import (
 	"bufio"
@@ -634,7 +1318,9 @@ func main() {
 	if err := scanner.Err(); err != nil {
 		fmt.Println("Reading file:", err)
 	}
-}</code></pre><p>Reading user input</p><pre><code>reader := bufio.NewReader(os.Stdin)
+}</code></pre>
+      <p>Reading user input</p>
+      <pre><code>reader := bufio.NewReader(os.Stdin)
 
 fmt.Print("Enter your name: ")
 
@@ -645,7 +1331,9 @@ if err != nil {
 }
 
 name = strings.TrimSpace(name)
-fmt.Println("Hello,", name)</code></pre><p>Buffered writing</p><pre><code>file, err := os.Create("output.txt")
+fmt.Println("Hello,", name)</code></pre>
+      <p>Buffered writing</p>
+      <pre><code>file, err := os.Create("output.txt")
 if err != nil {
 	return err
 }
@@ -656,10 +1344,27 @@ defer writer.Flush()
 
 for i := 1; i &lt;= 1000; i++ {
 	fmt.Fprintf(writer, "Line %d\n", i)
-}</code></pre><p>Remember to <strong>call "Flush", usually with "defer"</strong>.</p><p>Scanner size limit</p><p>"bufio.Scanner" has a token-size limit. Increase it when processing unusually long lines:</p><pre><code>scanner := bufio.NewScanner(file)
+}</code></pre>
+      <p>Remember to <strong>call "Flush", usually with "defer"</strong>.</p>
+      <p>Scanner size limit</p>
+      <p>
+        "bufio.Scanner" has a token-size limit. Increase it when processing
+        unusually long lines:
+      </p>
+      <pre><code>scanner := bufio.NewScanner(file)
 
 buffer := make([]byte, 64*1024)
-scanner.Buffer(buffer, 1024*1024)</code></pre><p>This sets a maximum token size of 1 MB.</p><p>---</p><h2 id="13-bytes-working-with-byte-slices">13. "bytes": Working with Byte Slices</h2><p>The <strong>bytes</strong> package is similar to "strings", but it works with "[]byte".</p><pre><code>package main
+scanner.Buffer(buffer, 1024*1024)</code></pre>
+      <p>This sets a maximum token size of 1 MB.</p>
+      <p>---</p>
+      <h2 id="13-bytes-working-with-byte-slices">
+        13. "bytes": Working with Byte Slices
+      </h2>
+      <p>
+        The <strong>bytes</strong> package is similar to "strings", but it works
+        with "[]byte".
+      </p>
+      <pre><code>package main
 
 import (
 	"bytes"
@@ -671,24 +1376,48 @@ func main() {
 
 	fmt.Println(bytes.Contains(data, []byte("Go")))
 	fmt.Println(string(bytes.ToUpper(data)))
-}</code></pre><p>"bytes.Buffer"</p><p>A "bytes.Buffer" can be both read from and written to.</p><pre><code>var buffer bytes.Buffer
+}</code></pre>
+      <p>"bytes.Buffer"</p>
+      <p>A "bytes.Buffer" can be both read from and written to.</p>
+      <pre><code>var buffer bytes.Buffer
 
 buffer.WriteString("Hello")
 buffer.WriteByte(' ')
 buffer.WriteString("Go")
 
-fmt.Println(buffer.String())</code></pre><p>It is commonly used when:</p><p>- Building request bodies</p><p>- Creating files in memory</p><p>- Capturing output</p><p>- Testing readers and writers</p><p>- Working with binary data</p><p>Example JSON request body:</p><pre><code>payload := []byte(`{"name":"Ginad"}`)
+fmt.Println(buffer.String())</code></pre>
+      <p>It is commonly used when:</p>
+      <p>- Building request bodies</p>
+      <p>- Creating files in memory</p>
+      <p>- Capturing output</p>
+      <p>- Testing readers and writers</p>
+      <p>- Working with binary data</p>
+      <p>Example JSON request body:</p>
+      <pre><code>payload := []byte(`{"name":"Ginad"}`)
 
 request, err := http.NewRequest(
 	http.MethodPost,
 	"https://example.com/users",
 	bytes.NewReader(payload),
-)</code></pre><p>---</p><h2 id="14-encodingjson-json-encoding-and-decoding">14. "encoding/json": JSON Encoding and Decoding</h2><p>The <strong>encoding</strong>/json package converts between Go values and JSON.</p><p>Struct tags</p><pre><code>type User struct {
+)</code></pre>
+      <p>---</p>
+      <h2 id="14-encodingjson-json-encoding-and-decoding">
+        14. "encoding/json": JSON Encoding and Decoding
+      </h2>
+      <p>
+        The <strong>encoding</strong>/json package converts between Go values
+        and JSON.
+      </p>
+      <p>Struct tags</p>
+      <pre><code>type User struct {
 	ID       int    `json:"id"`
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	Password string `json:"-"` // exclude this field
-}</code></pre><p>Tags control JSON field names.</p><p>Encoding a value</p><pre><code>package main
+}</code></pre>
+      <p>Tags control JSON field names.</p>
+      <p>Encoding a value</p>
+      <pre><code>package main
 
 import (
 	"encoding/json"
@@ -713,7 +1442,19 @@ func main() {
 	}
 
 	fmt.Println(string(data))
-}</code></pre><p>Output:</p><table><thead><tr><th><p>{"id":1,"name":"Ginad"}</p></th></tr></thead></table><p>Pretty JSON</p><pre><code>data, err := json.MarshalIndent(user, "", "  ")</code></pre><p>Decoding JSON</p><pre><code>input := []byte(`{
+}</code></pre>
+      <p>Output:</p>
+      <table>
+        <thead>
+          <tr>
+            <th><p>{"id":1,"name":"Ginad"}</p></th>
+          </tr>
+        </thead>
+      </table>
+      <p>Pretty JSON</p>
+      <pre><code>data, err := json.MarshalIndent(user, "", "  ")</code></pre>
+      <p>Decoding JSON</p>
+      <pre><code>input := []byte(`{
 	"id": 1,
 	"name": "Ginad"
 }`)
@@ -725,15 +1466,29 @@ if err != nil {
 	return err
 }
 
-fmt.Println(user.Name)</code></pre><p>Pass a pointer to "json.Unmarshal" so it can modify the destination.</p><p><strong>Optional</strong> fields by defining pointer</p><pre><code>type UpdateUserRequest struct {
+fmt.Println(user.Name)</code></pre>
+      <p>
+        Pass a pointer to "json.Unmarshal" so it can modify the destination.
+      </p>
+      <p><strong>Optional</strong> fields by defining pointer</p>
+      <pre><code>type UpdateUserRequest struct {
 	Name  *string `json:"name"` //optional
 	Email *string `json:"email"`//optional
-}</code></pre><p>Omitting empty values</p><pre><code>type Product struct {
+}</code></pre>
+      <p>Omitting empty values</p>
+      <pre><code>type Product struct {
 	ID          int      `json:"id"`
 	Name        string   `json:"name"`
 	Description string   `json:"description,omitempty"` // omit on empty
 	Tags        []string `json:"tags,omitempty"` // omit on empty
-}</code></pre><p>Streaming JSON</p><p>Use json.Decoder and json.Encoder when<strong> working with readers and writers</strong>.</p><pre><code>func handleCreateUser(w http.ResponseWriter, r *http.Request) {
+}</code></pre>
+      <p>Streaming JSON</p>
+      <p>
+        Use json.Decoder and json.Encoder when<strong>
+          working with readers and writers</strong
+        >.
+      </p>
+      <pre><code>func handleCreateUser(w http.ResponseWriter, r *http.Request) {
 	var request CreateUserRequest
 
 	decoder := json.NewDecoder(r.Body)
@@ -747,13 +1502,23 @@ fmt.Println(user.Name)</code></pre><p>Pass a pointer to "json.Unmarshal" so it c
 	w.WriteHeader(http.StatusCreated)
 
 	json.NewEncoder(w).Encode(request)
-}</code></pre><p>Rejecting unknown fields</p><pre><code>decoder := json.NewDecoder(r.Body)
+}</code></pre>
+      <p>Rejecting unknown fields</p>
+      <pre><code>decoder := json.NewDecoder(r.Body)
 decoder.DisallowUnknownFields() // strict check
 
 if err := decoder.Decode(&amp;request); err != nil {
 	http.Error(w, "invalid request body", http.StatusBadRequest)
 	return
-}</code></pre><p>This is useful for strict API request validation.</p><p>---</p><h2 id="15-neturl-urls-and-query-parameters">15. "net/url": URLs and Query Parameters</h2><p>The "net/url" package parses and constructs URLs.</p><p>Parsing a URL</p><pre><code>package main
+}</code></pre>
+      <p>This is useful for strict API request validation.</p>
+      <p>---</p>
+      <h2 id="15-neturl-urls-and-query-parameters">
+        15. "net/url": URLs and Query Parameters
+      </h2>
+      <p>The "net/url" package parses and constructs URLs.</p>
+      <p>Parsing a URL</p>
+      <pre><code>package main
 
 import (
 	"fmt"
@@ -773,14 +1538,26 @@ func main() {
 	fmt.Println(parsed.Host)
 	fmt.Println(parsed.Path)
 	fmt.Println(parsed.Query().Get("page"))
-}</code></pre><p>Creating query parameters safely</p><pre><code>values := url.Values{}
+}</code></pre>
+      <p>Creating query parameters safely</p>
+      <pre><code>values := url.Values{}
 
 values.Set("search", "Go standard library")
 values.Set("page", "1")
 
 query := values.Encode()
 
-fmt.Println(query)</code></pre><p>Output:</p><table><thead><tr><th><p>page=1&amp;search=Go+standard+library</p></th></tr></thead></table><p>Modifying a URL</p><pre><code>parsed, err := url.Parse("https://example.com/products")
+fmt.Println(query)</code></pre>
+      <p>Output:</p>
+      <table>
+        <thead>
+          <tr>
+            <th><p>page=1&amp;search=Go+standard+library</p></th>
+          </tr>
+        </thead>
+      </table>
+      <p>Modifying a URL</p>
+      <pre><code>parsed, err := url.Parse("https://example.com/products")
 if err != nil {
 	return err
 }
@@ -791,7 +1568,14 @@ query.Set("page", "2")
 
 parsed.RawQuery = query.Encode()
 
-fmt.Println(parsed.String())</code></pre><p>---</p><h2 id="16-nethttp-http-clients">16. "net/http": HTTP Clients</h2><p>The "net/http" package provides HTTP client and server implementations.</p><p>Simple GET request</p><pre><code>response, err := http.Get("https://api.example.com/users")
+fmt.Println(parsed.String())</code></pre>
+      <p>---</p>
+      <h2 id="16-nethttp-http-clients">16. "net/http": HTTP Clients</h2>
+      <p>
+        The "net/http" package provides HTTP client and server implementations.
+      </p>
+      <p>Simple GET request</p>
+      <pre><code>response, err := http.Get("https://api.example.com/users")
 if err != nil {
 	return err
 }
@@ -802,9 +1586,16 @@ if err != nil {
 	return err
 }
 
-fmt.Println(string(body))</code></pre><p>For production applications, use a configured "http.Client" with a timeout.</p><pre><code>client := &amp;http.Client{
+fmt.Println(string(body))</code></pre>
+      <p>
+        For production applications, use a configured "http.Client" with a
+        timeout.
+      </p>
+      <pre><code>client := &amp;http.Client{
 	Timeout: 10 * time.Second,
-}</code></pre><p>Checking status codes</p><pre><code>response, err := client.Get("https://api.example.com/users")
+}</code></pre>
+      <p>Checking status codes</p>
+      <pre><code>response, err := client.Get("https://api.example.com/users")
 if err != nil {
 	return err
 }
@@ -815,7 +1606,9 @@ if response.StatusCode &lt; 200 || response.StatusCode &gt;= 300 {
 		"unexpected HTTP status: %s",
 		response.Status,
 	)
-}</code></pre><p>Creating a request</p><pre><code>request, err := http.NewRequest(
+}</code></pre>
+      <p>Creating a request</p>
+      <pre><code>request, err := http.NewRequest(
 	http.MethodGet,
 	"https://api.example.com/users",
 	nil,
@@ -827,7 +1620,9 @@ if err != nil {
 request.Header.Set("Accept", "application/json")
 request.Header.Set("Authorization", "Bearer token")
 
-response, err := client.Do(request)</code></pre><p>Request with context and timeout</p><pre><code>ctx, cancel := context.WithTimeout(
+response, err := client.Do(request)</code></pre>
+      <p>Request with context and timeout</p>
+      <pre><code>ctx, cancel := context.WithTimeout(
 	context.Background(),
 	5*time.Second,
 )
@@ -843,7 +1638,9 @@ if err != nil {
 	return err
 }
 
-response, err := client.Do(request)</code></pre><p>Sending JSON</p><pre><code>type CreateUserRequest struct {
+response, err := client.Do(request)</code></pre>
+      <p>Sending JSON</p>
+      <pre><code>type CreateUserRequest struct {
 	Name  string `json:"name"`
 	Email string `json:"email"`
 }
@@ -874,7 +1671,10 @@ response, err := client.Do(request)
 if err != nil {
 	return err
 }
-defer response.Body.Close()</code></pre><p>Reusing an HTTP client</p><p>Do not create a new client for every request.</p><pre><code>type APIClient struct {
+defer response.Body.Close()</code></pre>
+      <p>Reusing an HTTP client</p>
+      <p>Do not create a new client for every request.</p>
+      <pre><code>type APIClient struct {
 	baseURL string
 	client  *http.Client
 }
@@ -886,7 +1686,12 @@ func NewAPIClient(baseURL string) *APIClient {
 			Timeout: 10 * time.Second,
 		},
 	}
-}</code></pre><p>---</p><h2 id="17-nethttp-http-servers">17. "net/http": HTTP Servers</h2><p>Go can build an HTTP server without an external framework.</p><p>Basic server</p><pre><code>package main
+}</code></pre>
+      <p>---</p>
+      <h2 id="17-nethttp-http-servers">17. "net/http": HTTP Servers</h2>
+      <p>Go can build an HTTP server without an external framework.</p>
+      <p>Basic server</p>
+      <pre><code>package main
 
 import (
 	"fmt"
@@ -908,13 +1713,17 @@ func main() {
 		fmt.Fprintf(w, "Retrieving item details for ID: %s", id)
 	})
 	http.ListenAndServe(":8080", mux)
-}</code></pre><p>Path parameters</p><pre><code>http.HandleFunc("GET /users/{id}", func(
+}</code></pre>
+      <p>Path parameters</p>
+      <pre><code>http.HandleFunc("GET /users/{id}", func(
 	w http.ResponseWriter,
 	r *http.Request,
 ) {
 	id := r.PathValue("id")
 	fmt.Fprintf(w, "User ID: %s", id)
-})</code></pre><p>JSON response helper</p><pre><code>func writeJSON(
+})</code></pre>
+      <p>JSON response helper</p>
+      <pre><code>func writeJSON(
 	w http.ResponseWriter,
 	status int,
 	value any,
@@ -925,7 +1734,9 @@ func main() {
 	if err := json.NewEncoder(w).Encode(value); err != nil {
 		log.Printf("encode response: %v", err)
 	}
-}</code></pre><p>Usage:</p><pre><code>http.HandleFunc("GET /users/{id}", func(
+}</code></pre>
+      <p>Usage:</p>
+      <pre><code>http.HandleFunc("GET /users/{id}", func(
 	w http.ResponseWriter,
 	r *http.Request,
 ) {
@@ -935,7 +1746,9 @@ func main() {
 	}
 
 	writeJSON(w, http.StatusOK, user)
-})</code></pre><p>Reading query parameters</p><pre><code>http.HandleFunc("GET /search", func(
+})</code></pre>
+      <p>Reading query parameters</p>
+      <pre><code>http.HandleFunc("GET /search", func(
 	w http.ResponseWriter,
 	r *http.Request,
 ) {
@@ -943,7 +1756,10 @@ func main() {
 	page := r.URL.Query().Get("page")
 
 	fmt.Fprintf(w, "query=%s page=%s", query, page)
-})</code></pre><p>Custom server configuration</p><p>A production server should normally configure timeouts.</p><pre><code>server := &amp;http.Server{
+})</code></pre>
+      <p>Custom server configuration</p>
+      <p>A production server should normally configure timeouts.</p>
+      <pre><code>server := &amp;http.Server{
 	Addr:              ":8080",
 	Handler:           mux,
 	ReadHeaderTimeout: 5 * time.Second,
@@ -957,7 +1773,9 @@ log.Printf("server listening on %s", server.Addr)
 if err := server.ListenAndServe(); err != nil &amp;&amp;
 	!errors.Is(err, http.ErrServerClosed) {
 	log.Fatal(err)
-}</code></pre><p>Middleware</p><pre><code>func loggingMiddleware(next http.Handler) http.Handler {
+}</code></pre>
+      <p>Middleware</p>
+      <pre><code>func loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(
 		w http.ResponseWriter,
 		r *http.Request,
@@ -973,8 +1791,26 @@ if err := server.ListenAndServe(); err != nil &amp;&amp;
 			time.Since(start),
 		)
 	})
-}</code></pre><p>Usage:</p><pre><code>handler := loggingMiddleware(mux)
-server.Handler = handler</code></pre><p>---</p><h2 id="18-context-cancellation-deadlines-and-request-values">18. "context": Cancellation, Deadlines, and Request Values</h2><p>The <strong>context</strong> package carries deadlines, cancellation signals, and request-scoped information.</p><p>It is especially important for:</p><p>- HTTP requests</p><p>- Database operations</p><p>- Goroutines</p><p>- External API calls</p><p>- Graceful shutdown</p><p>Cancellation</p><pre><code>package main
+}</code></pre>
+      <p>Usage:</p>
+      <pre><code>handler := loggingMiddleware(mux)
+server.Handler = handler</code></pre>
+      <p>---</p>
+      <h2 id="18-context-cancellation-deadlines-and-request-values">
+        18. "context": Cancellation, Deadlines, and Request Values
+      </h2>
+      <p>
+        The <strong>context</strong> package carries deadlines, cancellation
+        signals, and request-scoped information.
+      </p>
+      <p>It is especially important for:</p>
+      <p>- HTTP requests</p>
+      <p>- Database operations</p>
+      <p>- Goroutines</p>
+      <p>- External API calls</p>
+      <p>- Graceful shutdown</p>
+      <p>Cancellation</p>
+      <pre><code>package main
 
 import (
 	"context"
@@ -1005,13 +1841,17 @@ func main() {
 	cancel()
 
 	time.Sleep(500 * time.Millisecond)
-}</code></pre><p>Timeout</p><pre><code>ctx, cancel := context.WithTimeout(
+}</code></pre>
+      <p>Timeout</p>
+      <pre><code>ctx, cancel := context.WithTimeout(
 	context.Background(),
 	3*time.Second,
 )
 defer cancel()
 
-result, err := performOperation(ctx)</code></pre><p><br />Respecting cancellation</p><pre><code>func performOperation(ctx context.Context) error {
+result, err := performOperation(ctx)</code></pre>
+      <p><br />Respecting cancellation</p>
+      <pre><code>func performOperation(ctx context.Context) error {
 	select {
 	case &lt;-time.After(5 * time.Second):
 		return nil
@@ -1019,9 +1859,33 @@ result, err := performOperation(ctx)</code></pre><p><br />Respecting cancellatio
 	case &lt;-ctx.Done():
 		return ctx.Err()
 	}
-}</code></pre><p>Context rules</p><p>1. Pass "context.Context" as the first parameter.</p><p>2. Do not store contexts inside long-lived structs.</p><p>3. Do not pass "nil"; use "context.Background()" or "context.TODO()".</p><p>4. Use context values only for request-scoped metadata.</p><p>5. Always call the returned cancellation function.</p><p>Good:</p><pre><code>func FindUser(ctx context.Context, id int) (User, error)</code></pre><p>Avoid:</p><pre><code>type UserService struct {
+}</code></pre>
+      <p>Context rules</p>
+      <p>1. Pass "context.Context" as the first parameter.</p>
+      <p>2. Do not store contexts inside long-lived structs.</p>
+      <p>
+        3. Do not pass "nil"; use "context.Background()" or "context.TODO()".
+      </p>
+      <p>4. Use context values only for request-scoped metadata.</p>
+      <p>5. Always call the returned cancellation function.</p>
+      <p>Good:</p>
+      <pre><code>func FindUser(ctx context.Context, id int) (User, error)</code></pre>
+      <p>Avoid:</p>
+      <pre><code>type UserService struct {
 	ctx context.Context
-}</code></pre><p>---</p><h2 id="19-sync-synchronizing-goroutines">19. "sync": Synchronizing Goroutines</h2><p>The <strong>sync</strong> package provides synchronization primitives.</p><p><strong>sync</strong>.WaitGroup - A wait group waits for goroutines to finish.</p><pre><code>package main
+}</code></pre>
+      <p>---</p>
+      <h2 id="19-sync-synchronizing-goroutines">
+        19. "sync": Synchronizing Goroutines
+      </h2>
+      <p>
+        The <strong>sync</strong> package provides synchronization primitives.
+      </p>
+      <p>
+        <strong>sync</strong>.WaitGroup - A wait group waits for goroutines to
+        finish.
+      </p>
+      <pre><code>package main
 
 import (
 	"fmt"
@@ -1040,7 +1904,9 @@ func main() {
 	}
 
 	wg.Wait()
-}</code></pre><p>For <strong>older</strong> Go versions, the traditional pattern is:</p><pre><code>var wg sync.WaitGroup
+}</code></pre>
+      <p>For <strong>older</strong> Go versions, the traditional pattern is:</p>
+      <pre><code>var wg sync.WaitGroup
 
 for i := 1; i &lt;= 3; i++ {
 	id := i
@@ -1053,7 +1919,9 @@ for i := 1; i &lt;= 3; i++ {
 	}()
 }
 
-wg.Wait()</code></pre><p>sync.Mutex - A mutex protects shared state.</p><pre><code>package main
+wg.Wait()</code></pre>
+      <p>sync.Mutex - A mutex protects shared state.</p>
+      <pre><code>package main
 
 import (
 	"fmt"
@@ -1090,7 +1958,11 @@ func main() {
 	wg.Wait()
 
 	fmt.Println(counter.Value())
-}</code></pre><p>sync.RWMutex - when reads are frequent and writes are less frequent.</p><pre><code>type Cache struct {
+}</code></pre>
+      <p>
+        sync.RWMutex - when reads are frequent and writes are less frequent.
+      </p>
+      <pre><code>type Cache struct {
 	mu    sync.RWMutex
 	items map[string]string
 }
@@ -1108,7 +1980,9 @@ func (c *Cache) Set(key, value string) {
 	defer c.mu.Unlock()
 
 	c.items[key] = value
-}</code></pre><p>sync.Once - Runs a function exactly once.</p><pre><code>var (
+}</code></pre>
+      <p>sync.Once - Runs a function exactly once.</p>
+      <pre><code>var (
 	config     Config
 	configOnce sync.Once
 )
@@ -1119,14 +1993,26 @@ func GetConfig() Config {
 	})
 
 	return config
-}</code></pre><p>sync.Map - Do not automatically use it instead of a regular map protected by a mutex.</p><pre><code>var cache sync.Map
+}</code></pre>
+      <p>
+        sync.Map - Do not automatically use it instead of a regular map
+        protected by a mutex.
+      </p>
+      <pre><code>var cache sync.Map
 
 cache.Store("user:1", "Ginad")
 
 value, exists := cache.Load("user:1")
 if exists {
 	fmt.Println(value)
-}</code></pre><p>---</p><h2 id="20-syncatomic-atomic-values">20. "sync/atomic": Atomic Values</h2><p>Atomic operations are useful for small pieces of shared state, such as counters and flags.</p><pre><code>package main
+}</code></pre>
+      <p>---</p>
+      <h2 id="20-syncatomic-atomic-values">20. "sync/atomic": Atomic Values</h2>
+      <p>
+        Atomic operations are useful for small pieces of shared state, such as
+        counters and flags.
+      </p>
+      <pre><code>package main
 import (
 	"fmt"
 	"sync"
@@ -1142,8 +2028,22 @@ func main() {
 	}
 	wg.Wait()
 	fmt.Println(counter.Load())
-}</code></pre><p>Boolean flag:</p><p>var ready atomic.Bool</p><p>ready.Store(true)</p><p>if ready.Load() {</p><pre><code>fmt.Println("Application is ready")
-}</code></pre><p>Use a mutex when multiple related values must be updated together.</p><p>---</p><h2 id="21-channels-and-select">21. Channels and "select"</h2><p>Channels are part of the Go language, but their behavior is closely connected to the standard library’s concurrency tools.</p><p>Sending and receiving</p><pre><code>package main
+}</code></pre>
+      <p>Boolean flag:</p>
+      <p>var ready atomic.Bool</p>
+      <p>ready.Store(true)</p>
+      <p>if ready.Load() {</p>
+      <pre><code>fmt.Println("Application is ready")
+}</code></pre>
+      <p>Use a mutex when multiple related values must be updated together.</p>
+      <p>---</p>
+      <h2 id="21-channels-and-select">21. Channels and "select"</h2>
+      <p>
+        Channels are part of the Go language, but their behavior is closely
+        connected to the standard library’s concurrency tools.
+      </p>
+      <p>Sending and receiving</p>
+      <pre><code>package main
 import "fmt"
 func main() {
 	messages := make(chan string)
@@ -1152,11 +2052,16 @@ func main() {
 	}()
 	message := &lt;-messages
 	fmt.Println(message)
-}</code></pre><p>Buffered channel</p><pre><code>messages := make(chan string, 2)
+}</code></pre>
+      <p>Buffered channel</p>
+      <pre><code>messages := make(chan string, 2)
 messages &lt;- "first"
 messages &lt;- "second"
 fmt.Println(&lt;-messages)
-fmt.Println(&lt;-messages)</code></pre><p>Closing a channel</p><p>The sender normally closes a channel.</p><pre><code>jobs := make(chan int)
+fmt.Println(&lt;-messages)</code></pre>
+      <p>Closing a channel</p>
+      <p>The sender normally closes a channel.</p>
+      <pre><code>jobs := make(chan int)
 go func() {
 	defer close(jobs)
 	for i := 1; i &lt;= 5; i++ {
@@ -1165,11 +2070,16 @@ go func() {
 }()
 for job := range jobs {
 	fmt.Println(job)
-}</code></pre><p>"select"</p><p>select {</p><pre><code>case message := &lt;-messages:
+}</code></pre>
+      <p>"select"</p>
+      <p>select {</p>
+      <pre><code>case message := &lt;-messages:
 	fmt.Println(message)
 case &lt;-time.After(2 * time.Second):
 	fmt.Println("Timed out")
-}</code></pre><p>Worker pool</p><pre><code>func worker(
+}</code></pre>
+      <p>Worker pool</p>
+      <pre><code>func worker(
 	id int,
 	jobs &lt;-chan int,
 	results chan&lt;- int,
@@ -1194,13 +2104,28 @@ func main() {
 	for i := 0; i &lt; jobCount; i++ {
 		fmt.Println("Result:", &lt;-results)
 	}
-}</code></pre><p>---</p><h2 id="22-log-and-logslog-application-logging">22. "log" and "log/slog": Application Logging</h2><p>Basic "log"</p><pre><code>package main
+}</code></pre>
+      <p>---</p>
+      <h2 id="22-log-and-logslog-application-logging">
+        22. "log" and "log/slog": Application Logging
+      </h2>
+      <p>Basic "log"</p>
+      <pre><code>package main
 import "log"
 func main() {
 	log.Println("Application started")
 	log.Printf("Listening on port %d", 8080)
-}</code></pre><p>Fatal logging:</p><p>if err != nil {</p><pre><code>log.Fatal(err)
-}</code></pre><p>"log.Fatal" logs the message and exits the program. Deferred functions will not run after it calls "os.Exit".</p><p>Structured logging with "log/slog"</p><pre><code>package main
+}</code></pre>
+      <p>Fatal logging:</p>
+      <p>if err != nil {</p>
+      <pre><code>log.Fatal(err)
+}</code></pre>
+      <p>
+        "log.Fatal" logs the message and exits the program. Deferred functions
+        will not run after it calls "os.Exit".
+      </p>
+      <p>Structured logging with "log/slog"</p>
+      <pre><code>package main
 import (
 	"log/slog"
 	"os"
@@ -1214,17 +2139,36 @@ func main() {
 		"user_id", 1001,
 		"email", "Ginad@example.com",
 	)
-}</code></pre><p>Possible output:</p><pre><code>{
+}</code></pre>
+      <p>Possible output:</p>
+      <pre><code>{
   "time": "2026-07-15T12:00:00Z",
   "level": "INFO",
   "msg": "user created",
   "user_id": 1001,
   "email": "Ginad@example.com"
-}</code></pre><p>Log levels</p><p>logger.Debug("database query", "query", query)</p><p>logger.Info("request completed", "status", 200)</p><p>logger.Warn("slow request", "duration", duration)</p><p>logger.Error("request failed", "error", err)</p><p>Adding permanent attributes</p><pre><code>requestLogger := logger.With(
+}</code></pre>
+      <p>Log levels</p>
+      <p>logger.Debug("database query", "query", query)</p>
+      <p>logger.Info("request completed", "status", 200)</p>
+      <p>logger.Warn("slow request", "duration", duration)</p>
+      <p>logger.Error("request failed", "error", err)</p>
+      <p>Adding permanent attributes</p>
+      <pre><code>requestLogger := logger.With(
 	"request_id", requestID,
 	"method", r.Method,
 	"path", r.URL.Path,
-)</code></pre><p>requestLogger.Info("request started")</p><p>Logging errors</p><p>Use:</p><p>logger.Error("failed to load user", "error", err)</p><p>Instead of converting everything into one formatted string:</p><p>logger.Error(fmt.Sprintf("failed to load user: %v", err))</p><p>Structured fields are easier for log-processing systems to query.</p><p>---</p><h2 id="23-flag-command-line-flags">23. "flag": Command-Line Flags</h2><pre><code>The "flag" package parses command-line options.
+)</code></pre>
+      <p>requestLogger.Info("request started")</p>
+      <p>Logging errors</p>
+      <p>Use:</p>
+      <p>logger.Error("failed to load user", "error", err)</p>
+      <p>Instead of converting everything into one formatted string:</p>
+      <p>logger.Error(fmt.Sprintf("failed to load user: %v", err))</p>
+      <p>Structured fields are easier for log-processing systems to query.</p>
+      <p>---</p>
+      <h2 id="23-flag-command-line-flags">23. "flag": Command-Line Flags</h2>
+      <pre><code>The "flag" package parses command-line options.
 package main
 import (
 	"flag"
@@ -1253,10 +2197,22 @@ func main() {
 	for i := 0; i &lt; *count; i++ {
 		fmt.Println("Hello,", *name)
 	}
-}</code></pre><p>Run:</p><p>go run . -name Ginad -count 3 -verbose</p><p>Remaining positional arguments:</p><p>flag.Parse()</p><pre><code>files := flag.Args()
+}</code></pre>
+      <p>Run:</p>
+      <p>go run . -name Ginad -count 3 -verbose</p>
+      <p>Remaining positional arguments:</p>
+      <p>flag.Parse()</p>
+      <pre><code>files := flag.Args()
 for _, file := range files {
 	fmt.Println(file)
-}</code></pre><p>---</p><h2 id="24-regexp-regular-expressions">24. "regexp": Regular Expressions</h2><p>The "regexp" package provides regular-expression matching.</p><p>Simple matching</p><pre><code>package main
+}</code></pre>
+      <p>---</p>
+      <h2 id="24-regexp-regular-expressions">
+        24. "regexp": Regular Expressions
+      </h2>
+      <p>The "regexp" package provides regular-expression matching.</p>
+      <p>Simple matching</p>
+      <pre><code>package main
 import (
 	"fmt"
 	"regexp"
@@ -1271,22 +2227,42 @@ func main() {
 		return
 	}
 	fmt.Println(matched)
-}</code></pre><p>Compile once, reuse many times</p><pre><code>var usernamePattern = regexp.MustCompile(
+}</code></pre>
+      <p>Compile once, reuse many times</p>
+      <pre><code>var usernamePattern = regexp.MustCompile(
 	`^[a-zA-Z0-9_]{3,20}$`,
 )
 func validUsername(username string) bool {
 	return usernamePattern.MatchString(username)
-}</code></pre><p>"regexp.MustCompile" panics if the pattern is invalid, so it is appropriate for constant patterns checked during development.</p><p>Finding values</p><pre><code>pattern := regexp.MustCompile(`\d+`)
+}</code></pre>
+      <p>
+        "regexp.MustCompile" panics if the pattern is invalid, so it is
+        appropriate for constant patterns checked during development.
+      </p>
+      <p>Finding values</p>
+      <pre><code>pattern := regexp.MustCompile(`\d+`)
 matches := pattern.FindAllString(
 	"Order 123 contains 4 products",
 	-1,
 )
-fmt.Println(matches)</code></pre><p>Output:</p><p>[123 4]</p><p>Replacing matches</p><pre><code>pattern := regexp.MustCompile(`\s+`)
+fmt.Println(matches)</code></pre>
+      <p>Output:</p>
+      <p>[123 4]</p>
+      <p>Replacing matches</p>
+      <pre><code>pattern := regexp.MustCompile(`\s+`)
 result := pattern.ReplaceAllString(
 	"Go    standard   library",
 	" ",
 )
-fmt.Println(result)</code></pre><p>For simple prefix, suffix, containment, splitting, or replacement operations, prefer the "strings" package.</p><p>---</p><h2 id="25-math-and-mathrandv2">25. "math" and "math/rand/v2"</h2><p>"math"</p><pre><code>package main
+fmt.Println(result)</code></pre>
+      <p>
+        For simple prefix, suffix, containment, splitting, or replacement
+        operations, prefer the "strings" package.
+      </p>
+      <p>---</p>
+      <h2 id="25-math-and-mathrandv2">25. "math" and "math/rand/v2"</h2>
+      <p>"math"</p>
+      <pre><code>package main
 import (
 	"fmt"
 	"math"
@@ -1300,7 +2276,9 @@ func main() {
 	fmt.Println(math.Min(10, 20))
 	fmt.Println(math.Sqrt(81))
 	fmt.Println(math.Pow(2, 8))
-}</code></pre><p>Random values</p><pre><code>package main
+}</code></pre>
+      <p>Random values</p>
+      <pre><code>package main
 import (
 	"fmt"
 	"math/rand/v2"
@@ -1308,9 +2286,25 @@ import (
 func main() {
 	value := rand.IntN(100)
 	fmt.Println(value)
-}</code></pre><p>Random item:</p><pre><code>names := []string{"Ginad", "Gigi", "Gane"}
+}</code></pre>
+      <p>Random item:</p>
+      <pre><code>names := []string{"Ginad", "Gigi", "Gane"}
 name := names[rand.IntN(len(names))]
-fmt.Println(name)</code></pre><p>Shuffle:</p><p>rand.Shuffle(len(names), func(i, j int) {</p><p>	names[i], names[j] = names[j], names[i]</p><p>})</p><p>Do not use "math/rand/v2" for passwords, access tokens, API keys, reset links, or other security-sensitive values. Use "crypto/rand".</p><p>---</p><h2 id="26-cryptorand-secure-random-values">26. "crypto/rand": Secure Random Values</h2><p>Generate secure random bytes:</p><pre><code>package main
+fmt.Println(name)</code></pre>
+      <p>Shuffle:</p>
+      <p>rand.Shuffle(len(names), func(i, j int) {</p>
+      <p>names[i], names[j] = names[j], names[i]</p>
+      <p>})</p>
+      <p>
+        Do not use "math/rand/v2" for passwords, access tokens, API keys, reset
+        links, or other security-sensitive values. Use "crypto/rand".
+      </p>
+      <p>---</p>
+      <h2 id="26-cryptorand-secure-random-values">
+        26. "crypto/rand": Secure Random Values
+      </h2>
+      <p>Generate secure random bytes:</p>
+      <pre><code>package main
 import (
 	"crypto/rand"
 	"encoding/hex"
@@ -1332,7 +2326,21 @@ func main() {
 		panic(err)
 	}
 	fmt.Println(token)
-}</code></pre><p>Thirty-two random bytes become a 64-character hexadecimal string.</p><p>Use secure randomness for:</p><p>- Session tokens</p><p>- Password reset tokens</p><p>- Verification codes</p><p>- API secrets</p><p>- Nonces</p><p>- Cryptographic keys</p><p>---</p><h2 id="27-cryptosha256-and-encodinghex">27. "crypto/sha256" and "encoding/hex"</h2><p>Hashing data:</p><pre><code>package main
+}</code></pre>
+      <p>Thirty-two random bytes become a 64-character hexadecimal string.</p>
+      <p>Use secure randomness for:</p>
+      <p>- Session tokens</p>
+      <p>- Password reset tokens</p>
+      <p>- Verification codes</p>
+      <p>- API secrets</p>
+      <p>- Nonces</p>
+      <p>- Cryptographic keys</p>
+      <p>---</p>
+      <h2 id="27-cryptosha256-and-encodinghex">
+        27. "crypto/sha256" and "encoding/hex"
+      </h2>
+      <p>Hashing data:</p>
+      <pre><code>package main
 import (
 	"crypto/sha256"
 	"encoding/hex"
@@ -1343,13 +2351,28 @@ func main() {
 	hash := sha256.Sum256(input)
 	encoded := hex.EncodeToString(hash[:])
 	fmt.Println(encoded)
-}</code></pre><p>Hashing a stream:</p><p>file, err := os.Open("archive.zip")</p><p>if err != nil {</p><pre><code>return err
-}</code></pre><p>defer file.Close()</p><pre><code>hasher := sha256.New()
+}</code></pre>
+      <p>Hashing a stream:</p>
+      <p>file, err := os.Open("archive.zip")</p>
+      <p>if err != nil {</p>
+      <pre><code>return err
+}</code></pre>
+      <p>defer file.Close()</p>
+      <pre><code>hasher := sha256.New()
 if _, err := io.Copy(hasher, file); err != nil {
 	return err
 }
 checksum := hex.EncodeToString(hasher.Sum(nil))
-fmt.Println(checksum)</code></pre><p>Do not use plain SHA-256 to store user passwords. Passwords need a dedicated password-hashing algorithm such as bcrypt, scrypt, or Argon2, which are not all provided directly by the core standard library.</p><p>---</p><h2 id="28-encodingbase64">28. "encoding/base64"</h2><p>Base64 converts binary data into text.</p><pre><code>package main
+fmt.Println(checksum)</code></pre>
+      <p>
+        Do not use plain SHA-256 to store user passwords. Passwords need a
+        dedicated password-hashing algorithm such as bcrypt, scrypt, or Argon2,
+        which are not all provided directly by the core standard library.
+      </p>
+      <p>---</p>
+      <h2 id="28-encodingbase64">28. "encoding/base64"</h2>
+      <p>Base64 converts binary data into text.</p>
+      <pre><code>package main
 import (
 	"encoding/base64"
 	"fmt"
@@ -1364,17 +2387,42 @@ func main() {
 		return
 	}
 	fmt.Println(string(decoded))
-}</code></pre><p>URL-safe Base64:</p><p>encoded := base64.RawURLEncoding.EncodeToString(data)</p><p>Base64 is encoding, not encryption. Anyone can decode it.</p><p>---</p><h2 id="29-databasesql-database-access">29. "database/sql": Database Access</h2><p>The "database/sql" package defines a common interface for relational databases.</p><p>A separate database driver is still required.</p><p>Conceptual example:</p><pre><code>import (
+}</code></pre>
+      <p>URL-safe Base64:</p>
+      <p>encoded := base64.RawURLEncoding.EncodeToString(data)</p>
+      <p>Base64 is encoding, not encryption. Anyone can decode it.</p>
+      <p>---</p>
+      <h2 id="29-databasesql-database-access">
+        29. "database/sql": Database Access
+      </h2>
+      <p>
+        The "database/sql" package defines a common interface for relational
+        databases.
+      </p>
+      <p>A separate database driver is still required.</p>
+      <p>Conceptual example:</p>
+      <pre><code>import (
 	"context"
 	"database/sql"
 	_ "github.com/jackc/pgx/v5/stdlib"
-)</code></pre><p>Opening a database:</p><p>db, err := sql.Open("pgx", databaseURL)</p><p>if err != nil {</p><pre><code>return err
-}</code></pre><p>defer db.Close()</p><p>"sql.Open" may not immediately connect. Use "PingContext":</p><pre><code>ctx, cancel := context.WithTimeout(
+)</code></pre>
+      <p>Opening a database:</p>
+      <p>db, err := sql.Open("pgx", databaseURL)</p>
+      <p>if err != nil {</p>
+      <pre><code>return err
+}</code></pre>
+      <p>defer db.Close()</p>
+      <p>"sql.Open" may not immediately connect. Use "PingContext":</p>
+      <pre><code>ctx, cancel := context.WithTimeout(
 	context.Background(),
 	5*time.Second,
-)</code></pre><p>defer cancel()</p><pre><code>if err := db.PingContext(ctx); err != nil {
+)</code></pre>
+      <p>defer cancel()</p>
+      <pre><code>if err := db.PingContext(ctx); err != nil {
 	return fmt.Errorf("connect to database: %w", err)
-}</code></pre><p>Querying one row</p><pre><code>type User struct {
+}</code></pre>
+      <p>Querying one row</p>
+      <pre><code>type User struct {
 	ID    int64
 	Name  string
 	Email string
@@ -1402,37 +2450,78 @@ func findUser(
 		return User{}, fmt.Errorf("query user: %w", err)
 	}
 	return user, nil
-}</code></pre><p>Querying multiple rows</p><pre><code>rows, err := db.QueryContext(
+}</code></pre>
+      <p>Querying multiple rows</p>
+      <pre><code>rows, err := db.QueryContext(
 	ctx,
 	`SELECT id, name, email FROM users`,
-)</code></pre><p>if err != nil {</p><pre><code>return nil, err
-}</code></pre><p>defer rows.Close()</p><p>var users []User</p><p>for rows.Next() {</p><pre><code>var user User
+)</code></pre>
+      <p>if err != nil {</p>
+      <pre><code>return nil, err
+}</code></pre>
+      <p>defer rows.Close()</p>
+      <p>var users []User</p>
+      <p>for rows.Next() {</p>
+      <pre><code>var user User
 	if err := rows.Scan(
 		&amp;user.ID,
 		&amp;user.Name,
 		&amp;user.Email,
 	); err != nil {
 		return nil, err
-	}</code></pre><p>	users = append(users, user)</p><pre><code>}
+	}</code></pre>
+      <p>users = append(users, user)</p>
+      <pre><code>}
 if err := rows.Err(); err != nil {
 	return nil, err
-}</code></pre><p>Executing a statement</p><pre><code>result, err := db.ExecContext(
+}</code></pre>
+      <p>Executing a statement</p>
+      <pre><code>result, err := db.ExecContext(
 	ctx,
 	`DELETE FROM users WHERE id = $1`,
 	id,
-)</code></pre><p>if err != nil {</p><pre><code>return err
+)</code></pre>
+      <p>if err != nil {</p>
+      <pre><code>return err
 }
-affected, err := result.RowsAffected()</code></pre><p>Transaction</p><p>tx, err := db.BeginTx(ctx, nil)</p><p>if err != nil {</p><pre><code>return err
-}</code></pre><p>defer tx.Rollback()</p><p>_, err = tx.ExecContext(</p><p>	ctx,</p><pre><code>`UPDATE accounts
+affected, err := result.RowsAffected()</code></pre>
+      <p>Transaction</p>
+      <p>tx, err := db.BeginTx(ctx, nil)</p>
+      <p>if err != nil {</p>
+      <pre><code>return err
+}</code></pre>
+      <p>defer tx.Rollback()</p>
+      <p>_, err = tx.ExecContext(</p>
+      <p>ctx,</p>
+      <pre><code>`UPDATE accounts
 	 SET balance = balance - $1
-	 WHERE id = $2`,</code></pre><p>	amount,</p><p>	fromAccount,</p><p>)</p><p>if err != nil {</p><pre><code>return err
-}</code></pre><p>_, err = tx.ExecContext(</p><p>	ctx,</p><pre><code>`UPDATE accounts
+	 WHERE id = $2`,</code></pre>
+      <p>amount,</p>
+      <p>fromAccount,</p>
+      <p>)</p>
+      <p>if err != nil {</p>
+      <pre><code>return err
+}</code></pre>
+      <p>_, err = tx.ExecContext(</p>
+      <p>ctx,</p>
+      <pre><code>`UPDATE accounts
 	 SET balance = balance + $1
-	 WHERE id = $2`,</code></pre><p>	amount,</p><p>	toAccount,</p><p>)</p><p>if err != nil {</p><pre><code>return err
+	 WHERE id = $2`,</code></pre>
+      <p>amount,</p>
+      <p>toAccount,</p>
+      <p>)</p>
+      <p>if err != nil {</p>
+      <pre><code>return err
 }
 if err := tx.Commit(); err != nil {
 	return err
-}</code></pre><p>The deferred rollback is safe after a successful commit.</p><p>---</p><h2 id="30-htmltemplate-safe-html-templates">30. "html/template": Safe HTML Templates</h2><pre><code>The "html/template" package generates HTML with contextual escaping.
+}</code></pre>
+      <p>The deferred rollback is safe after a successful commit.</p>
+      <p>---</p>
+      <h2 id="30-htmltemplate-safe-html-templates">
+        30. "html/template": Safe HTML Templates
+      </h2>
+      <pre><code>The "html/template" package generates HTML with contextual escaping.
 package main
 import (
 	"html/template"
@@ -1457,37 +2546,90 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			http.StatusInternalServerError,
 		)
 	}
-}</code></pre><p>Template:</p><p>&lt;!doctype html&gt;</p><p>&lt;html lang="en"&gt;</p><p>&lt;head&gt;</p><p>    &lt;title&gt;{{.Title}}&lt;/title&gt;</p><p>&lt;/head&gt;</p><p>&lt;body&gt;</p><p>    &lt;h1&gt;Hello, {{.Name}}&lt;/h1&gt;</p><p>&lt;/body&gt;</p><p>&lt;/html&gt;</p><p>Looping</p><p>&lt;ul&gt;</p><pre><code>{{range .Users}}
+}</code></pre>
+      <p>Template:</p>
+      <p>&lt;!doctype html&gt;</p>
+      <p>&lt;html lang="en"&gt;</p>
+      <p>&lt;head&gt;</p>
+      <p>&lt;title&gt;{{.Title}}&lt;/title&gt;</p>
+      <p>&lt;/head&gt;</p>
+      <p>&lt;body&gt;</p>
+      <p>&lt;h1&gt;Hello, {{.Name}}&lt;/h1&gt;</p>
+      <p>&lt;/body&gt;</p>
+      <p>&lt;/html&gt;</p>
+      <p>Looping</p>
+      <p>&lt;ul&gt;</p>
+      <pre><code>{{range .Users}}
         &lt;li&gt;{{.Name}}&lt;/li&gt;
     {{else}}
         &lt;li&gt;No users found&lt;/li&gt;
-    {{end}}</code></pre><p>&lt;/ul&gt;</p><p>Conditions</p><p>{{if .LoggedIn}}</p><p>    &lt;p&gt;Welcome back.&lt;/p&gt;</p><p>{{else}}</p><p>    &lt;a href="/login"&gt;Sign in&lt;/a&gt;</p><p>{{end}}</p><p>Template functions</p><pre><code>functions := template.FuncMap{
+    {{end}}</code></pre>
+      <p>&lt;/ul&gt;</p>
+      <p>Conditions</p>
+      <p>{{if .LoggedIn}}</p>
+      <p>&lt;p&gt;Welcome back.&lt;/p&gt;</p>
+      <p>{{else}}</p>
+      <p>&lt;a href="/login"&gt;Sign in&lt;/a&gt;</p>
+      <p>{{end}}</p>
+      <p>Template functions</p>
+      <pre><code>functions := template.FuncMap{
 	"uppercase": strings.ToUpper,
 }
 tmpl := template.Must(
 	template.New("page.html").
 		Funcs(functions).
 		ParseFiles("templates/page.html"),
-)</code></pre><p>Usage:</p><p>&lt;h1&gt;{{uppercase .Title}}&lt;/h1&gt;</p><p>Prefer "html/template" over "text/template" when generating HTML because it performs HTML-aware escaping.</p><p>---</p><h2 id="31-embed-embedding-files-in-a-binary">31. "embed": Embedding Files in a Binary</h2><p>The "embed" package can include files in the compiled application.</p><pre><code>package main
+)</code></pre>
+      <p>Usage:</p>
+      <p>&lt;h1&gt;{{uppercase .Title}}&lt;/h1&gt;</p>
+      <p>
+        Prefer "html/template" over "text/template" when generating HTML because
+        it performs HTML-aware escaping.
+      </p>
+      <p>---</p>
+      <h2 id="31-embed-embedding-files-in-a-binary">
+        31. "embed": Embedding Files in a Binary
+      </h2>
+      <p>The "embed" package can include files in the compiled application.</p>
+      <pre><code>package main
 import (
 	"embed"
 	"fmt"
-)</code></pre><p>//go:embed templates/index.html</p><pre><code>var indexHTML string
+)</code></pre>
+      <p>//go:embed templates/index.html</p>
+      <pre><code>var indexHTML string
 func main() {
 	fmt.Println(indexHTML)
-}</code></pre><p>Embedding multiple files:</p><p>//go:embed templates/*.html static/*</p><p>var content embed.FS</p><p>Using embedded static files with HTTP:</p><p>staticFS, err := fs.Sub(content, "static")</p><p>if err != nil {</p><pre><code>log.Fatal(err)
+}</code></pre>
+      <p>Embedding multiple files:</p>
+      <p>//go:embed templates/*.html static/*</p>
+      <p>var content embed.FS</p>
+      <p>Using embedded static files with HTTP:</p>
+      <p>staticFS, err := fs.Sub(content, "static")</p>
+      <p>if err != nil {</p>
+      <pre><code>log.Fatal(err)
 }
 fileServer := http.FileServer(http.FS(staticFS))
 mux.Handle("GET /static/", http.StripPrefix(
 	"/static/",
 	fileServer,
-))</code></pre><p>Embedding templates:</p><p>//go:embed templates/*.html</p><pre><code>var templateFiles embed.FS
+))</code></pre>
+      <p>Embedding templates:</p>
+      <p>//go:embed templates/*.html</p>
+      <pre><code>var templateFiles embed.FS
 var templates = template.Must(
 	template.ParseFS(templateFiles, "templates/*.html"),
-)</code></pre><p>---</p><h2 id="32-testing-unit-tests">32. "testing": Unit Tests</h2><p>Go has built-in testing support.</p><p>Application code:</p><pre><code>package calculator
+)</code></pre>
+      <p>---</p>
+      <h2 id="32-testing-unit-tests">32. "testing": Unit Tests</h2>
+      <p>Go has built-in testing support.</p>
+      <p>Application code:</p>
+      <pre><code>package calculator
 func Add(a, b int) int {
 	return a + b
-}</code></pre><p>Test file:</p><pre><code>package calculator
+}</code></pre>
+      <p>Test file:</p>
+      <pre><code>package calculator
 import "testing"
 func TestAdd(t *testing.T) {
 	result := Add(2, 3)
@@ -1497,7 +2639,11 @@ func TestAdd(t *testing.T) {
 			result,
 		)
 	}
-}</code></pre><p>Run:</p><p>go test ./...</p><p>Table-driven tests</p><pre><code>func TestAdd(t *testing.T) {
+}</code></pre>
+      <p>Run:</p>
+      <p>go test ./...</p>
+      <p>Table-driven tests</p>
+      <pre><code>func TestAdd(t *testing.T) {
 	tests := []struct {
 		name string
 		a    int
@@ -1537,7 +2683,9 @@ func TestAdd(t *testing.T) {
 			}
 		})
 	}
-}</code></pre><p>Testing errors</p><pre><code>func TestFindUserNotFound(t *testing.T) {
+}</code></pre>
+      <p>Testing errors</p>
+      <pre><code>func TestFindUserNotFound(t *testing.T) {
 	_, err := FindUser(999)
 	if !errors.Is(err, ErrUserNotFound) {
 		t.Fatalf(
@@ -1545,7 +2693,9 @@ func TestAdd(t *testing.T) {
 			err,
 		)
 	}
-}</code></pre><p>Test helpers</p><pre><code>func assertEqual[T comparable](
+}</code></pre>
+      <p>Test helpers</p>
+      <pre><code>func assertEqual[T comparable](
 	t *testing.T,
 	got T,
 	want T,
@@ -1554,14 +2704,24 @@ func TestAdd(t *testing.T) {
 	if got != want {
 		t.Fatalf("got %v; want %v", got, want)
 	}
-}</code></pre><p>"t.Helper()" makes test failures point to the calling line.</p><p>---</p><h2 id="33-nethttphttptest-testing-http-handlers">33. "net/http/httptest": Testing HTTP Handlers</h2><p>The standard library includes HTTP testing utilities.</p><p>Testing a handler</p><pre><code>func helloHandler(
+}</code></pre>
+      <p>"t.Helper()" makes test failures point to the calling line.</p>
+      <p>---</p>
+      <h2 id="33-nethttphttptest-testing-http-handlers">
+        33. "net/http/httptest": Testing HTTP Handlers
+      </h2>
+      <p>The standard library includes HTTP testing utilities.</p>
+      <p>Testing a handler</p>
+      <pre><code>func helloHandler(
 	w http.ResponseWriter,
 	r *http.Request,
 ) {
 	writeJSON(w, http.StatusOK, map[string]string{
 		"message": "hello",
 	})
-}</code></pre><p>Test:</p><pre><code>func TestHelloHandler(t *testing.T) {
+}</code></pre>
+      <p>Test:</p>
+      <pre><code>func TestHelloHandler(t *testing.T) {
 	request := httptest.NewRequest(
 		http.MethodGet,
 		"/hello",
@@ -1588,9 +2748,21 @@ func TestAdd(t *testing.T) {
 			body["message"],
 		)
 	}
-}</code></pre><p>Testing against a complete server</p><pre><code>server := httptest.NewServer(
+}</code></pre>
+      <p>Testing against a complete server</p>
+      <pre><code>server := httptest.NewServer(
 	http.HandlerFunc(helloHandler),
-)</code></pre><p>defer server.Close()</p><p>response, err := http.Get(server.URL)</p><p>if err != nil {</p><p>	t.Fatal(err)</p><p>}</p><p>defer response.Body.Close()</p><p>This is useful for testing HTTP clients.</p><p>---</p><h2 id="34-benchmarks">34. Benchmarks</h2><pre><code>func BenchmarkBuildString(b *testing.B) {
+)</code></pre>
+      <p>defer server.Close()</p>
+      <p>response, err := http.Get(server.URL)</p>
+      <p>if err != nil {</p>
+      <p>t.Fatal(err)</p>
+      <p>}</p>
+      <p>defer response.Body.Close()</p>
+      <p>This is useful for testing HTTP clients.</p>
+      <p>---</p>
+      <h2 id="34-benchmarks">34. Benchmarks</h2>
+      <pre><code>func BenchmarkBuildString(b *testing.B) {
 	for b.Loop() {
 		var builder strings.Builder
 		for j := 0; j &lt; 100; j++ {
@@ -1598,7 +2770,19 @@ func TestAdd(t *testing.T) {
 		}
 		_ = builder.String()
 	}
-}</code></pre><p>Run:</p><p>go test -bench=. ./...</p><p>Include memory statistics:</p><p>go test -bench=. -benchmem ./...</p><p>Do not optimize code only because a benchmark looks interesting. Benchmark the real operation and compare alternatives.</p><p>---</p><h2 id="35-fuzz-testing">35. Fuzz Testing</h2><p>Fuzz tests help find unexpected input that causes failures.</p><pre><code>func FuzzParseNumber(f *testing.F) {
+}</code></pre>
+      <p>Run:</p>
+      <p>go test -bench=. ./...</p>
+      <p>Include memory statistics:</p>
+      <p>go test -bench=. -benchmem ./...</p>
+      <p>
+        Do not optimize code only because a benchmark looks interesting.
+        Benchmark the real operation and compare alternatives.
+      </p>
+      <p>---</p>
+      <h2 id="35-fuzz-testing">35. Fuzz Testing</h2>
+      <p>Fuzz tests help find unexpected input that causes failures.</p>
+      <pre><code>func FuzzParseNumber(f *testing.F) {
 	f.Add("123")
 	f.Add("-50")
 	f.Add("invalid")
@@ -1620,7 +2804,14 @@ func TestAdd(t *testing.T) {
 			)
 		}
 	})
-}</code></pre><p>Run:</p><p>go test -fuzz=FuzzParseNumber</p><p>---</p><h2 id="36-runtime-runtime-information">36. "runtime": Runtime Information</h2><pre><code>package main
+}</code></pre>
+      <p>Run:</p>
+      <p>go test -fuzz=FuzzParseNumber</p>
+      <p>---</p>
+      <h2 id="36-runtime-runtime-information">
+        36. "runtime": Runtime Information
+      </h2>
+      <pre><code>package main
 import (
 	"fmt"
 	"runtime"
@@ -1631,9 +2822,26 @@ func main() {
 	fmt.Println("CPUs:", runtime.NumCPU())
 	fmt.Println("Goroutines:", runtime.NumGoroutine())
 	fmt.Println("Go version:", runtime.Version())
-}</code></pre><p>Memory statistics:</p><p>var stats runtime.MemStats</p><p>runtime.ReadMemStats(&amp;stats)</p><pre><code>fmt.Println("Allocated bytes:", stats.Alloc)
+}</code></pre>
+      <p>Memory statistics:</p>
+      <p>var stats runtime.MemStats</p>
+      <p>runtime.ReadMemStats(&amp;stats)</p>
+      <pre><code>fmt.Println("Allocated bytes:", stats.Alloc)
 fmt.Println("Total allocated:", stats.TotalAlloc)
-fmt.Println("Heap objects:", stats.HeapObjects)</code></pre><p>Most applications should not manually call the garbage collector or change runtime internals without a measured reason.</p><p>---</p><h2 id="37-ossignal-graceful-shutdown">37. "os/signal": Graceful Shutdown</h2><p>Servers should stop accepting traffic and allow active requests to finish.</p><pre><code>package main
+fmt.Println("Heap objects:", stats.HeapObjects)</code></pre>
+      <p>
+        Most applications should not manually call the garbage collector or
+        change runtime internals without a measured reason.
+      </p>
+      <p>---</p>
+      <h2 id="37-ossignal-graceful-shutdown">
+        37. "os/signal": Graceful Shutdown
+      </h2>
+      <p>
+        Servers should stop accepting traffic and allow active requests to
+        finish.
+      </p>
+      <pre><code>package main
 import (
 	"context"
 	"errors"
@@ -1689,7 +2897,13 @@ func main() {
 		}
 	}
 	log.Println("server stopped")
-}</code></pre><p>---</p><h2 id="38-compressgzip-compressing-data">38. "compress/gzip": Compressing Data</h2><p>Compressing a file</p><pre><code>func compressFile(
+}</code></pre>
+      <p>---</p>
+      <h2 id="38-compressgzip-compressing-data">
+        38. "compress/gzip": Compressing Data
+      </h2>
+      <p>Compressing a file</p>
+      <pre><code>func compressFile(
 	sourcePath string,
 	destinationPath string,
 ) error {
@@ -1707,7 +2921,9 @@ func main() {
 	defer writer.Close()
 	_, err = io.Copy(writer, source)
 	return err
-}</code></pre><p>Decompressing</p><pre><code>func decompressFile(
+}</code></pre>
+      <p>Decompressing</p>
+      <pre><code>func decompressFile(
 	sourcePath string,
 	destinationPath string,
 ) error {
@@ -1728,7 +2944,11 @@ func main() {
 	defer destination.Close()
 	_, err = io.Copy(destination, reader)
 	return err
-}</code></pre><p>---</p><h2 id="39-archivezip-zip-archives">39. "archive/zip": ZIP Archives</h2><p>Creating a ZIP file</p><pre><code>func createArchive(path string) error {
+}</code></pre>
+      <p>---</p>
+      <h2 id="39-archivezip-zip-archives">39. "archive/zip": ZIP Archives</h2>
+      <p>Creating a ZIP file</p>
+      <pre><code>func createArchive(path string) error {
 	file, err := os.Create(path)
 	if err != nil {
 		return err
@@ -1742,10 +2962,26 @@ func main() {
 	}
 	_, err = writer.Write([]byte("Hello from ZIP"))
 	return err
-}</code></pre><p>Reading a ZIP file</p><p>reader, err := zip.OpenReader("archive.zip")</p><p>if err != nil {</p><pre><code>return err
-}</code></pre><p>defer reader.Close()</p><pre><code>for _, file := range reader.File {
+}</code></pre>
+      <p>Reading a ZIP file</p>
+      <p>reader, err := zip.OpenReader("archive.zip")</p>
+      <p>if err != nil {</p>
+      <pre><code>return err
+}</code></pre>
+      <p>defer reader.Close()</p>
+      <pre><code>for _, file := range reader.File {
 	fmt.Println(file.Name)
-}</code></pre><p>When extracting ZIP files, validate output paths to prevent path traversal attacks such as entries containing "../".</p><p>---</p><h2 id="40-reflect-runtime-type-inspection">40. "reflect": Runtime Type Inspection</h2><p>Reflection can inspect values and types at runtime.</p><pre><code>package main
+}</code></pre>
+      <p>
+        When extracting ZIP files, validate output paths to prevent path
+        traversal attacks such as entries containing "../".
+      </p>
+      <p>---</p>
+      <h2 id="40-reflect-runtime-type-inspection">
+        40. "reflect": Runtime Type Inspection
+      </h2>
+      <p>Reflection can inspect values and types at runtime.</p>
+      <pre><code>package main
 import (
 	"fmt"
 	"reflect"
@@ -1754,7 +2990,9 @@ func main() {
 	value := 42
 	fmt.Println(reflect.TypeOf(value))
 	fmt.Println(reflect.ValueOf(value))
-}</code></pre><p>Inspecting a struct:</p><pre><code>type User struct {
+}</code></pre>
+      <p>Inspecting a struct:</p>
+      <pre><code>type User struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
 }
@@ -1768,7 +3006,25 @@ func inspect(value any) {
 			field.Tag.Get("json"),
 		)
 	}
-}</code></pre><p>Reflection is useful for:</p><p>- Serialization libraries</p><p>- Validation libraries</p><p>- Dependency injection</p><p>- Object mapping</p><p>- Framework internals</p><p>For normal application logic, interfaces, generics, and explicit code are usually easier to understand and maintain.</p><p>---</p><h2 id="41-complete-example-small-json-api">41. Complete Example: Small JSON API</h2><p>This example combines several commonly used standard-library packages.</p><pre><code>package main
+}</code></pre>
+      <p>Reflection is useful for:</p>
+      <p>- Serialization libraries</p>
+      <p>- Validation libraries</p>
+      <p>- Dependency injection</p>
+      <p>- Object mapping</p>
+      <p>- Framework internals</p>
+      <p>
+        For normal application logic, interfaces, generics, and explicit code
+        are usually easier to understand and maintain.
+      </p>
+      <p>---</p>
+      <h2 id="41-complete-example-small-json-api">
+        41. Complete Example: Small JSON API
+      </h2>
+      <p>
+        This example combines several commonly used standard-library packages.
+      </p>
+      <pre><code>package main
 import (
 	"context"
 	"encoding/json"
@@ -1967,38 +3223,187 @@ func main() {
 		)
 	}
 	logger.Info("server stopped")
-}</code></pre><p>Run:</p><p>go run .</p><p>Create a user:</p><pre><code>curl -X POST http://localhost:8080/users \
+}</code></pre>
+      <p>Run:</p>
+      <p>go run .</p>
+      <p>Create a user:</p>
+      <pre><code>curl -X POST http://localhost:8080/users \
   -H "Content-Type: application/json" \
-  -d '{"name":"Ginad"}'</code></pre><p>Retrieve the user:</p><p>curl http://localhost:8080/users/1</p><p>Check health:</p><p>curl http://localhost:8080/health</p><p>---</p><h2 id="42-recommended-learning-order">42. Recommended Learning Order</h2><p>Learn these packages first:</p><p>1. "fmt"</p><p>2. "errors"</p><p>3. "strings"</p><p>4. "strconv"</p><p>5. "slices"</p><p>6. "time"</p><p>7. "os"</p><p>8. "path/filepath"</p><p>9. "io"</p><p>10. "bufio"</p><p>11. "encoding/json"</p><p>12. "net/url"</p><p>13. "net/http"</p><p>14. "context"</p><p>15. "sync"</p><p>16. "log/slog"</p><p>17. "testing"</p><p>18. "net/http/httptest"</p><p>Then continue with:</p><p>1. "database/sql"</p><p>2. "html/template"</p><p>3. "embed"</p><p>4. "crypto/rand"</p><p>5. "crypto/sha256"</p><p>6. "encoding/base64"</p><p>7. "regexp"</p><p>8. "compress/gzip"</p><p>9. "archive/zip"</p><p>10. "runtime"</p><p>11. "os/signal"</p><p>12. "reflect"</p><p>---</p><h2 id="43-standard-library-best-practices">43. Standard-Library Best Practices</h2><p>Close resources</p><p>file, err := os.Open(path)</p><p>if err != nil {</p><pre><code>return err
-}</code></pre><p>defer file.Close()</p><p>The same applies to:</p><p>- HTTP response bodies</p><p>- Database rows</p><p>- ZIP readers</p><p>- Gzip readers</p><p>- Files</p><p>Wrap errors with context</p><p>Good:</p><p>return fmt.Errorf("read configuration file: %w", err)</p><p>Less useful:</p><p>return err</p><p>Set network timeouts</p><pre><code>client := &amp;http.Client{
+  -d '{"name":"Ginad"}'</code></pre>
+      <p>Retrieve the user:</p>
+      <p>curl http://localhost:8080/users/1</p>
+      <p>Check health:</p>
+      <p>curl http://localhost:8080/health</p>
+      <p>---</p>
+      <h2 id="42-recommended-learning-order">42. Recommended Learning Order</h2>
+      <p>Learn these packages first:</p>
+      <p>1. "fmt"</p>
+      <p>2. "errors"</p>
+      <p>3. "strings"</p>
+      <p>4. "strconv"</p>
+      <p>5. "slices"</p>
+      <p>6. "time"</p>
+      <p>7. "os"</p>
+      <p>8. "path/filepath"</p>
+      <p>9. "io"</p>
+      <p>10. "bufio"</p>
+      <p>11. "encoding/json"</p>
+      <p>12. "net/url"</p>
+      <p>13. "net/http"</p>
+      <p>14. "context"</p>
+      <p>15. "sync"</p>
+      <p>16. "log/slog"</p>
+      <p>17. "testing"</p>
+      <p>18. "net/http/httptest"</p>
+      <p>Then continue with:</p>
+      <p>1. "database/sql"</p>
+      <p>2. "html/template"</p>
+      <p>3. "embed"</p>
+      <p>4. "crypto/rand"</p>
+      <p>5. "crypto/sha256"</p>
+      <p>6. "encoding/base64"</p>
+      <p>7. "regexp"</p>
+      <p>8. "compress/gzip"</p>
+      <p>9. "archive/zip"</p>
+      <p>10. "runtime"</p>
+      <p>11. "os/signal"</p>
+      <p>12. "reflect"</p>
+      <p>---</p>
+      <h2 id="43-standard-library-best-practices">
+        43. Standard-Library Best Practices
+      </h2>
+      <p>Close resources</p>
+      <p>file, err := os.Open(path)</p>
+      <p>if err != nil {</p>
+      <pre><code>return err
+}</code></pre>
+      <p>defer file.Close()</p>
+      <p>The same applies to:</p>
+      <p>- HTTP response bodies</p>
+      <p>- Database rows</p>
+      <p>- ZIP readers</p>
+      <p>- Gzip readers</p>
+      <p>- Files</p>
+      <p>Wrap errors with context</p>
+      <p>Good:</p>
+      <p>return fmt.Errorf("read configuration file: %w", err)</p>
+      <p>Less useful:</p>
+      <p>return err</p>
+      <p>Set network timeouts</p>
+      <pre><code>client := &amp;http.Client{
 	Timeout: 10 * time.Second,
-}</code></pre><p>Also configure server timeouts.</p><p>Use context for cancellation</p><pre><code>func LoadUser(
+}</code></pre>
+      <p>Also configure server timeouts.</p>
+      <p>Use context for cancellation</p>
+      <pre><code>func LoadUser(
 	ctx context.Context,
 	id int64,
-) (User, error)</code></pre><p>Limit untrusted input</p><pre><code>reader := http.MaxBytesReader(
+) (User, error)</code></pre>
+      <p>Limit untrusted input</p>
+      <pre><code>reader := http.MaxBytesReader(
 	w,
 	r.Body,
 	1&lt;&lt;20,
-)</code></pre><p>Prefer streaming for large data</p><p>Prefer:</p><p>io.Copy(destination, source)</p><p>Over reading an entire large file into memory.</p><p>Protect shared state</p><p>Use:</p><p>- "sync.Mutex"</p><p>- "sync.RWMutex"</p><p>- Channels</p><p>- Atomic values</p><p>Do not concurrently modify a regular map without synchronization.</p><p>Use secure randomness for secrets</p><p>Use:</p><p>crypto/rand</p><p>Not:</p><p>math/rand/v2</p><p>Use structured logs</p><p>logger.Error(</p><p>	"failed to save user",</p><p>	"user_id", id,</p><p>	"error", err,</p><p>)</p><p>Test behavior</p><p>Focus tests on observable behavior rather than internal implementation details.</p><p>---</p><h2 id="44-package-cheat-sheet">44. Package Cheat Sheet</h2><p>Task - Package</p><p>Print formatted output - "fmt"</p><p>Create and inspect errors - "errors"</p><p>Manipulate strings - "strings"</p><p>Convert strings and numbers - "strconv"</p><p>Work with generic slices - "slices"</p><p>Work with generic maps - "maps"</p><p>Sort collections - "slices", "sort"</p><p>Work with dates and durations - "time"</p><p>Read files and environment variables - "os"</p><p>Build file paths - "path/filepath"</p><p>Stream data - "io"</p><p>Buffered reading and writing - "bufio"</p><p>Work with byte slices - "bytes"</p><p>Encode and decode JSON - "encoding/json"</p><p>Parse URLs - "net/url"</p><p>Build HTTP clients and servers - "net/http"</p><p>Handle cancellation and deadlines - "context"</p><p>Synchronize goroutines - "sync"</p><p>Atomic counters and flags - "sync/atomic"</p><p>Structured logging - "log/slog"</p><p>Parse CLI flags - "flag"</p><p>Use regular expressions - "regexp"</p><p>Mathematical operations - "math"</p><p>Non-secure randomness - "math/rand/v2"</p><p>Secure randomness - "crypto/rand"</p><p>Hash data - "crypto/sha256"</p><p>Encode binary data as text - "encoding/base64", "encoding/hex"</p><p>Access relational databases - "database/sql"</p><p>Generate safe HTML - "html/template"</p><p>Embed application files - "embed"</p><p>Write unit tests - "testing"</p><p>Test HTTP handlers - "net/http/httptest"</p><p>Graceful shutdown - "os/signal"</p><p>Compress data - "compress/gzip"</p><p>Create ZIP archives - "archive/zip"</p><p>Inspect runtime information - "runtime"</p><p>Runtime type inspection - "reflect"</p><p>---</p><h2 id="45-further-reading">45. Further Reading</h2><p>- Go standard-library package index: "https://pkg.go.dev/std"</p><p>- Official Go documentation: "https://go.dev/doc/"</p><p>- Effective Go: "https://go.dev/doc/effective_go"</p><p>- Go package documentation: "https://pkg.go.dev"</p><p>- Go source-code organization: "https://go.dev/doc/code"</p><p>- Go module organization: "https://go.dev/doc/modules/layout”</p>
-</div>
-<a href="https://go.dev/play/" target="_blank" class="playground-float">▶ Go Playground</a>
-<a href="#" class="toc-back">&#8593; Top</a>
-<script>
-document.querySelectorAll('pre').forEach(function(pre) {
-  var btn = document.createElement('button');
-  btn.className = 'copy-btn';
-  btn.textContent = 'Copy';
-  btn.addEventListener('click', function() {
-    var code = pre.querySelector('code');
-    var text = code ? code.textContent : pre.textContent;
-    navigator.clipboard.writeText(text).then(function() {
-      btn.textContent = 'Copied!';
-      btn.classList.add('copied');
-      setTimeout(function() { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
-    });
-  });
-  pre.appendChild(btn);
-});
-</script>
-</body>
+)</code></pre>
+      <p>Prefer streaming for large data</p>
+      <p>Prefer:</p>
+      <p>io.Copy(destination, source)</p>
+      <p>Over reading an entire large file into memory.</p>
+      <p>Protect shared state</p>
+      <p>Use:</p>
+      <p>- "sync.Mutex"</p>
+      <p>- "sync.RWMutex"</p>
+      <p>- Channels</p>
+      <p>- Atomic values</p>
+      <p>Do not concurrently modify a regular map without synchronization.</p>
+      <p>Use secure randomness for secrets</p>
+      <p>Use:</p>
+      <p>crypto/rand</p>
+      <p>Not:</p>
+      <p>math/rand/v2</p>
+      <p>Use structured logs</p>
+      <p>logger.Error(</p>
+      <p>"failed to save user",</p>
+      <p>"user_id", id,</p>
+      <p>"error", err,</p>
+      <p>)</p>
+      <p>Test behavior</p>
+      <p>
+        Focus tests on observable behavior rather than internal implementation
+        details.
+      </p>
+      <p>---</p>
+      <h2 id="44-package-cheat-sheet">44. Package Cheat Sheet</h2>
+      <p>Task - Package</p>
+      <p>Print formatted output - "fmt"</p>
+      <p>Create and inspect errors - "errors"</p>
+      <p>Manipulate strings - "strings"</p>
+      <p>Convert strings and numbers - "strconv"</p>
+      <p>Work with generic slices - "slices"</p>
+      <p>Work with generic maps - "maps"</p>
+      <p>Sort collections - "slices", "sort"</p>
+      <p>Work with dates and durations - "time"</p>
+      <p>Read files and environment variables - "os"</p>
+      <p>Build file paths - "path/filepath"</p>
+      <p>Stream data - "io"</p>
+      <p>Buffered reading and writing - "bufio"</p>
+      <p>Work with byte slices - "bytes"</p>
+      <p>Encode and decode JSON - "encoding/json"</p>
+      <p>Parse URLs - "net/url"</p>
+      <p>Build HTTP clients and servers - "net/http"</p>
+      <p>Handle cancellation and deadlines - "context"</p>
+      <p>Synchronize goroutines - "sync"</p>
+      <p>Atomic counters and flags - "sync/atomic"</p>
+      <p>Structured logging - "log/slog"</p>
+      <p>Parse CLI flags - "flag"</p>
+      <p>Use regular expressions - "regexp"</p>
+      <p>Mathematical operations - "math"</p>
+      <p>Non-secure randomness - "math/rand/v2"</p>
+      <p>Secure randomness - "crypto/rand"</p>
+      <p>Hash data - "crypto/sha256"</p>
+      <p>Encode binary data as text - "encoding/base64", "encoding/hex"</p>
+      <p>Access relational databases - "database/sql"</p>
+      <p>Generate safe HTML - "html/template"</p>
+      <p>Embed application files - "embed"</p>
+      <p>Write unit tests - "testing"</p>
+      <p>Test HTTP handlers - "net/http/httptest"</p>
+      <p>Graceful shutdown - "os/signal"</p>
+      <p>Compress data - "compress/gzip"</p>
+      <p>Create ZIP archives - "archive/zip"</p>
+      <p>Inspect runtime information - "runtime"</p>
+      <p>Runtime type inspection - "reflect"</p>
+      <p>---</p>
+      <h2 id="45-further-reading">45. Further Reading</h2>
+      <p>- Go standard-library package index: "https://pkg.go.dev/std"</p>
+      <p>- Official Go documentation: "https://go.dev/doc/"</p>
+      <p>- Effective Go: "https://go.dev/doc/effective_go"</p>
+      <p>- Go package documentation: "https://pkg.go.dev"</p>
+      <p>- Go source-code organization: "https://go.dev/doc/code"</p>
+      <p>- Go module organization: "https://go.dev/doc/modules/layout”</p>
+    </div>
+    <a href="https://go.dev/play/" target="_blank" class="playground-float"
+      >▶ Go Playground</a
+    >
+    <a href="#" class="toc-back">&#8593; Top</a>
+    <script>
+      document.querySelectorAll("pre").forEach(function (pre) {
+        var btn = document.createElement("button");
+        btn.className = "copy-btn";
+        btn.textContent = "Copy";
+        btn.addEventListener("click", function () {
+          var code = pre.querySelector("code");
+          var text = code ? code.textContent : pre.textContent;
+          navigator.clipboard.writeText(text).then(function () {
+            btn.textContent = "Copied!";
+            btn.classList.add("copied");
+            setTimeout(function () {
+              btn.textContent = "Copy";
+              btn.classList.remove("copied");
+            }, 2000);
+          });
+        });
+        pre.appendChild(btn);
+      });
+    </script>
+  </body>
 </html>

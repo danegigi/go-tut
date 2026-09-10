@@ -1,93 +1,378 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Ent & SQL — gin-templ-datastar</title>
-<style>
-:root{--bg:#0f1117;--surface:#1a1d27;--border:#2d3148;--text:#e2e4f0;--muted:#8b8fa8;--accent:#7c87ff;--code-bg:#1e2130;}
-*{box-sizing:border-box;margin:0;padding:0;}
-html{scroll-behavior:smooth;}
-html{scroll-behavior:smooth;}
-body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:15px;line-height:1.75;}
-.nav{position:sticky;top:0;z-index:10;background:rgba(15,17,23,.9);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:16px;}
-.nav a{color:var(--accent);text-decoration:none;font-weight:600;font-size:0.9rem;}
-.nav a:hover{text-decoration:underline;}
-.nav .crumb{color:var(--muted);font-size:0.85rem;}
-.container{max-width:920px;margin:0 auto;padding:40px 36px 96px;}
-h1{font-size:2.5rem;font-weight:800;color:#fff;margin:28px 0 16px;line-height:1.2;letter-spacing:-0.01em;}
-h2{font-size:1.45rem;font-weight:600;color:var(--accent);margin:44px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--border);scroll-margin-top:70px;}
-h3{font-size:1.15rem;font-weight:600;color:#c5caff;margin:30px 0 10px;scroll-margin-top:70px;}
-h4,h5,h6{font-size:1rem;font-weight:600;color:var(--muted);margin:22px 0 8px;}
-h4.gbe-topic{color:#c5caff;font-size:1.02rem;margin:26px 0 8px;padding-left:20px;position:relative;scroll-margin-top:70px;}
-h4.gbe-topic::before{content:"▸";position:absolute;left:0;color:var(--accent);}
-p{margin-bottom:14px;color:#cdd0e0;}
-a{color:var(--accent);}
-strong{color:#eef0fb;}
-code{background:#252836;color:#c5caff;padding:2px 6px;border-radius:4px;font-family:"JetBrains Mono","Fira Code",ui-monospace,SFMono-Regular,Menlo,monospace;font-size:0.9em;font-weight:400;}
-pre{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;padding:18px 22px;overflow-x:auto;margin:18px 0;}
-pre code{background:none;padding:0;color:#e6e9f5;font-size:0.95rem;line-height:1.7;white-space:pre;font-weight:400;}
-pre code strong, pre code b{font-weight:400;color:inherit;}
-table{width:100%;border-collapse:collapse;margin:20px 0;font-size:0.9em;}
-th{background:#252836;color:var(--accent);text-align:left;padding:10px 14px;font-weight:600;font-size:0.8em;border-bottom:2px solid var(--border);}
-td{padding:9px 14px;border-bottom:1px solid var(--border);color:#cdd0e0;vertical-align:top;}
-ul,ol{padding-left:26px;margin-bottom:14px;}
-li{margin-bottom:6px;color:#cdd0e0;}
-blockquote{border-left:3px solid var(--accent);margin:18px 0;padding:12px 18px;background:rgba(124,135,255,.07);color:var(--muted);border-radius:0 6px 6px 0;}
-img{max-width:100%;border-radius:8px;}
-hr{border:none;border-top:1px solid var(--border);margin:36px 0;}
-.toc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 22px;margin:24px 0 36px;}
-.toc-title{font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 10px;}
-.toc ul{list-style:none;padding:0;margin:0;}
-.toc li{margin:2px 0;}
-.toc a{color:#c5caff;text-decoration:none;font-size:0.92rem;}
-.toc a:hover{color:var(--accent);text-decoration:underline;}
-.toc-l2{margin-left:0;}
-.toc-l3{margin-left:18px;}
-.toc-l3 a{color:var(--muted);font-size:0.88rem;}
-.toc-back{position:fixed;bottom:24px;right:24px;background:var(--accent);color:#fff;padding:9px 14px;border-radius:8px;font-size:0.8rem;font-weight:600;text-decoration:none;box-shadow:0 4px 12px rgba(0,0,0,.4);opacity:.88;}
-.toc-back:hover{opacity:1;}
-.playground-float{position:fixed;bottom:24px;right:90px;background:#1a1d27;color:var(--accent);border:1px solid var(--accent);padding:8px 12px;border-radius:8px;font-size:0.75rem;font-weight:600;text-decoration:none;box-shadow:0 4px 12px rgba(0,0,0,.4);opacity:.88;}
-.playground-float:hover{opacity:1;background:rgba(124,135,255,.12);text-decoration:none;}
-pre{position:relative;}
-.copy-btn{position:absolute;top:8px;right:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:var(--muted);padding:4px 8px;border-radius:5px;font-size:0.7rem;font-family:inherit;cursor:pointer;opacity:0;transition:opacity .2s,background .15s;}
-pre:hover .copy-btn{opacity:1;}
-.copy-btn:hover{background:rgba(124,135,255,.15);color:var(--accent);border-color:var(--accent);}
-.copy-btn.copied{color:#4ade80;border-color:#4ade80;}
-</style>
-</head>
-<body>
-<nav class="nav">
-  <a href="index.html">&#8592; Home</a>
-  <span class="crumb">Ent & SQL</span>
-</nav>
-<div class="container">
-<h1 class="page-title">Ent & SQL</h1>
-<nav class="toc" aria-label="Table of contents">
-  <p class="toc-title">Contents</p>
-  <ul>
-<li class="toc-l2"><a href="#ent-tutorial-basic-intermedia">Ent Tutorial (Basic → Intermedia)</a></li>
-<li class="toc-l2"><a href="#1-introduction">1. Introduction</a></li>
-<li class="toc-l2"><a href="#2-database-connection">2. Database Connection</a></li>
-<li class="toc-l2"><a href="#sqlite">SQLite</a></li>
-<li class="toc-l2"><a href="#3-schema-definition">3. Schema Definition</a></li>
-<li class="toc-l2"><a href="#how-ent-generates-code">How Ent Generates Code</a></li>
-<li class="toc-l2"><a href="#4-code-generation">4. Code Generation</a></li>
-<li class="toc-l2"><a href="#5-crud-operations">5. CRUD Operations</a></li>
-<li class="toc-l2"><a href="#create">Create</a></li>
-<li class="toc-l2"><a href="#read">Read</a></li>
-<li class="toc-l2"><a href="#update">Update</a></li>
-<li class="toc-l2"><a href="#delete">Delete</a></li>
-<li class="toc-l2"><a href="#transaction">Transaction</a></li>
-<li class="toc-l2"><a href="#6-query-builder">6. Query Builder</a></li>
-<li class="toc-l2"><a href="#7-pagination">7. Pagination</a></li>
-<li class="toc-l2"><a href="#8-eager-loading">8. Eager Loading</a></li>
-<li class="toc-l2"><a href="#9-hooks">9. Hooks</a></li>
-<li class="toc-l2"><a href="#10-atlas-migrations">10. Atlas Migrations</a></li>
-<li class="toc-l2"><a href="#11-best-practices">11. Best Practices</a></li>
-  </ul>
-</nav>
-<h2 id="ent-tutorial-basic-intermedia">Ent Tutorial (Basic → Intermedia)</h2><h2 id="1-introduction"><br />1. Introduction</h2><p>Ent is a code-first ORM for Go. You define schemas in Go and Ent generates a type-safe API.</p><pre><code>Schema
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ent & SQL — gin-templ-datastar</title>
+    <style>
+      :root {
+        --bg: #0f1117;
+        --surface: #1a1d27;
+        --border: #2d3148;
+        --text: #e2e4f0;
+        --muted: #8b8fa8;
+        --accent: #7c87ff;
+        --code-bg: #1e2130;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 15px;
+        line-height: 1.75;
+      }
+      .nav {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: rgba(15, 17, 23, 0.9);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid var(--border);
+        padding: 12px 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .nav a {
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+      .nav a:hover {
+        text-decoration: underline;
+      }
+      .nav .crumb {
+        color: var(--muted);
+        font-size: 0.85rem;
+      }
+      .container {
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 40px 36px 96px;
+      }
+      h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #fff;
+        margin: 28px 0 16px;
+        line-height: 1.2;
+        letter-spacing: -0.01em;
+      }
+      h2 {
+        font-size: 1.45rem;
+        font-weight: 600;
+        color: var(--accent);
+        margin: 44px 0 14px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border);
+        scroll-margin-top: 70px;
+      }
+      h3 {
+        font-size: 1.15rem;
+        font-weight: 600;
+        color: #c5caff;
+        margin: 30px 0 10px;
+        scroll-margin-top: 70px;
+      }
+      h4,
+      h5,
+      h6 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--muted);
+        margin: 22px 0 8px;
+      }
+      h4.gbe-topic {
+        color: #c5caff;
+        font-size: 1.02rem;
+        margin: 26px 0 8px;
+        padding-left: 20px;
+        position: relative;
+        scroll-margin-top: 70px;
+      }
+      h4.gbe-topic::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent);
+      }
+      p {
+        margin-bottom: 14px;
+        color: #cdd0e0;
+      }
+      a {
+        color: var(--accent);
+      }
+      strong {
+        color: #eef0fb;
+      }
+      code {
+        background: #252836;
+        color: #c5caff;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family:
+          "JetBrains Mono", "Fira Code", ui-monospace, SFMono-Regular, Menlo,
+          monospace;
+        font-size: 0.9em;
+        font-weight: 400;
+      }
+      pre {
+        background: var(--code-bg);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 18px 22px;
+        overflow-x: auto;
+        margin: 18px 0;
+      }
+      pre code {
+        background: none;
+        padding: 0;
+        color: #e6e9f5;
+        font-size: 0.95rem;
+        line-height: 1.7;
+        white-space: pre;
+        font-weight: 400;
+      }
+      pre code strong,
+      pre code b {
+        font-weight: 400;
+        color: inherit;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        font-size: 0.9em;
+      }
+      th {
+        background: #252836;
+        color: var(--accent);
+        text-align: left;
+        padding: 10px 14px;
+        font-weight: 600;
+        font-size: 0.8em;
+        border-bottom: 2px solid var(--border);
+      }
+      td {
+        padding: 9px 14px;
+        border-bottom: 1px solid var(--border);
+        color: #cdd0e0;
+        vertical-align: top;
+      }
+      ul,
+      ol {
+        padding-left: 26px;
+        margin-bottom: 14px;
+      }
+      li {
+        margin-bottom: 6px;
+        color: #cdd0e0;
+      }
+      blockquote {
+        border-left: 3px solid var(--accent);
+        margin: 18px 0;
+        padding: 12px 18px;
+        background: rgba(124, 135, 255, 0.07);
+        color: var(--muted);
+        border-radius: 0 6px 6px 0;
+      }
+      img {
+        max-width: 100%;
+        border-radius: 8px;
+      }
+      hr {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 36px 0;
+      }
+      .toc {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 18px 22px;
+        margin: 24px 0 36px;
+      }
+      .toc-title {
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+        margin: 0 0 10px;
+      }
+      .toc ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .toc li {
+        margin: 2px 0;
+      }
+      .toc a {
+        color: #c5caff;
+        text-decoration: none;
+        font-size: 0.92rem;
+      }
+      .toc a:hover {
+        color: var(--accent);
+        text-decoration: underline;
+      }
+      .toc-l2 {
+        margin-left: 0;
+      }
+      .toc-l3 {
+        margin-left: 18px;
+      }
+      .toc-l3 a {
+        color: var(--muted);
+        font-size: 0.88rem;
+      }
+      .toc-back {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background: var(--accent);
+        color: #fff;
+        padding: 9px 14px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-decoration: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        opacity: 0.88;
+      }
+      .toc-back:hover {
+        opacity: 1;
+      }
+      .playground-float {
+        position: fixed;
+        bottom: 24px;
+        right: 90px;
+        background: #1a1d27;
+        color: var(--accent);
+        border: 1px solid var(--accent);
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-decoration: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        opacity: 0.88;
+      }
+      .playground-float:hover {
+        opacity: 1;
+        background: rgba(124, 135, 255, 0.12);
+        text-decoration: none;
+      }
+      pre {
+        position: relative;
+      }
+      .copy-btn {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: var(--muted);
+        padding: 4px 8px;
+        border-radius: 5px;
+        font-size: 0.7rem;
+        font-family: inherit;
+        cursor: pointer;
+        opacity: 0;
+        transition:
+          opacity 0.2s,
+          background 0.15s;
+      }
+      pre:hover .copy-btn {
+        opacity: 1;
+      }
+      .copy-btn:hover {
+        background: rgba(124, 135, 255, 0.15);
+        color: var(--accent);
+        border-color: var(--accent);
+      }
+      .copy-btn.copied {
+        color: #4ade80;
+        border-color: #4ade80;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="nav">
+      <a href="index.html">&#8592; Home</a>
+      <span class="crumb">Ent & SQL</span>
+    </nav>
+    <div class="container">
+      <h1 class="page-title">Ent & SQL</h1>
+      <nav class="toc" aria-label="Table of contents">
+        <p class="toc-title">Contents</p>
+        <ul>
+          <li class="toc-l2">
+            <a href="#ent-tutorial-basic-intermedia"
+              >Ent Tutorial (Basic → Intermedia)</a
+            >
+          </li>
+          <li class="toc-l2"><a href="#1-introduction">1. Introduction</a></li>
+          <li class="toc-l2">
+            <a href="#2-database-connection">2. Database Connection</a>
+          </li>
+          <li class="toc-l2"><a href="#sqlite">SQLite</a></li>
+          <li class="toc-l2">
+            <a href="#3-schema-definition">3. Schema Definition</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#how-ent-generates-code">How Ent Generates Code</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#4-code-generation">4. Code Generation</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#5-crud-operations">5. CRUD Operations</a>
+          </li>
+          <li class="toc-l2"><a href="#create">Create</a></li>
+          <li class="toc-l2"><a href="#read">Read</a></li>
+          <li class="toc-l2"><a href="#update">Update</a></li>
+          <li class="toc-l2"><a href="#delete">Delete</a></li>
+          <li class="toc-l2"><a href="#transaction">Transaction</a></li>
+          <li class="toc-l2">
+            <a href="#6-query-builder">6. Query Builder</a>
+          </li>
+          <li class="toc-l2"><a href="#7-pagination">7. Pagination</a></li>
+          <li class="toc-l2">
+            <a href="#8-eager-loading">8. Eager Loading</a>
+          </li>
+          <li class="toc-l2"><a href="#9-hooks">9. Hooks</a></li>
+          <li class="toc-l2">
+            <a href="#10-atlas-migrations">10. Atlas Migrations</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#11-best-practices">11. Best Practices</a>
+          </li>
+        </ul>
+      </nav>
+      <h2 id="ent-tutorial-basic-intermedia">
+        Ent Tutorial (Basic → Intermedia)
+      </h2>
+      <h2 id="1-introduction"><br />1. Introduction</h2>
+      <p>
+        Ent is a code-first ORM for Go. You define schemas in Go and Ent
+        generates a type-safe API.
+      </p>
+      <pre><code>Schema
   ↓
 go generate ./ent
   ↓
@@ -95,9 +380,58 @@ Generated Client
   ↓
 CRUD
   ↓
-SQL</code></pre><p><a href="https://entgo.io/docs/getting-started/">https://entgo.io/docs/getting-started/</a></p><p><a href="https://github.com/ent/ent/tree/master/examples/start">https://github.com/ent/ent/tree/master/examples/start</a></p><h2 id="2-database-connection">2. Database Connection</h2><h2 id="sqlite">SQLite</h2><pre><code>client, err := ent.Open("sqlite3", "file:ent.db?_fk=1")</code></pre><p>No SQL equivalent exists because connections are handled by the driver.</p><p>Run development migration:</p><table><thead><tr><th><p><strong>client</strong>.Schema.Create(<strong>ctx</strong>)</p></th></tr></thead></table><p><a href="https://entgo.io/docs/dialects">https://entgo.io/docs/dialects</a></p><p><a href="https://entgo.io/docs/sql-integration">https://entgo.io/docs/sql-integration</a></p><h2 id="3-schema-definition">3. Schema Definition</h2><p>A schema defines an entity.</p><pre><code>type User struct {
+SQL</code></pre>
+      <p>
+        <a href="https://entgo.io/docs/getting-started/"
+          >https://entgo.io/docs/getting-started/</a
+        >
+      </p>
+      <p>
+        <a href="https://github.com/ent/ent/tree/master/examples/start"
+          >https://github.com/ent/ent/tree/master/examples/start</a
+        >
+      </p>
+      <h2 id="2-database-connection">2. Database Connection</h2>
+      <h2 id="sqlite">SQLite</h2>
+      <pre><code>client, err := ent.Open("sqlite3", "file:ent.db?_fk=1")</code></pre>
+      <p>
+        No SQL equivalent exists because connections are handled by the driver.
+      </p>
+      <p>Run development migration:</p>
+      <table>
+        <thead>
+          <tr>
+            <th>
+              <p><strong>client</strong>.Schema.Create(<strong>ctx</strong>)</p>
+            </th>
+          </tr>
+        </thead>
+      </table>
+      <p>
+        <a href="https://entgo.io/docs/dialects"
+          >https://entgo.io/docs/dialects</a
+        >
+      </p>
+      <p>
+        <a href="https://entgo.io/docs/sql-integration"
+          >https://entgo.io/docs/sql-integration</a
+        >
+      </p>
+      <h2 id="3-schema-definition">3. Schema Definition</h2>
+      <p>A schema defines an entity.</p>
+      <pre><code>type User struct {
     ent.Schema
-}</code></pre><p>A schema contains:</p><ul><li>Fields</li><li>Edges</li><li>Indexes</li><li>Mixins</li><li>Annotations</li></ul><h2 id="how-ent-generates-code">How Ent Generates Code</h2><pre><code>ent/schema/user.go
+}</code></pre>
+      <p>A schema contains:</p>
+      <ul>
+        <li>Fields</li>
+        <li>Edges</li>
+        <li>Indexes</li>
+        <li>Mixins</li>
+        <li>Annotations</li>
+      </ul>
+      <h2 id="how-ent-generates-code">How Ent Generates Code</h2>
+      <pre><code>ent/schema/user.go
         │
 go generate ./ent
         │
@@ -112,68 +446,291 @@ user_create.go
 user_query.go
 user_update.go
 predicates
-migrations</code></pre><p>Example:</p><pre><code>field.String("email").Unique()</code></pre><p>Generated SQL</p><table><thead><tr><th><p>email VARCHAR(255) <strong>UNIQUE</strong> <strong>NOT</strong> <strong>NULL</strong>;</p></th></tr></thead></table><p>Generated API</p><pre><code>SetEmail(...)
-user.EmailEQ(...)</code></pre><p><a href="https://entgo.io/docs/schema-def">https://entgo.io/docs/schema-def</a></p><p><a href="https://entgo.io/docs/schema-fields">https://entgo.io/docs/schema-fields</a></p><p><a href="https://entgo.io/docs/schema-edges">https://entgo.io/docs/schema-edges</a></p><p><a href="https://entgo.io/docs/schema-indexes">https://entgo.io/docs/schema-indexes</a></p><p><a href="https://entgo.io/docs/schema-mixin">https://entgo.io/docs/schema-mixin</a></p><p><a href="https://entgo.io/docs/schema-annotations">https://entgo.io/docs/schema-annotations</a></p><h2 id="4-code-generation">4. Code Generation</h2><pre><code>go generate ./ent</code></pre><p>Regenerate after every schema change.</p><p><a href="https://entgo.io/docs/code-gen">https://entgo.io/docs/code-gen</a></p><h2 id="5-crud-operations">5. CRUD Operations</h2><h2 id="create">Create</h2><pre><code>client.User.Create().
+migrations</code></pre>
+      <p>Example:</p>
+      <pre><code>field.String("email").Unique()</code></pre>
+      <p>Generated SQL</p>
+      <table>
+        <thead>
+          <tr>
+            <th>
+              <p>
+                email VARCHAR(255) <strong>UNIQUE</strong> <strong>NOT</strong>
+                <strong>NULL</strong>;
+              </p>
+            </th>
+          </tr>
+        </thead>
+      </table>
+      <p>Generated API</p>
+      <pre><code>SetEmail(...)
+user.EmailEQ(...)</code></pre>
+      <p>
+        <a href="https://entgo.io/docs/schema-def"
+          >https://entgo.io/docs/schema-def</a
+        >
+      </p>
+      <p>
+        <a href="https://entgo.io/docs/schema-fields"
+          >https://entgo.io/docs/schema-fields</a
+        >
+      </p>
+      <p>
+        <a href="https://entgo.io/docs/schema-edges"
+          >https://entgo.io/docs/schema-edges</a
+        >
+      </p>
+      <p>
+        <a href="https://entgo.io/docs/schema-indexes"
+          >https://entgo.io/docs/schema-indexes</a
+        >
+      </p>
+      <p>
+        <a href="https://entgo.io/docs/schema-mixin"
+          >https://entgo.io/docs/schema-mixin</a
+        >
+      </p>
+      <p>
+        <a href="https://entgo.io/docs/schema-annotations"
+          >https://entgo.io/docs/schema-annotations</a
+        >
+      </p>
+      <h2 id="4-code-generation">4. Code Generation</h2>
+      <pre><code>go generate ./ent</code></pre>
+      <p>Regenerate after every schema change.</p>
+      <p>
+        <a href="https://entgo.io/docs/code-gen"
+          >https://entgo.io/docs/code-gen</a
+        >
+      </p>
+      <h2 id="5-crud-operations">5. CRUD Operations</h2>
+      <h2 id="create">Create</h2>
+      <pre><code>client.User.Create().
  SetName("John").
  SetEmail("john@example.com").
- Save(ctx)</code></pre><pre><code>INSERT INTO users(name,email)
-VALUES('John','john@example.com');</code></pre><h2 id="read">Read</h2><pre><code>client.User.Query().
+ Save(ctx)</code></pre>
+      <pre><code>INSERT INTO users(name,email)
+VALUES('John','john@example.com');</code></pre>
+      <h2 id="read">Read</h2>
+      <pre><code>client.User.Query().
 Where(user.Email("john@example.com")).
-Only(ctx)</code></pre><pre><code>SELECT *
+Only(ctx)</code></pre>
+      <pre><code>SELECT *
 FROM users
 WHERE email=?
-LIMIT 1;</code></pre><h2 id="update">Update</h2><pre><code>client.User.UpdateOneID(id).
+LIMIT 1;</code></pre>
+      <h2 id="update">Update</h2>
+      <pre><code>client.User.UpdateOneID(id).
 SetName("Jane").
-Save(ctx)</code></pre><pre><code>UPDATE users
+Save(ctx)</code></pre>
+      <pre><code>UPDATE users
 SET name='Jane'
-WHERE id=?;</code></pre><h2 id="delete">Delete</h2><pre><code>client.User.DeleteOneID(id).Exec(ctx)</code></pre><pre><code>DELETE FROM users
-WHERE id=?;</code></pre><h2 id="transaction">Transaction</h2><pre><code>tx,_:=client.Tx(ctx)
+WHERE id=?;</code></pre>
+      <h2 id="delete">Delete</h2>
+      <pre><code>client.User.DeleteOneID(id).Exec(ctx)</code></pre>
+      <pre><code>DELETE FROM users
+WHERE id=?;</code></pre>
+      <h2 id="transaction">Transaction</h2>
+      <pre><code>tx,_:=client.Tx(ctx)
 // operations
-tx.Commit()</code></pre><pre><code>BEGIN;
+tx.Commit()</code></pre>
+      <pre><code>BEGIN;
 ...
-COMMIT;</code></pre><p><a href="https://entgo.io/docs/crud">https://entgo.io/docs/crud</a></p><p><a href="https://entgo.io/docs/transactions">https://entgo.io/docs/transactions</a></p><p><a href="https://github.com/ent/ent/tree/master/examples/start">https://github.com/ent/ent/tree/master/examples/start</a></p><h2 id="6-query-builder">6. Query Builder</h2><p>Filtering:</p><pre><code>client.User.Query().
+COMMIT;</code></pre>
+      <p><a href="https://entgo.io/docs/crud">https://entgo.io/docs/crud</a></p>
+      <p>
+        <a href="https://entgo.io/docs/transactions"
+          >https://entgo.io/docs/transactions</a
+        >
+      </p>
+      <p>
+        <a href="https://github.com/ent/ent/tree/master/examples/start"
+          >https://github.com/ent/ent/tree/master/examples/start</a
+        >
+      </p>
+      <h2 id="6-query-builder">6. Query Builder</h2>
+      <p>Filtering:</p>
+      <pre><code>client.User.Query().
 Where(user.And(
  user.AgeGT(18),
  user.NameContains("John"),
-))</code></pre><pre><code>SELECT *
+))</code></pre>
+      <pre><code>SELECT *
 FROM users
 WHERE age&gt;18
-AND name LIKE '%John%';</code></pre><p>Ordering</p><table><thead><tr><th><p>Order(<strong>ent</strong>.Desc(<strong>user</strong>.FieldName))</p></th></tr></thead></table><table><thead><tr><th><p><strong>ORDER</strong> <strong>BY</strong> name <strong>DESC</strong>;</p></th></tr></thead></table><p>Aggregation</p><pre><code>Count()
-GroupBy()</code></pre><pre><code>SELECT COUNT(*) FROM users;</code></pre><p><a href="https://entgo.io/docs/predicates">https://entgo.io/docs/predicates</a></p><p><a href="https://entgo.io/docs/traversals">https://entgo.io/docs/traversals</a></p><p><a href="https://entgo.io/docs/aggregate">https://entgo.io/docs/aggregate</a></p><p><a href="https://entgo.io/docs/paging">https://entgo.io/docs/paging</a></p><h2 id="7-pagination">7. Pagination</h2><pre><code>Query().Limit(10).Offset(20)</code></pre><pre><code>SELECT *
+AND name LIKE '%John%';</code></pre>
+      <p>Ordering</p>
+      <table>
+        <thead>
+          <tr>
+            <th>
+              <p>
+                Order(<strong>ent</strong>.Desc(<strong>user</strong>.FieldName))
+              </p>
+            </th>
+          </tr>
+        </thead>
+      </table>
+      <table>
+        <thead>
+          <tr>
+            <th>
+              <p>
+                <strong>ORDER</strong> <strong>BY</strong> name
+                <strong>DESC</strong>;
+              </p>
+            </th>
+          </tr>
+        </thead>
+      </table>
+      <p>Aggregation</p>
+      <pre><code>Count()
+GroupBy()</code></pre>
+      <pre><code>SELECT COUNT(*) FROM users;</code></pre>
+      <p>
+        <a href="https://entgo.io/docs/predicates"
+          >https://entgo.io/docs/predicates</a
+        >
+      </p>
+      <p>
+        <a href="https://entgo.io/docs/traversals"
+          >https://entgo.io/docs/traversals</a
+        >
+      </p>
+      <p>
+        <a href="https://entgo.io/docs/aggregate"
+          >https://entgo.io/docs/aggregate</a
+        >
+      </p>
+      <p>
+        <a href="https://entgo.io/docs/paging">https://entgo.io/docs/paging</a>
+      </p>
+      <h2 id="7-pagination">7. Pagination</h2>
+      <pre><code>Query().Limit(10).Offset(20)</code></pre>
+      <pre><code>SELECT *
 FROM users
-LIMIT 10 OFFSET 20;</code></pre><p>Cursor pagination is recommended for large datasets.</p><p><a href="https://entgo.io/docs/paging">https://entgo.io/docs/paging</a></p><h2 id="8-eager-loading">8. Eager Loading</h2><pre><code>client.User.Query().
+LIMIT 10 OFFSET 20;</code></pre>
+      <p>Cursor pagination is recommended for large datasets.</p>
+      <p>
+        <a href="https://entgo.io/docs/paging">https://entgo.io/docs/paging</a>
+      </p>
+      <h2 id="8-eager-loading">8. Eager Loading</h2>
+      <pre><code>client.User.Query().
 WithPosts().
-All(ctx)</code></pre><pre><code>SELECT u.*, p.*
+All(ctx)</code></pre>
+      <pre><code>SELECT u.*, p.*
 FROM users u
 LEFT JOIN posts p
-ON p.user_id=u.id;</code></pre><p><a href="https://entgo.io/docs/eager-load">https://entgo.io/docs/eager-load</a></p><p><a href="https://entgo.io/docs/traversals">https://entgo.io/docs/traversals</a></p><h2 id="9-hooks">9. Hooks</h2><p>Lifecycle</p><pre><code>Create
+ON p.user_id=u.id;</code></pre>
+      <p>
+        <a href="https://entgo.io/docs/eager-load"
+          >https://entgo.io/docs/eager-load</a
+        >
+      </p>
+      <p>
+        <a href="https://entgo.io/docs/traversals"
+          >https://entgo.io/docs/traversals</a
+        >
+      </p>
+      <h2 id="9-hooks">9. Hooks</h2>
+      <p>Lifecycle</p>
+      <pre><code>Create
  ↓
 Hook
  ↓
 Validation
  ↓
-SQL</code></pre><p>Soft delete</p><p>Instead of</p><pre><code>DELETE FROM users;</code></pre><p>Use</p><pre><code>UPDATE users
-SET deleted_at=NOW();</code></pre><p>Common hooks:</p><ul><li>Validation</li><li>Audit logging</li><li>Password hashing</li><li>Soft delete</li><li>Timestamp updates</li></ul><p><a href="https://entgo.io/docs/hooks">https://entgo.io/docs/hooks</a></p><p><a href="https://entgo.io/docs/interceptors">https://entgo.io/docs/interceptors</a></p><p><a href="https://entgo.io/docs/privacy">https://entgo.io/docs/privacy</a></p><h2 id="10-atlas-migrations">10. Atlas Migrations</h2><p>Development</p><table><thead><tr><th><p><strong>client</strong>.Schema.Create(<strong>ctx</strong>)</p></th></tr></thead></table><p>Production</p><pre><code>atlas migrate diff
-atlas migrate apply</code></pre><p><a href="https://entgo.io/docs/migrate">https://entgo.io/docs/migrate</a></p><p><a href="https://entgo.io/docs/versioned-migrations">https://entgo.io/docs/versioned-migrations</a></p><p><a href="https://atlasgo.io/">https://atlasgo.io/</a></p><h2 id="11-best-practices">11. Best Practices</h2><ul><li>Keep schemas focused</li><li>Review generated SQL</li><li>Use transactions</li><li>Use eager loading to avoid N+1</li><li>Use Atlas in production</li></ul><p><a href="https://entgo.io/docs/testing">https://entgo.io/docs/testing</a></p><p><a href="https://entgo.io/docs/faq">https://entgo.io/docs/faq</a></p>
-</div>
-<a href="https://go.dev/play/" target="_blank" class="playground-float">▶ Go Playground</a>
-<a href="#" class="toc-back">&#8593; Top</a>
-<script>
-document.querySelectorAll('pre').forEach(function(pre) {
-  var btn = document.createElement('button');
-  btn.className = 'copy-btn';
-  btn.textContent = 'Copy';
-  btn.addEventListener('click', function() {
-    var code = pre.querySelector('code');
-    var text = code ? code.textContent : pre.textContent;
-    navigator.clipboard.writeText(text).then(function() {
-      btn.textContent = 'Copied!';
-      btn.classList.add('copied');
-      setTimeout(function() { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
-    });
-  });
-  pre.appendChild(btn);
-});
-</script>
-</body>
+SQL</code></pre>
+      <p>Soft delete</p>
+      <p>Instead of</p>
+      <pre><code>DELETE FROM users;</code></pre>
+      <p>Use</p>
+      <pre><code>UPDATE users
+SET deleted_at=NOW();</code></pre>
+      <p>Common hooks:</p>
+      <ul>
+        <li>Validation</li>
+        <li>Audit logging</li>
+        <li>Password hashing</li>
+        <li>Soft delete</li>
+        <li>Timestamp updates</li>
+      </ul>
+      <p>
+        <a href="https://entgo.io/docs/hooks">https://entgo.io/docs/hooks</a>
+      </p>
+      <p>
+        <a href="https://entgo.io/docs/interceptors"
+          >https://entgo.io/docs/interceptors</a
+        >
+      </p>
+      <p>
+        <a href="https://entgo.io/docs/privacy"
+          >https://entgo.io/docs/privacy</a
+        >
+      </p>
+      <h2 id="10-atlas-migrations">10. Atlas Migrations</h2>
+      <p>Development</p>
+      <table>
+        <thead>
+          <tr>
+            <th>
+              <p><strong>client</strong>.Schema.Create(<strong>ctx</strong>)</p>
+            </th>
+          </tr>
+        </thead>
+      </table>
+      <p>Production</p>
+      <pre><code>atlas migrate diff
+atlas migrate apply</code></pre>
+      <p>
+        <a href="https://entgo.io/docs/migrate"
+          >https://entgo.io/docs/migrate</a
+        >
+      </p>
+      <p>
+        <a href="https://entgo.io/docs/versioned-migrations"
+          >https://entgo.io/docs/versioned-migrations</a
+        >
+      </p>
+      <p><a href="https://atlasgo.io/">https://atlasgo.io/</a></p>
+      <h2 id="11-best-practices">11. Best Practices</h2>
+      <ul>
+        <li>Keep schemas focused</li>
+        <li>Review generated SQL</li>
+        <li>Use transactions</li>
+        <li>Use eager loading to avoid N+1</li>
+        <li>Use Atlas in production</li>
+      </ul>
+      <p>
+        <a href="https://entgo.io/docs/testing"
+          >https://entgo.io/docs/testing</a
+        >
+      </p>
+      <p><a href="https://entgo.io/docs/faq">https://entgo.io/docs/faq</a></p>
+    </div>
+    <a href="https://go.dev/play/" target="_blank" class="playground-float"
+      >▶ Go Playground</a
+    >
+    <a href="#" class="toc-back">&#8593; Top</a>
+    <script>
+      document.querySelectorAll("pre").forEach(function (pre) {
+        var btn = document.createElement("button");
+        btn.className = "copy-btn";
+        btn.textContent = "Copy";
+        btn.addEventListener("click", function () {
+          var code = pre.querySelector("code");
+          var text = code ? code.textContent : pre.textContent;
+          navigator.clipboard.writeText(text).then(function () {
+            btn.textContent = "Copied!";
+            btn.classList.add("copied");
+            setTimeout(function () {
+              btn.textContent = "Copy";
+              btn.classList.remove("copied");
+            }, 2000);
+          });
+        });
+        pre.appendChild(btn);
+      });
+    </script>
+  </body>
 </html>

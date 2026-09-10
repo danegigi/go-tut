@@ -1,115 +1,445 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Golang Tutorial</title>
-<style>
-:root{--bg:#0f1117;--surface:#1a1d27;--border:#2d3148;--text:#e2e4f0;--muted:#8b8fa8;--accent:#7c87ff;--code-bg:#1e2130;}
-*{box-sizing:border-box;margin:0;padding:0;}
-html{scroll-behavior:smooth;}
-html{scroll-behavior:smooth;}
-body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:15px;line-height:1.75;}
-.nav{position:sticky;top:0;z-index:10;background:rgba(15,17,23,.9);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:16px;}
-.nav a{color:var(--accent);text-decoration:none;font-weight:600;font-size:0.9rem;}
-.nav a:hover{text-decoration:underline;}
-.nav .crumb{color:var(--muted);font-size:0.85rem;}
-.container{max-width:920px;margin:0 auto;padding:40px 36px 96px;}
-h1{font-size:2.5rem;font-weight:800;color:#fff;margin:28px 0 16px;line-height:1.2;letter-spacing:-0.01em;}
-h2{font-size:1.45rem;font-weight:600;color:var(--accent);margin:44px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--border);scroll-margin-top:70px;}
-h3{font-size:1.15rem;font-weight:600;color:#c5caff;margin:30px 0 10px;scroll-margin-top:70px;}
-h4,h5,h6{font-size:1rem;font-weight:600;color:var(--muted);margin:22px 0 8px;}
-h4.gbe-topic{color:#c5caff;font-size:1.02rem;margin:26px 0 8px;padding-left:20px;position:relative;scroll-margin-top:70px;}
-h4.gbe-topic::before{content:"▸";position:absolute;left:0;color:var(--accent);}
-p{margin-bottom:14px;color:#cdd0e0;}
-a{color:var(--accent);}
-strong{color:#eef0fb;}
-code{background:#252836;color:#c5caff;padding:2px 6px;border-radius:4px;font-family:"JetBrains Mono","Fira Code",ui-monospace,SFMono-Regular,Menlo,monospace;font-size:0.9em;font-weight:400;}
-pre{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;padding:18px 22px;overflow-x:auto;margin:18px 0;}
-pre code{background:none;padding:0;color:#e6e9f5;font-size:0.95rem;line-height:1.7;white-space:pre;font-weight:400;}
-pre code strong, pre code b{font-weight:400;color:inherit;}
-table{width:100%;border-collapse:collapse;margin:20px 0;font-size:0.9em;}
-th{background:#252836;color:var(--accent);text-align:left;padding:10px 14px;font-weight:600;font-size:0.8em;border-bottom:2px solid var(--border);}
-td{padding:9px 14px;border-bottom:1px solid var(--border);color:#cdd0e0;vertical-align:top;}
-ul,ol{padding-left:26px;margin-bottom:14px;}
-li{margin-bottom:6px;color:#cdd0e0;}
-blockquote{border-left:3px solid var(--accent);margin:18px 0;padding:12px 18px;background:rgba(124,135,255,.07);color:var(--muted);border-radius:0 6px 6px 0;}
-img{max-width:100%;border-radius:8px;}
-hr{border:none;border-top:1px solid var(--border);margin:36px 0;}
-.toc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 22px;margin:24px 0 36px;}
-.toc-title{font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 10px;}
-.toc ul{list-style:none;padding:0;margin:0;}
-.toc li{margin:2px 0;}
-.toc a{color:#c5caff;text-decoration:none;font-size:0.92rem;}
-.toc a:hover{color:var(--accent);text-decoration:underline;}
-.toc-l2{margin-left:0;}
-.toc-l3{margin-left:18px;}
-.toc-l3 a{color:var(--muted);font-size:0.88rem;}
-.toc-back{position:fixed;bottom:24px;right:24px;background:var(--accent);color:#fff;padding:9px 14px;border-radius:8px;font-size:0.8rem;font-weight:600;text-decoration:none;box-shadow:0 4px 12px rgba(0,0,0,.4);opacity:.88;}
-.toc-back:hover{opacity:1;}
-.playground-float{position:fixed;bottom:24px;right:90px;background:#1a1d27;color:var(--accent);border:1px solid var(--accent);padding:8px 12px;border-radius:8px;font-size:0.75rem;font-weight:600;text-decoration:none;box-shadow:0 4px 12px rgba(0,0,0,.4);opacity:.88;}
-.playground-float:hover{opacity:1;background:rgba(124,135,255,.12);text-decoration:none;}
-pre{position:relative;}
-.copy-btn{position:absolute;top:8px;right:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:var(--muted);padding:4px 8px;border-radius:5px;font-size:0.7rem;font-family:inherit;cursor:pointer;opacity:0;transition:opacity .2s,background .15s;}
-pre:hover .copy-btn{opacity:1;}
-.copy-btn:hover{background:rgba(124,135,255,.15);color:var(--accent);border-color:var(--accent);}
-.copy-btn.copied{color:#4ade80;border-color:#4ade80;}
-</style>
-<style>
-.hero{padding:56px 0 28px;text-align:center;}
-.hero h1{font-size:2.4rem;margin-bottom:10px;}
-.hero p{color:var(--muted);font-size:1.05rem;max-width:640px;margin:0 auto;}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;margin-top:36px;}
-.card{display:flex;flex-direction:column;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;text-decoration:none;transition:border-color .15s,transform .15s;}
-.card:hover{border-color:var(--accent);transform:translateY(-2px);text-decoration:none;}
-.card h3{color:#fff;margin:0;font-size:1.1rem;}
-.card p{color:var(--muted);font-size:0.9rem;margin:0;flex:1;}
-.card .go{color:var(--accent);font-size:0.85rem;font-weight:600;margin-top:6px;}
-.footer{text-align:center;color:var(--muted);font-size:0.8rem;margin-top:56px;}
-.footer a{color:var(--accent);}
-</style>
-</head>
-<body>
-<div class="container">
-  <div class="hero">
-    <h1>Golang Tutorial</h1>
-    <p>A hands-on guide to server-rendered Go — the language basics, the standard library, Gin, templ, Datastar, and Ent/SQL. Pick a topic to begin.</p>
-  </div>
-  <div class="grid">
-    <a class="card" href="go-basics.html">
-      <h3>Go Basics</h3>
-      <p>The Go language fundamentals — every topic from Go by Example with runnable playground links.</p>
-      <span class="go">Open &#8594;</span>
-    </a>
-    <a class="card" href="go-stdlib.html">
-      <h3>Go Standard Library</h3>
-      <p>The common standard-library packages you reach for every day: fmt, strings, errors, os, encoding/json, and more.</p>
-      <span class="go">Open &#8594;</span>
-    </a>
-    <a class="card" href="gin-gonic.html">
-      <h3>Gin Gonic</h3>
-      <p>The Gin web framework — routing, middleware, request binding, and rendering.</p>
-      <span class="go">Open &#8594;</span>
-    </a>
-    <a class="card" href="go-gin-templ.html">
-      <h3>Go + Gin + templ + Docker</h3>
-      <p>Putting Gin together with templ for type-safe server-rendered HTML, then deploying with Docker, Compose, Swarm, and Traefik.</p>
-      <span class="go">Open &#8594;</span>
-    </a>
-    <a class="card" href="ent-sql.html">
-      <h3>Ent & SQL</h3>
-      <p>The Ent ORM and working with SQL databases in Go.</p>
-      <span class="go">Open &#8594;</span>
-    </a>
-    <a class="card" href="tutorial.html">
-      <h3>Full-Stack Tutorial (this project)</h3>
-      <p>The complete gin-templ-datastar walkthrough: the admin panel this repo builds, end to end.</p>
-      <span class="go">Open &#8594;</span>
-    </a>
-  </div>
-  <div class="footer">
-    Source: <a href="https://github.com/danegigi/go-tut">github.com/danegigi/go-tut</a>
-  </div>
-</div>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Golang Tutorial</title>
+    <style>
+      :root {
+        --bg: #0f1117;
+        --surface: #1a1d27;
+        --border: #2d3148;
+        --text: #e2e4f0;
+        --muted: #8b8fa8;
+        --accent: #7c87ff;
+        --code-bg: #1e2130;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 15px;
+        line-height: 1.75;
+      }
+      .nav {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: rgba(15, 17, 23, 0.9);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid var(--border);
+        padding: 12px 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .nav a {
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+      .nav a:hover {
+        text-decoration: underline;
+      }
+      .nav .crumb {
+        color: var(--muted);
+        font-size: 0.85rem;
+      }
+      .container {
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 40px 36px 96px;
+      }
+      h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #fff;
+        margin: 28px 0 16px;
+        line-height: 1.2;
+        letter-spacing: -0.01em;
+      }
+      h2 {
+        font-size: 1.45rem;
+        font-weight: 600;
+        color: var(--accent);
+        margin: 44px 0 14px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border);
+        scroll-margin-top: 70px;
+      }
+      h3 {
+        font-size: 1.15rem;
+        font-weight: 600;
+        color: #c5caff;
+        margin: 30px 0 10px;
+        scroll-margin-top: 70px;
+      }
+      h4,
+      h5,
+      h6 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--muted);
+        margin: 22px 0 8px;
+      }
+      h4.gbe-topic {
+        color: #c5caff;
+        font-size: 1.02rem;
+        margin: 26px 0 8px;
+        padding-left: 20px;
+        position: relative;
+        scroll-margin-top: 70px;
+      }
+      h4.gbe-topic::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent);
+      }
+      p {
+        margin-bottom: 14px;
+        color: #cdd0e0;
+      }
+      a {
+        color: var(--accent);
+      }
+      strong {
+        color: #eef0fb;
+      }
+      code {
+        background: #252836;
+        color: #c5caff;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family:
+          "JetBrains Mono", "Fira Code", ui-monospace, SFMono-Regular, Menlo,
+          monospace;
+        font-size: 0.9em;
+        font-weight: 400;
+      }
+      pre {
+        background: var(--code-bg);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 18px 22px;
+        overflow-x: auto;
+        margin: 18px 0;
+      }
+      pre code {
+        background: none;
+        padding: 0;
+        color: #e6e9f5;
+        font-size: 0.95rem;
+        line-height: 1.7;
+        white-space: pre;
+        font-weight: 400;
+      }
+      pre code strong,
+      pre code b {
+        font-weight: 400;
+        color: inherit;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        font-size: 0.9em;
+      }
+      th {
+        background: #252836;
+        color: var(--accent);
+        text-align: left;
+        padding: 10px 14px;
+        font-weight: 600;
+        font-size: 0.8em;
+        border-bottom: 2px solid var(--border);
+      }
+      td {
+        padding: 9px 14px;
+        border-bottom: 1px solid var(--border);
+        color: #cdd0e0;
+        vertical-align: top;
+      }
+      ul,
+      ol {
+        padding-left: 26px;
+        margin-bottom: 14px;
+      }
+      li {
+        margin-bottom: 6px;
+        color: #cdd0e0;
+      }
+      blockquote {
+        border-left: 3px solid var(--accent);
+        margin: 18px 0;
+        padding: 12px 18px;
+        background: rgba(124, 135, 255, 0.07);
+        color: var(--muted);
+        border-radius: 0 6px 6px 0;
+      }
+      img {
+        max-width: 100%;
+        border-radius: 8px;
+      }
+      hr {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 36px 0;
+      }
+      .toc {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 18px 22px;
+        margin: 24px 0 36px;
+      }
+      .toc-title {
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+        margin: 0 0 10px;
+      }
+      .toc ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .toc li {
+        margin: 2px 0;
+      }
+      .toc a {
+        color: #c5caff;
+        text-decoration: none;
+        font-size: 0.92rem;
+      }
+      .toc a:hover {
+        color: var(--accent);
+        text-decoration: underline;
+      }
+      .toc-l2 {
+        margin-left: 0;
+      }
+      .toc-l3 {
+        margin-left: 18px;
+      }
+      .toc-l3 a {
+        color: var(--muted);
+        font-size: 0.88rem;
+      }
+      .toc-back {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background: var(--accent);
+        color: #fff;
+        padding: 9px 14px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-decoration: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        opacity: 0.88;
+      }
+      .toc-back:hover {
+        opacity: 1;
+      }
+      .playground-float {
+        position: fixed;
+        bottom: 24px;
+        right: 90px;
+        background: #1a1d27;
+        color: var(--accent);
+        border: 1px solid var(--accent);
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-decoration: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        opacity: 0.88;
+      }
+      .playground-float:hover {
+        opacity: 1;
+        background: rgba(124, 135, 255, 0.12);
+        text-decoration: none;
+      }
+      pre {
+        position: relative;
+      }
+      .copy-btn {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: var(--muted);
+        padding: 4px 8px;
+        border-radius: 5px;
+        font-size: 0.7rem;
+        font-family: inherit;
+        cursor: pointer;
+        opacity: 0;
+        transition:
+          opacity 0.2s,
+          background 0.15s;
+      }
+      pre:hover .copy-btn {
+        opacity: 1;
+      }
+      .copy-btn:hover {
+        background: rgba(124, 135, 255, 0.15);
+        color: var(--accent);
+        border-color: var(--accent);
+      }
+      .copy-btn.copied {
+        color: #4ade80;
+        border-color: #4ade80;
+      }
+    </style>
+    <style>
+      .hero {
+        padding: 56px 0 28px;
+        text-align: center;
+      }
+      .hero h1 {
+        font-size: 2.4rem;
+        margin-bottom: 10px;
+      }
+      .hero p {
+        color: var(--muted);
+        font-size: 1.05rem;
+        max-width: 640px;
+        margin: 0 auto;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 18px;
+        margin-top: 36px;
+      }
+      .card {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 22px;
+        text-decoration: none;
+        transition:
+          border-color 0.15s,
+          transform 0.15s;
+      }
+      .card:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+        text-decoration: none;
+      }
+      .card h3 {
+        color: #fff;
+        margin: 0;
+        font-size: 1.1rem;
+      }
+      .card p {
+        color: var(--muted);
+        font-size: 0.9rem;
+        margin: 0;
+        flex: 1;
+      }
+      .card .go {
+        color: var(--accent);
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-top: 6px;
+      }
+      .footer {
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.8rem;
+        margin-top: 56px;
+      }
+      .footer a {
+        color: var(--accent);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="hero">
+        <h1>Golang Tutorial</h1>
+        <p>
+          A hands-on guide to server-rendered Go — the language basics, the
+          standard library, Gin, templ, Datastar, and Ent/SQL. Pick a topic to
+          begin.
+        </p>
+      </div>
+      <div class="grid">
+        <a class="card" href="go-basics.html">
+          <h3>Go Basics</h3>
+          <p>
+            The Go language fundamentals — every topic from Go by Example with
+            runnable playground links.
+          </p>
+          <span class="go">Open &#8594;</span>
+        </a>
+        <a class="card" href="go-stdlib.html">
+          <h3>Go Standard Library</h3>
+          <p>
+            The common standard-library packages you reach for every day: fmt,
+            strings, errors, os, encoding/json, and more.
+          </p>
+          <span class="go">Open &#8594;</span>
+        </a>
+        <a class="card" href="gin-gonic.html">
+          <h3>Gin Gonic</h3>
+          <p>
+            The Gin web framework — routing, middleware, request binding, and
+            rendering.
+          </p>
+          <span class="go">Open &#8594;</span>
+        </a>
+        <a class="card" href="go-gin-templ.html">
+          <h3>Go + Gin + templ + Docker</h3>
+          <p>
+            Putting Gin together with templ for type-safe server-rendered HTML,
+            then deploying with Docker, Compose, Swarm, and Traefik.
+          </p>
+          <span class="go">Open &#8594;</span>
+        </a>
+        <a class="card" href="ent-sql.html">
+          <h3>Ent & SQL</h3>
+          <p>The Ent ORM and working with SQL databases in Go.</p>
+          <span class="go">Open &#8594;</span>
+        </a>
+        <a class="card" href="tutorial.html">
+          <h3>Full-Stack Tutorial (this project)</h3>
+          <p>
+            The complete gin-templ-datastar walkthrough: the admin panel this
+            repo builds, end to end.
+          </p>
+          <span class="go">Open &#8594;</span>
+        </a>
+      </div>
+      <div class="footer">
+        Source:
+        <a href="https://github.com/danegigi/go-tut"
+          >github.com/danegigi/go-tut</a
+        >
+      </div>
+    </div>
+  </body>
 </html>

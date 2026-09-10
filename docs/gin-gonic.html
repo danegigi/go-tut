@@ -1,118 +1,581 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Gin Gonic — gin-templ-datastar</title>
-<style>
-:root{--bg:#0f1117;--surface:#1a1d27;--border:#2d3148;--text:#e2e4f0;--muted:#8b8fa8;--accent:#7c87ff;--code-bg:#1e2130;}
-*{box-sizing:border-box;margin:0;padding:0;}
-html{scroll-behavior:smooth;}
-html{scroll-behavior:smooth;}
-body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:15px;line-height:1.75;}
-.nav{position:sticky;top:0;z-index:10;background:rgba(15,17,23,.9);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:16px;}
-.nav a{color:var(--accent);text-decoration:none;font-weight:600;font-size:0.9rem;}
-.nav a:hover{text-decoration:underline;}
-.nav .crumb{color:var(--muted);font-size:0.85rem;}
-.container{max-width:920px;margin:0 auto;padding:40px 36px 96px;}
-h1{font-size:2.5rem;font-weight:800;color:#fff;margin:28px 0 16px;line-height:1.2;letter-spacing:-0.01em;}
-h2{font-size:1.45rem;font-weight:600;color:var(--accent);margin:44px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--border);scroll-margin-top:70px;}
-h3{font-size:1.15rem;font-weight:600;color:#c5caff;margin:30px 0 10px;scroll-margin-top:70px;}
-h4,h5,h6{font-size:1rem;font-weight:600;color:var(--muted);margin:22px 0 8px;}
-h4.gbe-topic{color:#c5caff;font-size:1.02rem;margin:26px 0 8px;padding-left:20px;position:relative;scroll-margin-top:70px;}
-h4.gbe-topic::before{content:"▸";position:absolute;left:0;color:var(--accent);}
-p{margin-bottom:14px;color:#cdd0e0;}
-a{color:var(--accent);}
-strong{color:#eef0fb;}
-code{background:#252836;color:#c5caff;padding:2px 6px;border-radius:4px;font-family:"JetBrains Mono","Fira Code",ui-monospace,SFMono-Regular,Menlo,monospace;font-size:0.9em;font-weight:400;}
-pre{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;padding:18px 22px;overflow-x:auto;margin:18px 0;}
-pre code{background:none;padding:0;color:#e6e9f5;font-size:0.95rem;line-height:1.7;white-space:pre;font-weight:400;}
-pre code strong, pre code b{font-weight:400;color:inherit;}
-table{width:100%;border-collapse:collapse;margin:20px 0;font-size:0.9em;}
-th{background:#252836;color:var(--accent);text-align:left;padding:10px 14px;font-weight:600;font-size:0.8em;border-bottom:2px solid var(--border);}
-td{padding:9px 14px;border-bottom:1px solid var(--border);color:#cdd0e0;vertical-align:top;}
-ul,ol{padding-left:26px;margin-bottom:14px;}
-li{margin-bottom:6px;color:#cdd0e0;}
-blockquote{border-left:3px solid var(--accent);margin:18px 0;padding:12px 18px;background:rgba(124,135,255,.07);color:var(--muted);border-radius:0 6px 6px 0;}
-img{max-width:100%;border-radius:8px;}
-hr{border:none;border-top:1px solid var(--border);margin:36px 0;}
-.toc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 22px;margin:24px 0 36px;}
-.toc-title{font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 10px;}
-.toc ul{list-style:none;padding:0;margin:0;}
-.toc li{margin:2px 0;}
-.toc a{color:#c5caff;text-decoration:none;font-size:0.92rem;}
-.toc a:hover{color:var(--accent);text-decoration:underline;}
-.toc-l2{margin-left:0;}
-.toc-l3{margin-left:18px;}
-.toc-l3 a{color:var(--muted);font-size:0.88rem;}
-.toc-back{position:fixed;bottom:24px;right:24px;background:var(--accent);color:#fff;padding:9px 14px;border-radius:8px;font-size:0.8rem;font-weight:600;text-decoration:none;box-shadow:0 4px 12px rgba(0,0,0,.4);opacity:.88;}
-.toc-back:hover{opacity:1;}
-.playground-float{position:fixed;bottom:24px;right:90px;background:#1a1d27;color:var(--accent);border:1px solid var(--accent);padding:8px 12px;border-radius:8px;font-size:0.75rem;font-weight:600;text-decoration:none;box-shadow:0 4px 12px rgba(0,0,0,.4);opacity:.88;}
-.playground-float:hover{opacity:1;background:rgba(124,135,255,.12);text-decoration:none;}
-pre{position:relative;}
-.copy-btn{position:absolute;top:8px;right:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:var(--muted);padding:4px 8px;border-radius:5px;font-size:0.7rem;font-family:inherit;cursor:pointer;opacity:0;transition:opacity .2s,background .15s;}
-pre:hover .copy-btn{opacity:1;}
-.copy-btn:hover{background:rgba(124,135,255,.15);color:var(--accent);border-color:var(--accent);}
-.copy-btn.copied{color:#4ade80;border-color:#4ade80;}
-</style>
-</head>
-<body>
-<nav class="nav">
-  <a href="index.html">&#8592; Home</a>
-  <span class="crumb">Gin Gonic</span>
-</nav>
-<div class="container">
-<h1 class="page-title">Gin Gonic</h1>
-<nav class="toc" aria-label="Table of contents">
-  <p class="toc-title">Contents</p>
-  <ul>
-<li class="toc-l2"><a href="#gin-gonic-tutorialupdated-for-gin-112-go-125">Gin Gonic TutorialUpdated for Gin 1.12+ / Go 1.25+</a></li>
-<li class="toc-l2"><a href="#1-what-changed-in-this-update">1. What changed in this update</a></li>
-<li class="toc-l2"><a href="#2-sources-and-compatibility-notes">2. Sources and compatibility notes</a></li>
-<li class="toc-l2"><a href="#area">Area</a></li>
-<li class="toc-l2"><a href="#current-note">Current note</a></li>
-<li class="toc-l2"><a href="#3-project-setup">3. Project setup</a></li>
-<li class="toc-l2"><a href="#4-recommended-folder-structure">4. Recommended folder structure</a></li>
-<li class="toc-l2"><a href="#5-gin-quickstart">5. Gin quickstart</a></li>
-<li class="toc-l2"><a href="#6-router-basics">6. Router basics</a></li>
-<li class="toc-l2"><a href="#path-query-and-form-values">Path, query, and form values</a></li>
-<li class="toc-l2"><a href="#7-binding-and-validation">7. Binding and validation</a></li>
-<li class="toc-l2"><a href="#use-case">Use case</a></li>
-<li class="toc-l2"><a href="#recommended-method">Recommended method</a></li>
-<li class="toc-l2"><a href="#user-form-with-validation-tags">User form with validation tags</a></li>
-<li class="toc-l2"><a href="#api-handler-with-json-validation">API handler with JSON validation</a></li>
-<li class="toc-l2"><a href="#friendly-validation-errors">Friendly validation errors</a></li>
-<li class="toc-l2"><a href="#8-custom-validators">8. Custom validators</a></li>
-<li class="toc-l2"><a href="#9-templ-templating-with-gin">9. templ templating with Gin</a></li>
-<li class="toc-l2"><a href="#basic-templ-component">Basic templ component</a></li>
-<li class="toc-l2"><a href="#render-templ-from-gin">Render templ from Gin</a></li>
-<li class="toc-l2"><a href="#10-html-form-validation-with-gin-templ">10. HTML form validation with Gin + templ</a></li>
-<li class="toc-l2"><a href="#11-datastar-with-gin-and-sse">11. Datastar with Gin and SSE</a></li>
-<li class="toc-l2"><a href="#datastar-mental-model">Datastar mental model</a></li>
-<li class="toc-l2"><a href="#concept">Concept</a></li>
-<li class="toc-l2"><a href="#meaning">Meaning</a></li>
-<li class="toc-l2"><a href="#simple-manual-sse-response">Simple manual SSE response</a></li>
-<li class="toc-l2"><a href="#datastar-go-sdk-pattern">Datastar Go SDK pattern</a></li>
-<li class="toc-l2"><a href="#12-full-example-live-validated-form-with-datastar-sse">12. Full example: live validated form with Datastar SSE</a></li>
-<li class="toc-l2"><a href="#13-middleware-and-groups">13. Middleware and groups</a></li>
-<li class="toc-l2"><a href="#14-file-uploads">14. File uploads</a></li>
-<li class="toc-l2"><a href="#15-testing-gin-handlers">15. Testing Gin handlers</a></li>
-<li class="toc-l2"><a href="#16-production-server-setup">16. Production server setup</a></li>
-<li class="toc-l2"><a href="#17-security-checklist">17. Security checklist</a></li>
-<li class="toc-l2"><a href="#18-cheat-sheet">18. Cheat sheet</a></li>
-<li class="toc-l2"><a href="#task">Task</a></li>
-<li class="toc-l2"><a href="#gin-go-pattern">Gin / Go pattern</a></li>
-<li class="toc-l2"><a href="#19-useful-commands">19. Useful commands</a></li>
-<li class="toc-l2"><a href="#20-migration-notes-from-the-old-tutorial">20. Migration notes from the old tutorial</a></li>
-  </ul>
-</nav>
-<h2 id="gin-gonic-tutorialupdated-for-gin-112-go-125">Gin Gonic TutorialUpdated for Gin 1.12+ / Go 1.25+</h2><p>REST APIs, form validation, templ components, and Datastar SSE</p><p><em>Updated from the original Gin-Gonic v1 tutorial. This version keeps the beginner-friendly flow, refreshes commands and examples, and adds production-style patterns for server-rendered Go applications.</em></p><h2 id="1-what-changed-in-this-update">1. What changed in this update</h2><ul><li>Uses current Gin documentation style and modern Go module setup.</li><li>Assumes Go 1.25+ for the quickstart because the current Gin quickstart lists Go 1.25 or above as a prerequisite.</li><li>Shows Gin 1.12+ installation using go get github.com/gin-gonic/gin@latest.</li><li>Expands binding and validation with JSON, form, URI, query, custom validators, and friendly error responses.</li><li>Adds templ for type-safe HTML components instead of relying only on html/template.</li><li>Adds Datastar with Server-Sent Events (SSE) for backend-driven interactivity without a large JavaScript framework.</li><li>Adds project structure, testing, graceful shutdown, security notes, and production checklist.</li></ul><h2 id="2-sources-and-compatibility-notes">2. Sources and compatibility notes</h2><table><thead><tr><th><h2 id="area">Area</h2></th><th><h2 id="current-note">Current note</h2></th></tr><tr><th><p>Gin</p></th><th><p>Gin remains a high-performance Go HTTP framework with routing, middleware, binding, validation, rendering, route groups, testing support, and trusted proxy settings.</p></th></tr><tr><th><p>Go version</p></th><th><p>The current Gin quickstart says Gin requires Go 1.25 or above.</p></th></tr><tr><th><p>Validation</p></th><th><p>Gin uses go-playground/validator/v10 for field-level validation. Prefer ShouldBind* when you want custom error responses.</p></th></tr><tr><th></th><th><p>templ is a separate Go HTML component tool. You write .templ files, then run templ generate to produce Go code.</p></th></tr><tr><th><p>Datastar</p></th><th><p>Datastar uses data-* attributes and backend SSE events to patch elements, patch signals, redirect, and execute scripts.</p></th></tr></thead></table><p><em>Source URLs: https://gin-gonic.com/en/docs/quickstart/ | https://gin-gonic.com/en/docs/binding/ | https://gin-gonic.com/en/docs/binding/binding-and-validation/ | https://templ.guide/ | https://data-star.dev/guide/getting_started | https://data-star.dev/guide/backend_requests | https://pkg.go.dev/github.com/starfederation/datastar-go/datastar</em></p><h2 id="3-project-setup">3. Project setup</h2><p>mkdir gin-modern-tutorial</p><pre><code>cd gin-modern-tutorial
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gin Gonic — gin-templ-datastar</title>
+    <style>
+      :root {
+        --bg: #0f1117;
+        --surface: #1a1d27;
+        --border: #2d3148;
+        --text: #e2e4f0;
+        --muted: #8b8fa8;
+        --accent: #7c87ff;
+        --code-bg: #1e2130;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 15px;
+        line-height: 1.75;
+      }
+      .nav {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: rgba(15, 17, 23, 0.9);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid var(--border);
+        padding: 12px 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .nav a {
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+      .nav a:hover {
+        text-decoration: underline;
+      }
+      .nav .crumb {
+        color: var(--muted);
+        font-size: 0.85rem;
+      }
+      .container {
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 40px 36px 96px;
+      }
+      h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #fff;
+        margin: 28px 0 16px;
+        line-height: 1.2;
+        letter-spacing: -0.01em;
+      }
+      h2 {
+        font-size: 1.45rem;
+        font-weight: 600;
+        color: var(--accent);
+        margin: 44px 0 14px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border);
+        scroll-margin-top: 70px;
+      }
+      h3 {
+        font-size: 1.15rem;
+        font-weight: 600;
+        color: #c5caff;
+        margin: 30px 0 10px;
+        scroll-margin-top: 70px;
+      }
+      h4,
+      h5,
+      h6 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--muted);
+        margin: 22px 0 8px;
+      }
+      h4.gbe-topic {
+        color: #c5caff;
+        font-size: 1.02rem;
+        margin: 26px 0 8px;
+        padding-left: 20px;
+        position: relative;
+        scroll-margin-top: 70px;
+      }
+      h4.gbe-topic::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent);
+      }
+      p {
+        margin-bottom: 14px;
+        color: #cdd0e0;
+      }
+      a {
+        color: var(--accent);
+      }
+      strong {
+        color: #eef0fb;
+      }
+      code {
+        background: #252836;
+        color: #c5caff;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family:
+          "JetBrains Mono", "Fira Code", ui-monospace, SFMono-Regular, Menlo,
+          monospace;
+        font-size: 0.9em;
+        font-weight: 400;
+      }
+      pre {
+        background: var(--code-bg);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 18px 22px;
+        overflow-x: auto;
+        margin: 18px 0;
+      }
+      pre code {
+        background: none;
+        padding: 0;
+        color: #e6e9f5;
+        font-size: 0.95rem;
+        line-height: 1.7;
+        white-space: pre;
+        font-weight: 400;
+      }
+      pre code strong,
+      pre code b {
+        font-weight: 400;
+        color: inherit;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        font-size: 0.9em;
+      }
+      th {
+        background: #252836;
+        color: var(--accent);
+        text-align: left;
+        padding: 10px 14px;
+        font-weight: 600;
+        font-size: 0.8em;
+        border-bottom: 2px solid var(--border);
+      }
+      td {
+        padding: 9px 14px;
+        border-bottom: 1px solid var(--border);
+        color: #cdd0e0;
+        vertical-align: top;
+      }
+      ul,
+      ol {
+        padding-left: 26px;
+        margin-bottom: 14px;
+      }
+      li {
+        margin-bottom: 6px;
+        color: #cdd0e0;
+      }
+      blockquote {
+        border-left: 3px solid var(--accent);
+        margin: 18px 0;
+        padding: 12px 18px;
+        background: rgba(124, 135, 255, 0.07);
+        color: var(--muted);
+        border-radius: 0 6px 6px 0;
+      }
+      img {
+        max-width: 100%;
+        border-radius: 8px;
+      }
+      hr {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 36px 0;
+      }
+      .toc {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 18px 22px;
+        margin: 24px 0 36px;
+      }
+      .toc-title {
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+        margin: 0 0 10px;
+      }
+      .toc ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .toc li {
+        margin: 2px 0;
+      }
+      .toc a {
+        color: #c5caff;
+        text-decoration: none;
+        font-size: 0.92rem;
+      }
+      .toc a:hover {
+        color: var(--accent);
+        text-decoration: underline;
+      }
+      .toc-l2 {
+        margin-left: 0;
+      }
+      .toc-l3 {
+        margin-left: 18px;
+      }
+      .toc-l3 a {
+        color: var(--muted);
+        font-size: 0.88rem;
+      }
+      .toc-back {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background: var(--accent);
+        color: #fff;
+        padding: 9px 14px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-decoration: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        opacity: 0.88;
+      }
+      .toc-back:hover {
+        opacity: 1;
+      }
+      .playground-float {
+        position: fixed;
+        bottom: 24px;
+        right: 90px;
+        background: #1a1d27;
+        color: var(--accent);
+        border: 1px solid var(--accent);
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-decoration: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        opacity: 0.88;
+      }
+      .playground-float:hover {
+        opacity: 1;
+        background: rgba(124, 135, 255, 0.12);
+        text-decoration: none;
+      }
+      pre {
+        position: relative;
+      }
+      .copy-btn {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: var(--muted);
+        padding: 4px 8px;
+        border-radius: 5px;
+        font-size: 0.7rem;
+        font-family: inherit;
+        cursor: pointer;
+        opacity: 0;
+        transition:
+          opacity 0.2s,
+          background 0.15s;
+      }
+      pre:hover .copy-btn {
+        opacity: 1;
+      }
+      .copy-btn:hover {
+        background: rgba(124, 135, 255, 0.15);
+        color: var(--accent);
+        border-color: var(--accent);
+      }
+      .copy-btn.copied {
+        color: #4ade80;
+        border-color: #4ade80;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="nav">
+      <a href="index.html">&#8592; Home</a>
+      <span class="crumb">Gin Gonic</span>
+    </nav>
+    <div class="container">
+      <h1 class="page-title">Gin Gonic</h1>
+      <nav class="toc" aria-label="Table of contents">
+        <p class="toc-title">Contents</p>
+        <ul>
+          <li class="toc-l2">
+            <a href="#gin-gonic-tutorialupdated-for-gin-112-go-125"
+              >Gin Gonic TutorialUpdated for Gin 1.12+ / Go 1.25+</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#1-what-changed-in-this-update"
+              >1. What changed in this update</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#2-sources-and-compatibility-notes"
+              >2. Sources and compatibility notes</a
+            >
+          </li>
+          <li class="toc-l2"><a href="#area">Area</a></li>
+          <li class="toc-l2"><a href="#current-note">Current note</a></li>
+          <li class="toc-l2">
+            <a href="#3-project-setup">3. Project setup</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#4-recommended-folder-structure"
+              >4. Recommended folder structure</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#5-gin-quickstart">5. Gin quickstart</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#6-router-basics">6. Router basics</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#path-query-and-form-values"
+              >Path, query, and form values</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#7-binding-and-validation">7. Binding and validation</a>
+          </li>
+          <li class="toc-l2"><a href="#use-case">Use case</a></li>
+          <li class="toc-l2">
+            <a href="#recommended-method">Recommended method</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#user-form-with-validation-tags"
+              >User form with validation tags</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#api-handler-with-json-validation"
+              >API handler with JSON validation</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#friendly-validation-errors">Friendly validation errors</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#8-custom-validators">8. Custom validators</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#9-templ-templating-with-gin"
+              >9. templ templating with Gin</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#basic-templ-component">Basic templ component</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#render-templ-from-gin">Render templ from Gin</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#10-html-form-validation-with-gin-templ"
+              >10. HTML form validation with Gin + templ</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#11-datastar-with-gin-and-sse"
+              >11. Datastar with Gin and SSE</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#datastar-mental-model">Datastar mental model</a>
+          </li>
+          <li class="toc-l2"><a href="#concept">Concept</a></li>
+          <li class="toc-l2"><a href="#meaning">Meaning</a></li>
+          <li class="toc-l2">
+            <a href="#simple-manual-sse-response">Simple manual SSE response</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#datastar-go-sdk-pattern">Datastar Go SDK pattern</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#12-full-example-live-validated-form-with-datastar-sse"
+              >12. Full example: live validated form with Datastar SSE</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#13-middleware-and-groups">13. Middleware and groups</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#14-file-uploads">14. File uploads</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#15-testing-gin-handlers">15. Testing Gin handlers</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#16-production-server-setup"
+              >16. Production server setup</a
+            >
+          </li>
+          <li class="toc-l2">
+            <a href="#17-security-checklist">17. Security checklist</a>
+          </li>
+          <li class="toc-l2"><a href="#18-cheat-sheet">18. Cheat sheet</a></li>
+          <li class="toc-l2"><a href="#task">Task</a></li>
+          <li class="toc-l2"><a href="#gin-go-pattern">Gin / Go pattern</a></li>
+          <li class="toc-l2">
+            <a href="#19-useful-commands">19. Useful commands</a>
+          </li>
+          <li class="toc-l2">
+            <a href="#20-migration-notes-from-the-old-tutorial"
+              >20. Migration notes from the old tutorial</a
+            >
+          </li>
+        </ul>
+      </nav>
+      <h2 id="gin-gonic-tutorialupdated-for-gin-112-go-125">
+        Gin Gonic TutorialUpdated for Gin 1.12+ / Go 1.25+
+      </h2>
+      <p>REST APIs, form validation, templ components, and Datastar SSE</p>
+      <p>
+        <em
+          >Updated from the original Gin-Gonic v1 tutorial. This version keeps
+          the beginner-friendly flow, refreshes commands and examples, and adds
+          production-style patterns for server-rendered Go applications.</em
+        >
+      </p>
+      <h2 id="1-what-changed-in-this-update">1. What changed in this update</h2>
+      <ul>
+        <li>
+          Uses current Gin documentation style and modern Go module setup.
+        </li>
+        <li>
+          Assumes Go 1.25+ for the quickstart because the current Gin quickstart
+          lists Go 1.25 or above as a prerequisite.
+        </li>
+        <li>
+          Shows Gin 1.12+ installation using go get
+          github.com/gin-gonic/gin@latest.
+        </li>
+        <li>
+          Expands binding and validation with JSON, form, URI, query, custom
+          validators, and friendly error responses.
+        </li>
+        <li>
+          Adds templ for type-safe HTML components instead of relying only on
+          html/template.
+        </li>
+        <li>
+          Adds Datastar with Server-Sent Events (SSE) for backend-driven
+          interactivity without a large JavaScript framework.
+        </li>
+        <li>
+          Adds project structure, testing, graceful shutdown, security notes,
+          and production checklist.
+        </li>
+      </ul>
+      <h2 id="2-sources-and-compatibility-notes">
+        2. Sources and compatibility notes
+      </h2>
+      <table>
+        <thead>
+          <tr>
+            <th><h2 id="area">Area</h2></th>
+            <th><h2 id="current-note">Current note</h2></th>
+          </tr>
+          <tr>
+            <th><p>Gin</p></th>
+            <th>
+              <p>
+                Gin remains a high-performance Go HTTP framework with routing,
+                middleware, binding, validation, rendering, route groups,
+                testing support, and trusted proxy settings.
+              </p>
+            </th>
+          </tr>
+          <tr>
+            <th><p>Go version</p></th>
+            <th>
+              <p>
+                The current Gin quickstart says Gin requires Go 1.25 or above.
+              </p>
+            </th>
+          </tr>
+          <tr>
+            <th><p>Validation</p></th>
+            <th>
+              <p>
+                Gin uses go-playground/validator/v10 for field-level validation.
+                Prefer ShouldBind* when you want custom error responses.
+              </p>
+            </th>
+          </tr>
+          <tr>
+            <th></th>
+            <th>
+              <p>
+                templ is a separate Go HTML component tool. You write .templ
+                files, then run templ generate to produce Go code.
+              </p>
+            </th>
+          </tr>
+          <tr>
+            <th><p>Datastar</p></th>
+            <th>
+              <p>
+                Datastar uses data-* attributes and backend SSE events to patch
+                elements, patch signals, redirect, and execute scripts.
+              </p>
+            </th>
+          </tr>
+        </thead>
+      </table>
+      <p>
+        <em
+          >Source URLs: https://gin-gonic.com/en/docs/quickstart/ |
+          https://gin-gonic.com/en/docs/binding/ |
+          https://gin-gonic.com/en/docs/binding/binding-and-validation/ |
+          https://templ.guide/ | https://data-star.dev/guide/getting_started |
+          https://data-star.dev/guide/backend_requests |
+          https://pkg.go.dev/github.com/starfederation/datastar-go/datastar</em
+        >
+      </p>
+      <h2 id="3-project-setup">3. Project setup</h2>
+      <p>mkdir gin-modern-tutorial</p>
+      <pre><code>cd gin-modern-tutorial
 go mod init example.com/gin-modern-tutorial
 go get github.com/gin-gonic/gin@latest
 go get github.com/go-playground/validator/v10@latest
 go install github.com/a-h/templ/cmd/templ@latest
 go get github.com/a-h/templ@latest
-go get github.com/starfederation/datastar-go@datastar-sdk-go/v1.0.0-beta.11</code></pre><p><em>If the Datastar Go module tag changes, use go list -m -versions github.com/starfederation/datastar-go or check pkg.go.dev. The examples below show the stable integration pattern: set SSE headers, create a Datastar SSE generator, and send patch events.</em></p><h2 id="4-recommended-folder-structure">4. Recommended folder structure</h2><p>gin-modern-tutorial/</p><pre><code>go.mod
+go get github.com/starfederation/datastar-go@datastar-sdk-go/v1.0.0-beta.11</code></pre>
+      <p>
+        <em
+          >If the Datastar Go module tag changes, use go list -m -versions
+          github.com/starfederation/datastar-go or check pkg.go.dev. The
+          examples below show the stable integration pattern: set SSE headers,
+          create a Datastar SSE generator, and send patch events.</em
+        >
+      </p>
+      <h2 id="4-recommended-folder-structure">
+        4. Recommended folder structure
+      </h2>
+      <p>gin-modern-tutorial/</p>
+      <pre><code>go.mod
   cmd/server/main.go
   internal/http/routes.go
   internal/http/handlers/
@@ -129,7 +592,9 @@ go get github.com/starfederation/datastar-go@datastar-sdk-go/v1.0.0-beta.11</cod
     datastar.templ
   static/
     app.css
-  tmp/</code></pre><h2 id="5-gin-quickstart">5. Gin quickstart</h2><pre><code>package main
+  tmp/</code></pre>
+      <h2 id="5-gin-quickstart">5. Gin quickstart</h2>
+      <pre><code>package main
 import (
     "net/http"
     "github.com/gin-gonic/gin"
@@ -143,7 +608,16 @@ func main() {
     _ = r.Run(":8080")
 }
 go run ./cmd/server
-curl http://localhost:8080/ping</code></pre><h2 id="6-router-basics">6. Router basics</h2><p>r.GET("/users", listUsers)</p><p>r.POST("/users", createUser)</p><p>r.GET("/users/:id", getUser)</p><p>r.PUT("/users/:id", updateUser)</p><p>r.PATCH("/users/:id/status", updateUserStatus)</p><p>r.DELETE("/users/:id", deleteUser)</p><h2 id="path-query-and-form-values">Path, query, and form values</h2><pre><code>r.GET("/users/:id", func(c *gin.Context) {
+curl http://localhost:8080/ping</code></pre>
+      <h2 id="6-router-basics">6. Router basics</h2>
+      <p>r.GET("/users", listUsers)</p>
+      <p>r.POST("/users", createUser)</p>
+      <p>r.GET("/users/:id", getUser)</p>
+      <p>r.PUT("/users/:id", updateUser)</p>
+      <p>r.PATCH("/users/:id/status", updateUserStatus)</p>
+      <p>r.DELETE("/users/:id", deleteUser)</p>
+      <h2 id="path-query-and-form-values">Path, query, and form values</h2>
+      <pre><code>r.GET("/users/:id", func(c *gin.Context) {
     id := c.Param("id")
     includePosts := c.DefaultQuery("includePosts", "false")
     c.JSON(200, gin.H{"id": id, "includePosts": includePosts})
@@ -152,7 +626,55 @@ r.POST("/contact", func(c *gin.Context) {
     name := c.PostForm("name")
     message := c.PostForm("message")
     c.JSON(200, gin.H{"name": name, "message": message})
-})</code></pre><h2 id="7-binding-and-validation">7. Binding and validation</h2><p>Binding converts request data into a Go struct. Validation checks struct tags. The important practical rule is: use ShouldBind*, not Bind*, when you want to control the response body, status code, or template fragment returned to the user.</p><table><thead><tr><th><h2 id="use-case">Use case</h2></th><th><h2 id="recommended-method">Recommended method</h2></th></tr><tr><th><p>JSON body</p></th><th><p>c.ShouldBindJSON(&amp;input)</p></th></tr><tr><th><p>HTML form</p></th><th><p>c.ShouldBind(&amp;input) or c.ShouldBindWith(&amp;input, binding.Form)</p></th></tr><tr><th><p>Query only</p></th><th><p>c.ShouldBindQuery(&amp;input)</p></th></tr><tr><th><p>Path params</p></th><th><p>c.ShouldBindUri(&amp;input)</p></th></tr><tr><th><p>Headers</p></th><th><p>c.ShouldBindHeader(&amp;input)</p></th></tr><tr><th><p>Body reused more than once</p></th><th><p>c.ShouldBindBodyWith(&amp;input, binding.JSON)</p></th></tr></thead></table><h2 id="user-form-with-validation-tags">User form with validation tags</h2><pre><code>package forms
+})</code></pre>
+      <h2 id="7-binding-and-validation">7. Binding and validation</h2>
+      <p>
+        Binding converts request data into a Go struct. Validation checks struct
+        tags. The important practical rule is: use ShouldBind*, not Bind*, when
+        you want to control the response body, status code, or template fragment
+        returned to the user.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th><h2 id="use-case">Use case</h2></th>
+            <th><h2 id="recommended-method">Recommended method</h2></th>
+          </tr>
+          <tr>
+            <th><p>JSON body</p></th>
+            <th><p>c.ShouldBindJSON(&amp;input)</p></th>
+          </tr>
+          <tr>
+            <th><p>HTML form</p></th>
+            <th>
+              <p>
+                c.ShouldBind(&amp;input) or c.ShouldBindWith(&amp;input,
+                binding.Form)
+              </p>
+            </th>
+          </tr>
+          <tr>
+            <th><p>Query only</p></th>
+            <th><p>c.ShouldBindQuery(&amp;input)</p></th>
+          </tr>
+          <tr>
+            <th><p>Path params</p></th>
+            <th><p>c.ShouldBindUri(&amp;input)</p></th>
+          </tr>
+          <tr>
+            <th><p>Headers</p></th>
+            <th><p>c.ShouldBindHeader(&amp;input)</p></th>
+          </tr>
+          <tr>
+            <th><p>Body reused more than once</p></th>
+            <th><p>c.ShouldBindBodyWith(&amp;input, binding.JSON)</p></th>
+          </tr>
+        </thead>
+      </table>
+      <h2 id="user-form-with-validation-tags">
+        User form with validation tags
+      </h2>
+      <pre><code>package forms
 type CreateUserInput struct {
     Name     string `form:"name" json:"name" binding:"required,min=2,max=80"`
     Email    string `form:"email" json:"email" binding:"required,email"`
@@ -161,7 +683,11 @@ type CreateUserInput struct {
 }
 type UserURI struct {
     ID string `uri:"id" binding:"required,uuid"`
-}</code></pre><h2 id="api-handler-with-json-validation">API handler with JSON validation</h2><pre><code>func createUserAPI(c *gin.Context) {
+}</code></pre>
+      <h2 id="api-handler-with-json-validation">
+        API handler with JSON validation
+      </h2>
+      <pre><code>func createUserAPI(c *gin.Context) {
     var input forms.CreateUserInput
     if err := c.ShouldBindJSON(&amp;input); err != nil {
         c.JSON(http.StatusUnprocessableEntity, gin.H{
@@ -174,7 +700,9 @@ type UserURI struct {
         "message": "User created",
         "user": gin.H{"name": input.Name, "email": input.Email, "role": input.Role},
     })
-}</code></pre><h2 id="friendly-validation-errors">Friendly validation errors</h2><pre><code>package forms
+}</code></pre>
+      <h2 id="friendly-validation-errors">Friendly validation errors</h2>
+      <pre><code>package forms
 import (
     "errors"
     "strings"
@@ -208,7 +736,9 @@ func ValidationErrors(err error) []FieldError {
         out = append(out, FieldError{Field: field, Message: msg})
     }
     return out
-}</code></pre><h2 id="8-custom-validators">8. Custom validators</h2><pre><code>package forms
+}</code></pre>
+      <h2 id="8-custom-validators">8. Custom validators</h2>
+      <pre><code>package forms
 import (
     "time"
     "github.com/gin-gonic/gin/binding"
@@ -231,7 +761,17 @@ func main() {
     r := gin.Default()
     r.GET("/bookings/check", checkBooking)
     _ = r.Run(":8080")
-}</code></pre><h2 id="9-templ-templating-with-gin">9. templ templating with Gin</h2><p>Gin has built-in html/template rendering, but templ gives you typed Go components. This is useful when you want reusable layouts, form components, and fragments that can be rendered as full pages or SSE/Datastar patches.</p><h2 id="basic-templ-component">Basic templ component</h2><p>// internal/views/layout.templ</p><pre><code>package views
+}</code></pre>
+      <h2 id="9-templ-templating-with-gin">9. templ templating with Gin</h2>
+      <p>
+        Gin has built-in html/template rendering, but templ gives you typed Go
+        components. This is useful when you want reusable layouts, form
+        components, and fragments that can be rendered as full pages or
+        SSE/Datastar patches.
+      </p>
+      <h2 id="basic-templ-component">Basic templ component</h2>
+      <p>// internal/views/layout.templ</p>
+      <pre><code>package views
 templ Layout(title string) {
     &lt;!doctype html&gt;
     &lt;html lang="en"&gt;
@@ -248,7 +788,9 @@ templ Layout(title string) {
             &lt;/main&gt;
         &lt;/body&gt;
     &lt;/html&gt;
-}</code></pre><p>// internal/views/users.templ</p><pre><code>package views
+}</code></pre>
+      <p>// internal/views/users.templ</p>
+      <pre><code>package views
 import "example.com/gin-modern-tutorial/internal/forms"
 templ UserForm(input forms.CreateUserInput, errors map[string]string) {
     &lt;form method="post" action="/users"&gt;
@@ -276,7 +818,9 @@ templ UsersPage(input forms.CreateUserInput, errors map[string]string) {
     }
 }
 templ generate
-go run ./cmd/server</code></pre><h2 id="render-templ-from-gin">Render templ from Gin</h2><pre><code>package handlers
+go run ./cmd/server</code></pre>
+      <h2 id="render-templ-from-gin">Render templ from Gin</h2>
+      <pre><code>package handlers
 import (
     "net/http"
     "github.com/a-h/templ"
@@ -291,7 +835,11 @@ func Render(c *gin.Context, status int, component templ.Component) {
 }
 func NewUserPage(c *gin.Context) {
     Render(c, http.StatusOK, views.UsersPage(forms.CreateUserInput{}, map[string]string{}))
-}</code></pre><h2 id="10-html-form-validation-with-gin-templ">10. HTML form validation with Gin + templ</h2><pre><code>func createUserPage(c *gin.Context) {
+}</code></pre>
+      <h2 id="10-html-form-validation-with-gin-templ">
+        10. HTML form validation with Gin + templ
+      </h2>
+      <pre><code>func createUserPage(c *gin.Context) {
     var input forms.CreateUserInput
     if err := c.ShouldBind(&amp;input); err != nil {
         errorMap := forms.ValidationErrorMap(err)
@@ -307,7 +855,57 @@ func ValidationErrorMap(err error) map[string]string {
         result[e.Field] = e.Message
     }
     return result
-}</code></pre><h2 id="11-datastar-with-gin-and-sse">11. Datastar with Gin and SSE</h2><p>Datastar adds interactivity with HTML attributes and SSE responses. Instead of returning JSON and writing frontend state management, your Gin endpoint streams instructions that patch HTML or signals in the browser.</p><h2 id="datastar-mental-model">Datastar mental model</h2><table><thead><tr><th><h2 id="concept">Concept</h2></th><th><h2 id="meaning">Meaning</h2></th></tr><tr><th><p>Signal</p></th><th><p>Small reactive state stored in the browser, such as {email: ""}.</p></th></tr><tr><th><p>Action</p></th><th><p>A data-on-* or data-*-sse attribute that calls the backend.</p></th></tr><tr><th><p>SSE response</p></th><th><p>A text/event-stream response that tells Datastar to patch elements, patch signals, redirect, or run scripts.</p></th></tr><tr><th><p>Patch element</p></th><th><p>Replace, append, prepend, remove, or morph a selected DOM element.</p></th></tr></thead></table><p>// internal/views/datastar.templ</p><pre><code>package views
+}</code></pre>
+      <h2 id="11-datastar-with-gin-and-sse">11. Datastar with Gin and SSE</h2>
+      <p>
+        Datastar adds interactivity with HTML attributes and SSE responses.
+        Instead of returning JSON and writing frontend state management, your
+        Gin endpoint streams instructions that patch HTML or signals in the
+        browser.
+      </p>
+      <h2 id="datastar-mental-model">Datastar mental model</h2>
+      <table>
+        <thead>
+          <tr>
+            <th><h2 id="concept">Concept</h2></th>
+            <th><h2 id="meaning">Meaning</h2></th>
+          </tr>
+          <tr>
+            <th><p>Signal</p></th>
+            <th>
+              <p>
+                Small reactive state stored in the browser, such as {email: ""}.
+              </p>
+            </th>
+          </tr>
+          <tr>
+            <th><p>Action</p></th>
+            <th>
+              <p>A data-on-* or data-*-sse attribute that calls the backend.</p>
+            </th>
+          </tr>
+          <tr>
+            <th><p>SSE response</p></th>
+            <th>
+              <p>
+                A text/event-stream response that tells Datastar to patch
+                elements, patch signals, redirect, or run scripts.
+              </p>
+            </th>
+          </tr>
+          <tr>
+            <th><p>Patch element</p></th>
+            <th>
+              <p>
+                Replace, append, prepend, remove, or morph a selected DOM
+                element.
+              </p>
+            </th>
+          </tr>
+        </thead>
+      </table>
+      <p>// internal/views/datastar.templ</p>
+      <pre><code>package views
 templ DatastarCounter() {
     @Layout("Datastar Counter") {
         &lt;section id="counter" data-signals="{count: 0}"&gt;
@@ -316,7 +914,9 @@ templ DatastarCounter() {
             &lt;button data-on-click={ "@post('/datastar/increment')" }&gt;Increment&lt;/button&gt;
         &lt;/section&gt;
     }
-}</code></pre><h2 id="simple-manual-sse-response">Simple manual SSE response</h2><pre><code>func incrementManualSSE(c *gin.Context) {
+}</code></pre>
+      <h2 id="simple-manual-sse-response">Simple manual SSE response</h2>
+      <pre><code>func incrementManualSSE(c *gin.Context) {
     c.Header("Content-Type", "text/event-stream")
     c.Header("Cache-Control", "no-cache")
     c.Header("Connection", "keep-alive")
@@ -327,7 +927,9 @@ templ DatastarCounter() {
     c.Writer.WriteString("data: signals {"count": 1}
 ")
     c.Writer.Flush()
-}</code></pre><h2 id="datastar-go-sdk-pattern">Datastar Go SDK pattern</h2><pre><code>import (
+}</code></pre>
+      <h2 id="datastar-go-sdk-pattern">Datastar Go SDK pattern</h2>
+      <pre><code>import (
     datastar "github.com/starfederation/datastar-go/datastar"
 )
 func incrementSSE(c *gin.Context) {
@@ -340,7 +942,20 @@ func patchUserForm(c *gin.Context) {
     sse := datastar.NewSSE(c.Writer, c.Request)
     html := `&lt;div id="notice" class="success"&gt;Saved!&lt;/div&gt;`
     _ = sse.PatchElements(html)
-}</code></pre><p><em>SDK APIs can move while Datastar is still evolving. The durable pieces are the HTTP contract: Content-Type text/event-stream and Datastar SSE events for patching signals/elements. Use the SDK matching your installed module version.</em></p><h2 id="12-full-example-live-validated-form-with-datastar-sse">12. Full example: live validated form with Datastar SSE</h2><p>// internal/views/live_user_form.templ</p><pre><code>package views
+}</code></pre>
+      <p>
+        <em
+          >SDK APIs can move while Datastar is still evolving. The durable
+          pieces are the HTTP contract: Content-Type text/event-stream and
+          Datastar SSE events for patching signals/elements. Use the SDK
+          matching your installed module version.</em
+        >
+      </p>
+      <h2 id="12-full-example-live-validated-form-with-datastar-sse">
+        12. Full example: live validated form with Datastar SSE
+      </h2>
+      <p>// internal/views/live_user_form.templ</p>
+      <pre><code>package views
 import "example.com/gin-modern-tutorial/internal/forms"
 templ LiveUserForm(input forms.CreateUserInput, errors map[string]string) {
     &lt;form id="user-form" data-on-submit={ "@post('/users/live')" }&gt;
@@ -391,7 +1006,9 @@ func sendDatastarPatch(c *gin.Context, selector string, html string) {
     fmt.Fprintf(c.Writer, "data: elements %s
 ", html)
     c.Writer.Flush()
-}</code></pre><h2 id="13-middleware-and-groups">13. Middleware and groups</h2><pre><code>func requestID() gin.HandlerFunc {
+}</code></pre>
+      <h2 id="13-middleware-and-groups">13. Middleware and groups</h2>
+      <pre><code>func requestID() gin.HandlerFunc {
     return func(c *gin.Context) {
         id := c.GetHeader("X-Request-ID")
         if id == "" {
@@ -413,7 +1030,9 @@ func setupRouter() *gin.Engine {
     pages.POST("/users", createUserPage)
     pages.POST("/users/live", liveUserSubmit)
     return r
-}</code></pre><h2 id="14-file-uploads">14. File uploads</h2><pre><code>type ProfileForm struct {
+}</code></pre>
+      <h2 id="14-file-uploads">14. File uploads</h2>
+      <pre><code>type ProfileForm struct {
     Name   string                `form:"name" binding:"required"`
     Avatar *multipart.FileHeader `form:"avatar" binding:"required"`
 }
@@ -430,7 +1049,19 @@ func uploadProfile(c *gin.Context) {
         return
     }
     c.JSON(201, gin.H{"path": dst})
-}</code></pre><ul><li>Never trust file.Filename directly. Strip paths, generate server-side names, validate file type, and limit size.</li><li>Set router.MaxMultipartMemory for large forms and store large files outside the application container when deploying.</li></ul><h2 id="15-testing-gin-handlers">15. Testing Gin handlers</h2><pre><code>func TestPing(t *testing.T) {
+}</code></pre>
+      <ul>
+        <li>
+          Never trust file.Filename directly. Strip paths, generate server-side
+          names, validate file type, and limit size.
+        </li>
+        <li>
+          Set router.MaxMultipartMemory for large forms and store large files
+          outside the application container when deploying.
+        </li>
+      </ul>
+      <h2 id="15-testing-gin-handlers">15. Testing Gin handlers</h2>
+      <pre><code>func TestPing(t *testing.T) {
     router := setupRouter()
     w := httptest.NewRecorder()
     req := httptest.NewRequest(http.MethodGet, "/ping", nil)
@@ -446,7 +1077,9 @@ func TestCreateUserValidation(t *testing.T) {
     w := httptest.NewRecorder()
     router.ServeHTTP(w, req)
     require.Equal(t, http.StatusUnprocessableEntity, w.Code)
-}</code></pre><h2 id="16-production-server-setup">16. Production server setup</h2><pre><code>func main() {
+}</code></pre>
+      <h2 id="16-production-server-setup">16. Production server setup</h2>
+      <pre><code>func main() {
     gin.SetMode(gin.ReleaseMode)
     r := setupRouter()
     _ = r.SetTrustedProxies([]string{"203.0.113.10/8", "203.0.113.10/12"})
@@ -470,32 +1103,151 @@ func TestCreateUserValidation(t *testing.T) {
     ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
     defer cancel()
     _ = srv.Shutdown(ctx)
-}</code></pre><h2 id="17-security-checklist">17. Security checklist</h2><ul><li>Use ShouldBind* and return 422 for validation errors instead of leaking raw parser errors to users.</li><li>Set trusted proxies explicitly when behind Nginx, Traefik, Caddy, Cloudflare, Fly.io, or Kubernetes ingress.</li><li>Use CSRF protection for cookie-authenticated HTML forms.</li><li>Use HttpOnly, Secure, SameSite cookies for sessions.</li><li>Escape output by using templ or html/template; avoid template.HTML unless content is trusted.</li><li>Limit body size and multipart memory; validate uploads by MIME sniffing and business rules.</li><li>Set timeouts on http.Server.</li><li>Centralize error logging and avoid returning stack traces.</li><li>For Datastar SSE, authenticate endpoints the same way as normal POST routes and validate all incoming signals/forms.</li></ul><h2 id="18-cheat-sheet">18. Cheat sheet</h2><table><thead><tr><th><h2 id="task">Task</h2></th><th><h2 id="gin-go-pattern">Gin / Go pattern</h2></th></tr><tr><th><p>Create router</p></th><th><p>gin.Default() for logger+recovery, gin.New() for manual middleware</p></th></tr><tr><th><p>Bind JSON</p></th><th><p>c.ShouldBindJSON(&amp;input)</p></th></tr><tr><th><p>Bind form</p></th><th><p>c.ShouldBind(&amp;input)</p></th></tr><tr><th><p>Bind query</p></th><th><p>c.ShouldBindQuery(&amp;input)</p></th></tr><tr><th><p>Bind URI</p></th><th><p>c.ShouldBindUri(&amp;input)</p></th></tr><tr><th><p>Return JSON</p></th><th><p>c.JSON(status, gin.H{...})</p></th></tr><tr><th><p>Render templ</p></th><th><p>component.Render(c.Request.Context(), c.Writer)</p></th></tr><tr><th><p>Redirect after POST</p></th><th><p>c.Redirect(http.StatusSeeOther, "/target")</p></th></tr><tr><th><p>SSE endpoint</p></th><th><p>Content-Type: text/event-stream, no-cache, flush writes</p></th></tr><tr><th><p>Test handler</p></th><th><p>httptest.NewRecorder() + router.ServeHTTP(w, req)</p></th></tr></thead></table><h2 id="19-useful-commands">19. Useful commands</h2><pre><code>go mod tidy
+}</code></pre>
+      <h2 id="17-security-checklist">17. Security checklist</h2>
+      <ul>
+        <li>
+          Use ShouldBind* and return 422 for validation errors instead of
+          leaking raw parser errors to users.
+        </li>
+        <li>
+          Set trusted proxies explicitly when behind Nginx, Traefik, Caddy,
+          Cloudflare, Fly.io, or Kubernetes ingress.
+        </li>
+        <li>Use CSRF protection for cookie-authenticated HTML forms.</li>
+        <li>Use HttpOnly, Secure, SameSite cookies for sessions.</li>
+        <li>
+          Escape output by using templ or html/template; avoid template.HTML
+          unless content is trusted.
+        </li>
+        <li>
+          Limit body size and multipart memory; validate uploads by MIME
+          sniffing and business rules.
+        </li>
+        <li>Set timeouts on http.Server.</li>
+        <li>Centralize error logging and avoid returning stack traces.</li>
+        <li>
+          For Datastar SSE, authenticate endpoints the same way as normal POST
+          routes and validate all incoming signals/forms.
+        </li>
+      </ul>
+      <h2 id="18-cheat-sheet">18. Cheat sheet</h2>
+      <table>
+        <thead>
+          <tr>
+            <th><h2 id="task">Task</h2></th>
+            <th><h2 id="gin-go-pattern">Gin / Go pattern</h2></th>
+          </tr>
+          <tr>
+            <th><p>Create router</p></th>
+            <th>
+              <p>
+                gin.Default() for logger+recovery, gin.New() for manual
+                middleware
+              </p>
+            </th>
+          </tr>
+          <tr>
+            <th><p>Bind JSON</p></th>
+            <th><p>c.ShouldBindJSON(&amp;input)</p></th>
+          </tr>
+          <tr>
+            <th><p>Bind form</p></th>
+            <th><p>c.ShouldBind(&amp;input)</p></th>
+          </tr>
+          <tr>
+            <th><p>Bind query</p></th>
+            <th><p>c.ShouldBindQuery(&amp;input)</p></th>
+          </tr>
+          <tr>
+            <th><p>Bind URI</p></th>
+            <th><p>c.ShouldBindUri(&amp;input)</p></th>
+          </tr>
+          <tr>
+            <th><p>Return JSON</p></th>
+            <th><p>c.JSON(status, gin.H{...})</p></th>
+          </tr>
+          <tr>
+            <th><p>Render templ</p></th>
+            <th><p>component.Render(c.Request.Context(), c.Writer)</p></th>
+          </tr>
+          <tr>
+            <th><p>Redirect after POST</p></th>
+            <th><p>c.Redirect(http.StatusSeeOther, "/target")</p></th>
+          </tr>
+          <tr>
+            <th><p>SSE endpoint</p></th>
+            <th>
+              <p>Content-Type: text/event-stream, no-cache, flush writes</p>
+            </th>
+          </tr>
+          <tr>
+            <th><p>Test handler</p></th>
+            <th><p>httptest.NewRecorder() + router.ServeHTTP(w, req)</p></th>
+          </tr>
+        </thead>
+      </table>
+      <h2 id="19-useful-commands">19. Useful commands</h2>
+      <pre><code>go mod tidy
 templ generate
 go test ./...
 go run ./cmd/server
 go build -o ./tmp/server ./cmd/server
-GIN_MODE=release ./tmp/server</code></pre><p># Optional JSON encoder build tags supported by Gin:</p><pre><code>go build -tags=jsoniter ./cmd/server
-go build -tags=go_json ./cmd/server</code></pre><p># Optional: reduce binary size by disabling MsgPack rendering support:</p><p>go build -tags=nomsgpack ./cmd/server</p><h2 id="20-migration-notes-from-the-old-tutorial">20. Migration notes from the old tutorial</h2><ul><li>The old examples still teach important basics: routes, path params, query params, forms, uploads, route groups, middleware, rendering, cookies, trusted proxies, and testing.</li><li>Prefer modern Go modules over GOPATH-era workflows.</li><li>Prefer ShouldBind* for almost every real application because it lets you choose JSON, HTML, or SSE validation responses.</li><li>For frontend pages, templ components are easier to refactor than string-based templates and work well for Datastar fragments.</li><li>For live UI, Datastar SSE lets your Gin handlers stream DOM updates without converting the page into a SPA.</li></ul>
-</div>
-<a href="https://go.dev/play/" target="_blank" class="playground-float">▶ Go Playground</a>
-<a href="#" class="toc-back">&#8593; Top</a>
-<script>
-document.querySelectorAll('pre').forEach(function(pre) {
-  var btn = document.createElement('button');
-  btn.className = 'copy-btn';
-  btn.textContent = 'Copy';
-  btn.addEventListener('click', function() {
-    var code = pre.querySelector('code');
-    var text = code ? code.textContent : pre.textContent;
-    navigator.clipboard.writeText(text).then(function() {
-      btn.textContent = 'Copied!';
-      btn.classList.add('copied');
-      setTimeout(function() { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
-    });
-  });
-  pre.appendChild(btn);
-});
-</script>
-</body>
+GIN_MODE=release ./tmp/server</code></pre>
+      <p># Optional JSON encoder build tags supported by Gin:</p>
+      <pre><code>go build -tags=jsoniter ./cmd/server
+go build -tags=go_json ./cmd/server</code></pre>
+      <p>
+        # Optional: reduce binary size by disabling MsgPack rendering support:
+      </p>
+      <p>go build -tags=nomsgpack ./cmd/server</p>
+      <h2 id="20-migration-notes-from-the-old-tutorial">
+        20. Migration notes from the old tutorial
+      </h2>
+      <ul>
+        <li>
+          The old examples still teach important basics: routes, path params,
+          query params, forms, uploads, route groups, middleware, rendering,
+          cookies, trusted proxies, and testing.
+        </li>
+        <li>Prefer modern Go modules over GOPATH-era workflows.</li>
+        <li>
+          Prefer ShouldBind* for almost every real application because it lets
+          you choose JSON, HTML, or SSE validation responses.
+        </li>
+        <li>
+          For frontend pages, templ components are easier to refactor than
+          string-based templates and work well for Datastar fragments.
+        </li>
+        <li>
+          For live UI, Datastar SSE lets your Gin handlers stream DOM updates
+          without converting the page into a SPA.
+        </li>
+      </ul>
+    </div>
+    <a href="https://go.dev/play/" target="_blank" class="playground-float"
+      >▶ Go Playground</a
+    >
+    <a href="#" class="toc-back">&#8593; Top</a>
+    <script>
+      document.querySelectorAll("pre").forEach(function (pre) {
+        var btn = document.createElement("button");
+        btn.className = "copy-btn";
+        btn.textContent = "Copy";
+        btn.addEventListener("click", function () {
+          var code = pre.querySelector("code");
+          var text = code ? code.textContent : pre.textContent;
+          navigator.clipboard.writeText(text).then(function () {
+            btn.textContent = "Copied!";
+            btn.classList.add("copied");
+            setTimeout(function () {
+              btn.textContent = "Copy";
+              btn.classList.remove("copied");
+            }, 2000);
+          });
+        });
+        pre.appendChild(btn);
+      });
+    </script>
+  </body>
 </html>
